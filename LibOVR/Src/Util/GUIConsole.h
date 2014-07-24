@@ -1,7 +1,9 @@
 /************************************************************************************
 
-Filename    :   OVRVersion.h
-Content     :   
+Filename    :   GUIConsole.h
+Content     :   A stdout console window that runs alongside Windows GUI applications
+Created     :   Feb 4, 2013
+Authors     :   Brant Lewis
 
 Copyright   :   Copyright 2014 Oculus VR, Inc. All Rights reserved.
 
@@ -22,12 +24,26 @@ limitations under the License.
 
 *************************************************************************************/
 
-#ifndef _OVR_VERSION_H
-#define _OVR_VERSION_H
+#ifndef GUICONSOLE_H
+#define GUICONSOLE_H
 
-#define OVR_MAJOR_VERSION 0
-#define OVR_MINOR_VERSION 3
-#define OVR_BUILD_VERSION 3
-#define OVR_VERSION_STRING "0.3.3-pre.1"
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+
+#include "../../Include/OVR.h"
+
+#ifdef OVR_INTERNAL_USE
+
+class GUIConsole
+{
+public:
+  // constructors
+  GUIConsole();
+  ~GUIConsole();
+
+  // member variables
+  HANDLE hStdIn, hStdOut, hStdError;
+};
+#endif // #ifdef OVR_INTERNAL_USE
 
 #endif
