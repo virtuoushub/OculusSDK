@@ -24,6 +24,10 @@ limitations under the License.
 
 *************************************************************************************/
 
+#include "OVR_Types.h"
+
+#if defined(OVR_OS_WIN32)
+
 #include <Windows.h>
 
 #include "OVR_Win32_Display.h"
@@ -940,3 +944,4 @@ bool Win32::Win32DisplayDriver::SetDisplaySleep(bool sleep)
 
 
 } // namespace OVR
+#endif

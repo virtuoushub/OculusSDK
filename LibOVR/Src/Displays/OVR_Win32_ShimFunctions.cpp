@@ -23,6 +23,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 *************************************************************************************/
+#include "OVR_Types.h"
+
+#if defined(OVR_OS_WIN32)
 
 #include "OVR_Win32_Display.h"
 #include "OVR_Win32_ShimFunctions.h"
@@ -228,3 +231,4 @@ void* DisplayShim::GetDX11SwapChain()
 
 
 } } // OVR::Win32
+#endif

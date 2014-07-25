@@ -20,13 +20,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "OVR_CAPI_GL.h"
 #include "Kernel/OVR_Color.h"
 
-#if defined(OVR_OS_WIN32)
-#include <GL/wglew.h>
-#elif defined(OVR_OS_MAC)
-#elif defined(OVR_OS_LINUX) 
-#include <GL/glxew.h>
-#endif
-
 namespace OVR { namespace CAPI { namespace GL {
 
 

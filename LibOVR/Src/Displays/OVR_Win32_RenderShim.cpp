@@ -14,6 +14,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 ************************************************************************************/
 
+#include "OVR_Types.h"
+
+#if defined(OVR_OS_WIN32)
+
 #include <windows.h>
 #include <DbgHelp.h>
 #include <AtlBase.h>
@@ -786,3 +790,5 @@ void checkUMDriverOverrides( void* context )
 		}
 	}
 }
+#endif
+

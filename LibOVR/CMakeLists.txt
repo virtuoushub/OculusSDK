@@ -20,10 +20,7 @@ elseif(APPLE)
     list(APPEND EXTRA_LIBS ${COCOA_LIBRARY} ${IOKIT_LIBRARY})
 
 else()
-    # Extra source
-    file(GLOB PLATFORM_SOURCE_FILES Platform/Linux/*.cpp Platform/Linux/*.h)
-    list(APPEND PLATFORM_SOURCE_FILES Platform/OVR_ThreadsPthread.cpp)
-
+    
     # Extra libs
     # Used by the SDK to read the EDID of the monitors
     list(APPEND EXTRA_LIBS edid)
@@ -41,6 +38,7 @@ else()
     endif()
     list(APPEND EXTRA_LIBS ${X11_X11_LIB}) 
     list(APPEND EXTRA_LIBS ${X11_Xrandr_LIB})
+    
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty/EDID)
 

@@ -25,18 +25,12 @@ limitations under the License.
 
 ************************************************************************************/
 
-#ifndef OVR_Win32_Socket_h
-#define OVR_Win32_Socket_h
+#ifndef OVR_Unix_Socket_h
+#define OVR_Unix_Socket_h
 
-#ifdef OVR_OS_WIN32
 #include "OVR_Socket.h"
 #include "OVR_BitStream.h"
 
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <io.h>
 
 namespace OVR { namespace Net { 
 
@@ -150,6 +144,3 @@ public:
 }} // OVR::Net
 
 #endif
-
-#endif
-

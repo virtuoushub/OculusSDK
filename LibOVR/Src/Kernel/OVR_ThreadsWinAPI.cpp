@@ -30,6 +30,8 @@ limitations under the License.
 #include "OVR_Log.h"
 #include "OVR_Timer.h"
 
+#if defined(OVR_OS_WIN32)
+
 #ifdef OVR_ENABLE_THREADS
 
 // For _beginthreadex / _endtheadex
@@ -1038,4 +1040,5 @@ ThreadId GetCurrentThreadId()
 
 } // OVR
 
+#endif
 #endif

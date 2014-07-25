@@ -23,15 +23,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ************************************************************************************/
-#ifdef OVR_OS_WIN32
-
+#if 0
 #include "OVR_Win32_Socket.h"
 #include "../Kernel/OVR_Std.h"
 #include "../Kernel/OVR_Allocator.h"
 #include "../Kernel/OVR_Threads.h" // Thread::MSleep
 #include "../Kernel/OVR_Log.h"
 
-#include <Winsock2.h>
 
 namespace OVR { namespace Net {
 
@@ -602,4 +600,3 @@ void TCPSocketPollState::HandleEvent(TCPSocket* tcpSocket, SocketEvent_TCP* even
 
 }} // namespace OVR::Net
 #endif
-

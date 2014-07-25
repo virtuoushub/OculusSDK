@@ -79,7 +79,8 @@ limitations under the License.
 
 #elif defined(__GNUC__)
 #  define OVR_CC_GNU
-
+#define OVR_CPP_VERSION (__GNUC__ * 100 \
+                   + __GNUC_MINOR__ )
 #elif defined(__clang__)
 #  define OVR_CC_CLANG
 

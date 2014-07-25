@@ -32,12 +32,15 @@ limitations under the License.
 #include "Kernel/OVR_Types.h"
 #include "Kernel/OVR_Log.h"
 
+#include <GL/glew.h>
+
 #if defined(OVR_OS_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <GL/wglew.h>
+#elif defined(OVR_OS_LINUX) 
+#include <GL/glxew.h>
 #endif
-
-#include "GL/glew.h"
 
 namespace OVR { namespace CAPI { namespace GL {
 

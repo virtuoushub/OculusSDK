@@ -23,6 +23,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 *************************************************************************************/
+#include "OVR_Types.h"
+
+#if defined(OVR_OS_WIN32)
 
 #include "OVR_Win32_FocusReader.h"
 #include "../Kernel/OVR_Log.h"
@@ -78,3 +81,4 @@ void RenderFocusReader::OnSystemDestroy()
 
 
 }} // namespace OVR::Win32
+#endif
