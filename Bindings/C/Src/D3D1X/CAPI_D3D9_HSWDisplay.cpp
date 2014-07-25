@@ -26,15 +26,15 @@ limitations under the License.
 
 #define OVR_D3D_VERSION 9
 #include "CAPI_D3D9_HSWDisplay.h"
-#include "../../OVR_CAPI_D3D.h"
+#include "OVR_CAPI_D3D.h"
 #undef  OVR_D3D_VERSION
 
 #include <d3d9.h>
-#include "../../Kernel/OVR_File.h"
-#include "../../Kernel/OVR_SysFile.h"
-#include "../../Kernel/OVR_Math.h"
-#include "../../Kernel/OVR_Allocator.h"
-#include "../../Kernel/OVR_Color.h"
+#include "Kernel/OVR_File.h"
+#include "Kernel/OVR_SysFile.h"
+#include "Kernel/OVR_Math.h"
+#include "Kernel/OVR_Allocator.h"
+#include "Kernel/OVR_Color.h"
 
 #include "../Textures/healthAndSafety.tga.h"
 

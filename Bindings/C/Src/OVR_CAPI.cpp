@@ -30,10 +30,10 @@ limitations under the License.
 #include "Kernel/OVR_System.h"
 #include "OVR_Stereo.h"
 #include "OVR_Profile.h"
-#include "../Include/OVR_Version.h"
+#include "OVR_Version.h"
 
-#include "CAPI/CAPI_HMDState.h"
-#include "CAPI/CAPI_FrameTimeManager.h"
+#include "CAPI_HMDState.h"
+#include "CAPI_FrameTimeManager.h"
 
 #include "Service/Service_NetClient.h"
 #ifdef OVR_SINGLE_PROCESS
@@ -622,17 +622,17 @@ OVR_EXPORT void ovrHmd_EndFrame(ovrHmd hmddesc,
 		hmds->pRenderer->SaveGraphicsState();
 
         // See if we need to show the HSWDisplay.
-        if (hmds->pHSWDisplay) // Until we know that these are valid, assume any of them can't be.
-        {
-            ovrHSWDisplayState hswDisplayState;
-            hmds->pHSWDisplay->TickState(&hswDisplayState);  // This may internally call HASWarning::Display.
+        //if (hmds->pHSWDisplay) // Until we know that these are valid, assume any of them can't be.
+        //{
+        //    ovrHSWDisplayState hswDisplayState;
+        //    hmds->pHSWDisplay->TickState(&hswDisplayState);  // This may internally call HASWarning::Display.
 
-            if (hswDisplayState.Displayed)
-            {
-                hmds->pHSWDisplay->Render(ovrEye_Left, &eyeTexture[ovrEye_Left]);
-                hmds->pHSWDisplay->Render(ovrEye_Right, &eyeTexture[ovrEye_Right]);
-            }
-        }
+        //    if (hswDisplayState.Displayed)
+        //    {
+        //        hmds->pHSWDisplay->Render(ovrEye_Left, &eyeTexture[ovrEye_Left]);
+        //        hmds->pHSWDisplay->Render(ovrEye_Right, &eyeTexture[ovrEye_Right]);
+        //    }
+        //}
 
         hmds->pRenderer->EndFrame(true);
 		hmds->pRenderer->RestoreGraphicsState();

@@ -28,7 +28,7 @@ limitations under the License.
 #define OVR_CAPI_GL_HSWDisplay_h
 
 
-#include "../CAPI_HSWDisplay.h"
+#include "CAPI_HSWDisplay.h"
 #include "CAPI_GL_Util.h"
 
 

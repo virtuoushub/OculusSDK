@@ -59,7 +59,7 @@ set_target_properties(OVR_C PROPERTIES FOLDER "Oculus")
 # Sample code support
 #
 
-option(OCULUS_BUILD_SAMPLES "Build Oculus demos" TRUE)
+#option(OCULUS_BUILD_SAMPLES "Build Oculus demos" TRUE)
 if(OCULUS_BUILD_SAMPLES)
     # Make sure to set up the OVR include paths
     include_directories(3rdParty/glew/include)

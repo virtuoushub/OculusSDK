@@ -31,9 +31,7 @@ limitations under the License.
 
 #include "OVR_CAPI.h"
 
-#ifndef OVR_D3D_VERSION
-#error Please define OVR_D3D_VERSION to 9 or 10 or 11 before including OVR_CAPI_D3D.h
-#endif
+#ifdef OVR_D3D_VERSION
 
 
 #if defined(OVR_D3D_VERSION) && (OVR_D3D_VERSION == 11)
@@ -171,3 +169,5 @@ union ovrD3D9Texture
 #endif
 
 #endif	// OVR_CAPI_h
+
+#endif

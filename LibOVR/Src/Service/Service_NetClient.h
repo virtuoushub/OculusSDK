@@ -30,7 +30,7 @@ limitations under the License.
 #include "../Net/OVR_NetworkTypes.h"
 #include "Service_NetSessionCommon.h"
 #include "../Kernel/OVR_System.h"
-#include "../OVR_CAPI.h"
+//#include "../OVR_CAPI.h"
 #include "../Util/Util_Render_Stereo.h"
 
 namespace OVR { namespace Service {

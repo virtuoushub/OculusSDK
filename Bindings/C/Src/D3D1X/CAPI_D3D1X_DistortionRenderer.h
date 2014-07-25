@@ -25,12 +25,13 @@ limitations under the License.
 ************************************************************************************/
 
 // No include guard, since this fill will be multiply-included. 
-//#ifndef OVR_CAPI_D3D1X_DistortionRenderer_h
+#ifdef OVR_D3D_VERSION
+
 
 #include "CAPI_D3D1X_Util.h"
-#include "../CAPI_DistortionRenderer.h"
+#include "CAPI_DistortionRenderer.h"
 
-#include "../../Kernel/OVR_Log.h"
+#include "Kernel/OVR_Log.h"
 
 namespace OVR { namespace CAPI { namespace D3D_NS {
 
@@ -188,3 +189,5 @@ private:
 };
 
 }}} // OVR::CAPI::D3D1X
+
+#endif

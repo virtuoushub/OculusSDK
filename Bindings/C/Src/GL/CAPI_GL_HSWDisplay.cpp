@@ -27,11 +27,11 @@ limitations under the License.
 
 #include "CAPI_GL_HSWDisplay.h"
 #include "CAPI_GL_DistortionShaders.h"
-#include "../../OVR_CAPI_GL.h"
-#include "../../Kernel/OVR_File.h"
-#include "../../Kernel/OVR_Math.h"
-#include "../../Kernel/OVR_Allocator.h"
-#include "../../Kernel/OVR_Color.h"
+#include "OVR_CAPI_GL.h"
+#include "Kernel/OVR_File.h"
+#include "Kernel/OVR_Math.h"
+#include "Kernel/OVR_Allocator.h"
+#include "Kernel/OVR_Color.h"
 
 #include "../Textures/healthAndSafety.tga.h"
 

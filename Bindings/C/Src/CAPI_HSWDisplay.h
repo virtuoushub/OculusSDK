@@ -27,7 +27,7 @@ limitations under the License.
 #ifndef OVR_CAPI_HSWDisplay_h
 #define OVR_CAPI_HSWDisplay_h
 
-#include "../OVR_CAPI.h"
+#include "OVR_CAPI.h"
 #include "CAPI_HMDRenderState.h"
 #include <time.h>
 

@@ -27,7 +27,7 @@ limitations under the License.
 #ifndef OVR_Service_NetSessionCommon_h
 #define OVR_Service_NetSessionCommon_h
 
-#include "../OVR_CAPI.h"
+//#include "../OVR_CAPI.h"
 #include "../Net/OVR_RPC1.h"
 #include "../Kernel/OVR_Threads.h"
 #include "../Net/OVR_BitStream.h"

@@ -4,16 +4,10 @@ include_directories(Include Src Src/Kernel Src/Util)
 include_directories(../Bindings/C/Include)
 
 file(GLOB_RECURSE SOURCE_FILES Src/*.cpp Src/*.h Include/*.h)
-list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Src/OVR_Common_HMDDevice.cpp)
 
 if(WIN32)
-    # Extra source
-    file(GLOB PLATFORM_SOURCE_FILES Platform/Win32/*.cpp Platform/Win32/*.h)
-    list(APPEND PLATFORM_SOURCE_FILES Platform/OVR_ThreadsWinAPI.cpp)
-
     # Extra libs
-    list(APPEND EXTRA_LIBS setupapi winmm)
-
+    list(APPEND EXTRA_LIBS setupapi winmm ws2_32)
 elseif(APPLE)
 
     # Extra source

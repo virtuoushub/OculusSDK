@@ -16,9 +16,9 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifndef OVR_CAPI_GL_DistortionRenderer_h
 #define OVR_CAPI_GL_DistortionRenderer_h
 
-#include "../CAPI_DistortionRenderer.h"
+#include "CAPI_DistortionRenderer.h"
 
-#include "../../Kernel/OVR_Log.h"
+#include "Kernel/OVR_Log.h"
 #include "CAPI_GL_Util.h"
 
 namespace OVR { namespace CAPI { namespace GL {

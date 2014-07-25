@@ -31,7 +31,7 @@ limitations under the License.
     #error This header expects OVR_D3D_VERSION to be defined, to 9.
 #endif
 
-#include "../CAPI_HSWDisplay.h"
+#include "CAPI_HSWDisplay.h"
 #include "CAPI_D3D1X_Util.h"
 #include <d3d9.h>
 

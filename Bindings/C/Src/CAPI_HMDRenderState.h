@@ -27,10 +27,10 @@ limitations under the License.
 #ifndef OVR_CAPI_HMDRenderState_h
 #define OVR_CAPI_HMDRenderState_h
 
-#include "../OVR_CAPI.h"
-#include "../Kernel/OVR_Math.h"
-#include "../Util/Util_Render_Stereo.h"
-#include "../Service/Service_NetSessionCommon.h"
+#include "OVR_CAPI.h"
+#include "Kernel/OVR_Math.h"
+#include "Util/Util_Render_Stereo.h"
+#include "Service/Service_NetSessionCommon.h"
 
 namespace OVR { namespace CAPI {
 

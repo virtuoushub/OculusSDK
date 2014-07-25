@@ -26,8 +26,8 @@ limitations under the License.
 
 #include "CAPI_HSWDisplay.h"
 #include "CAPI_HMDState.h"
-#include "../Kernel/OVR_Log.h"
-#include "../Kernel/OVR_String.h"
+#include "Kernel/OVR_Log.h"
+#include "Kernel/OVR_String.h"
 
 
 //-------------------------------------------------------------------------------------

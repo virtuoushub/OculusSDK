@@ -27,19 +27,19 @@ limitations under the License.
 #ifndef OVR_CAPI_HMDState_h
 #define OVR_CAPI_HMDState_h
 
-#include "../Kernel/OVR_Math.h"
-#include "../Kernel/OVR_List.h"
-#include "../Kernel/OVR_Log.h"
-#include "../OVR_CAPI.h"
+#include "Kernel/OVR_Math.h"
+#include "Kernel/OVR_List.h"
+#include "Kernel/OVR_Log.h"
+#include "OVR_CAPI.h"
 
 #include "CAPI_FrameTimeManager.h"
 #include "CAPI_HMDRenderState.h"
 #include "CAPI_DistortionRenderer.h"
 #include "CAPI_HSWDisplay.h"
 
-#include "../Service/Service_NetClient.h"
-#include "../Net/OVR_NetworkTypes.h"
-#include "../Util/Util_LatencyTest2Reader.h"
+#include "Service/Service_NetClient.h"
+#include "Net/OVR_NetworkTypes.h"
+#include "Util/Util_LatencyTest2Reader.h"
 
 struct ovrHmdStruct { };
 

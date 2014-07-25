@@ -29,13 +29,13 @@ limitations under the License.
 #if defined(OVR_D3D_VERSION) && ((OVR_D3D_VERSION == 10) || (OVR_D3D_VERSION == 11))
 
 #define _WINSOCKAPI_             // Prevents <Windows.h> from #including <Winsock.h>, as we need the app to use <Winsock2.h> instead.
-#include "../../OVR_CAPI_D3D.h"  // OVR_D3D_VERSION will have been defined by who included us.
+#include "OVR_CAPI_D3D.h"  // OVR_D3D_VERSION will have been defined by who included us.
 #include "CAPI_D3D1X_HSWDisplay.h"
-#include "../../Kernel/OVR_File.h"
-#include "../../Kernel/OVR_SysFile.h"
-#include "../../Kernel/OVR_Math.h"
-#include "../../Kernel/OVR_Allocator.h"
-#include "../../Kernel/OVR_Color.h"
+#include "Kernel/OVR_File.h"
+#include "Kernel/OVR_SysFile.h"
+#include "Kernel/OVR_Math.h"
+#include "Kernel/OVR_Allocator.h"
+#include "Kernel/OVR_Color.h"
 
 
 #include "../Textures/healthAndSafety.tga.h"

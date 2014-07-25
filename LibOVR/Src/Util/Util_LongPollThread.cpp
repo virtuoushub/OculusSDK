@@ -25,6 +25,7 @@ limitations under the License.
 *************************************************************************************/
 
 #include "Util_LongPollThread.h"
+#if 0
 #include "Util_Watchdog.h"
 
 OVR_DEFINE_SINGLETON(OVR::Util::LongPollThread);
@@ -92,5 +93,5 @@ int LongPollThread::Run()
     return 0;
 }
 
-
 }} // namespace OVR::Util
+#endif
