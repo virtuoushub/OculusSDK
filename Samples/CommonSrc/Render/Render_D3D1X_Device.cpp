@@ -21,6 +21,7 @@ limitations under the License.
 
 ************************************************************************************/
 
+#ifdef OVR_D3D_VERSION
 #define GPU_PROFILING 0
 
 #include "Kernel/OVR_Log.h"
@@ -49,7 +50,7 @@ static D3D1x_(INPUT_ELEMENT_DESC) ModelVertexDesc[] =
     {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(Vertex, Pos),   D3D1x_(INPUT_PER_VERTEX_DATA), 0},
     {"Color",    0, DXGI_FORMAT_R8G8B8A8_UNORM,  0, offsetof(Vertex, C),     D3D1x_(INPUT_PER_VERTEX_DATA), 0},
     {"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT,    0, offsetof(Vertex, U),     D3D1x_(INPUT_PER_VERTEX_DATA), 0},
-    {"TexCoord", 1, DXGI_FORMAT_R32G32_FLOAT,    0, offsetof(Vertex, U2),	 D3D1x_(INPUT_PER_VERTEX_DATA), 0},
+    {"TexCoord", 1, DXGI_FORMAT_R32G32_FLOAT,    0, offsetof(Vertex, U2),     D3D1x_(INPUT_PER_VERTEX_DATA), 0},
     {"Normal",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(Vertex, Norm),  D3D1x_(INPUT_PER_VERTEX_DATA), 0},
 };
 
@@ -101,7 +102,7 @@ static const char* SolidPixelShaderSrc =
     "{\n"
     "   float4 finalColor = ov.Color;"
     // blend state expects premultiplied alpha
-	"	finalColor.rgb *= finalColor.a;\n"
+    "    finalColor.rgb *= finalColor.a;\n"
     "   return finalColor;\n"
     "}\n";
 
@@ -116,7 +117,7 @@ static const char* GouraudPixelShaderSrc =
     "{\n"
     "   float4 finalColor = ov.Color;"
     // blend state expects premultiplied alpha
-	"	finalColor.rgb *= finalColor.a;\n"
+    "    finalColor.rgb *= finalColor.a;\n"
     "   return finalColor;\n"
     "}\n";
 
@@ -131,9 +132,9 @@ static const char* TexturePixelShaderSrc =
     "};\n"
     "float4 main(in Varyings ov) : SV_Target\n"
     "{\n"
-    "	float4 color2 = ov.Color * Texture.Sample(Linear, ov.TexCoord);\n"
+    "    float4 color2 = ov.Color * Texture.Sample(Linear, ov.TexCoord);\n"
     "   if (color2.a <= 0.4)\n"
-    "		discard;\n"
+    "        discard;\n"
     "   return color2;\n"
     "}\n";
 
@@ -151,18 +152,18 @@ static const char* MultiTexturePixelShaderSrc =
     "{\n"
     "float4 color1;\n"
     "float4 color2;\n"
-	"	color1 = Texture[0].Sample(Linear, ov.TexCoord);\n"
-	// go to linear space colors (assume gamma 2.0 for speed)
-    "	color1.rgb *= color1.rgb;\n"
-    "	color2 = Texture[1].Sample(Linear, ov.TexCoord1);\n"
-	// go to linear space colors (assume gamma 2.0 for speed)
-	"	color2.rgb *= color2.rgb;\n"
-    "	color2.rgb = color2.rgb * lerp(1.2, 1.9, saturate(length(color2.rgb)));\n"
-    "	color2 = color1 * color2;\n"
+    "    color1 = Texture[0].Sample(Linear, ov.TexCoord);\n"
+    // go to linear space colors (assume gamma 2.0 for speed)
+    "    color1.rgb *= color1.rgb;\n"
+    "    color2 = Texture[1].Sample(Linear, ov.TexCoord1);\n"
+    // go to linear space colors (assume gamma 2.0 for speed)
+    "    color2.rgb *= color2.rgb;\n"
+    "    color2.rgb = color2.rgb * lerp(1.2, 1.9, saturate(length(color2.rgb)));\n"
+    "    color2 = color1 * color2;\n"
     "   if (color2.a <= 0.4)\n"
-    "		discard;\n"
-	// go to back to gamma space space colors (assume gamma 2.0 for speed)
-	"	return float4(sqrt(color2.rgb) / color2.a, 1);\n"
+    "        discard;\n"
+    // go to back to gamma space space colors (assume gamma 2.0 for speed)
+    "    return float4(sqrt(color2.rgb) / color2.a, 1);\n"
     "}\n";
 
 #define LIGHTING_COMMON                 \
@@ -222,30 +223,30 @@ static const char* AlphaTexturePixelShaderSrc =
     "};\n"
     "float4 main(in Varyings ov) : SV_Target\n"
     "{\n"
-	"	float4 finalColor = ov.Color;\n"
-    "	finalColor.a *= Texture.Sample(Linear, ov.TexCoord).r;\n"
+    "    float4 finalColor = ov.Color;\n"
+    "    finalColor.a *= Texture.Sample(Linear, ov.TexCoord).r;\n"
     // blend state expects premultiplied alpha
-	"	finalColor.rgb *= finalColor.a;\n"
-	"	return finalColor;\n"
+    "    finalColor.rgb *= finalColor.a;\n"
+    "    return finalColor;\n"
     "}\n";
 
 static const char* AlphaBlendedTexturePixelShaderSrc =
-	"Texture2D Texture : register(t0);\n"
-	"SamplerState Linear : register(s0);\n"
-	"struct Varyings\n"
-	"{\n"
-	"   float4 Position : SV_Position;\n"
-	"   float4 Color    : COLOR0;\n"
-	"   float2 TexCoord : TEXCOORD0;\n"
-	"};\n"
-	"float4 main(in Varyings ov) : SV_Target\n"
-	"{\n"
-	"	float4 finalColor = ov.Color;\n"
-	"	finalColor *= Texture.Sample(Linear, ov.TexCoord);\n"
-	// blend state expects premultiplied alpha
-	"	finalColor.rgb *= finalColor.a;\n"
-	"	return finalColor;\n"
-	"}\n";
+    "Texture2D Texture : register(t0);\n"
+    "SamplerState Linear : register(s0);\n"
+    "struct Varyings\n"
+    "{\n"
+    "   float4 Position : SV_Position;\n"
+    "   float4 Color    : COLOR0;\n"
+    "   float2 TexCoord : TEXCOORD0;\n"
+    "};\n"
+    "float4 main(in Varyings ov) : SV_Target\n"
+    "{\n"
+    "    float4 finalColor = ov.Color;\n"
+    "    finalColor *= Texture.Sample(Linear, ov.TexCoord);\n"
+    // blend state expects premultiplied alpha
+    "    finalColor.rgb *= finalColor.a;\n"
+    "    return finalColor;\n"
+    "}\n";
 #pragma endregion
 
 #pragma region Distortion shaders
@@ -337,8 +338,8 @@ static D3D1x_(INPUT_ELEMENT_DESC) DistortionVertexDesc[] =
 {
     {"Position", 0, DXGI_FORMAT_R32G32_FLOAT,       0, 0,          D3D1x_(INPUT_PER_VERTEX_DATA), 0},
     {"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT,       0, 8,          D3D1x_(INPUT_PER_VERTEX_DATA), 0},
-    {"TexCoord", 1, DXGI_FORMAT_R32G32_FLOAT,       0, 8+8,	       D3D1x_(INPUT_PER_VERTEX_DATA), 0},
-    {"TexCoord", 2, DXGI_FORMAT_R32G32_FLOAT,       0, 8+8+8,	   D3D1x_(INPUT_PER_VERTEX_DATA), 0},
+    {"TexCoord", 1, DXGI_FORMAT_R32G32_FLOAT,       0, 8+8,           D3D1x_(INPUT_PER_VERTEX_DATA), 0},
+    {"TexCoord", 2, DXGI_FORMAT_R32G32_FLOAT,       0, 8+8+8,       D3D1x_(INPUT_PER_VERTEX_DATA), 0},
     {"Color",    0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, 8+8+8+8,    D3D1x_(INPUT_PER_VERTEX_DATA), 0},
 };
 
@@ -526,7 +527,7 @@ static const char* PostProcessMeshPositionalTimewarpVertexShaderSrc =
     "float2 TimewarpTexCoordToWarpedPos(float2 inTexCoord, float4x4 rotMat)\n"
     "{\n"
     // Vertex inputs are in TanEyeAngle space for the R,G,B channels (i.e. after chromatic aberration and distortion).
-    // These are now "real world" vectors in direction (x,y,1) relative to the eye of the HMD.	
+    // These are now "real world" vectors in direction (x,y,1) relative to the eye of the HMD.    
     // Apply the 4x4 timewarp rotation to these vectors.
     "   float4 inputPos = PositionFromDepth(inTexCoord);\n"
     "   float3 transformed = float3( mul ( rotMat, inputPos ).xyz);\n"
@@ -551,7 +552,7 @@ static const char* PostProcessMeshPositionalTimewarpVertexShaderSrc =
 
     "   float timewarpLerpFactor = Color.a;\n"
     "   float4x4 lerpedEyeRot = lerp(EyeRotationStart, EyeRotationEnd, timewarpLerpFactor);\n"
-    //"	float4x4 lerpedEyeRot = EyeRotationStart;\n"
+    //"    float4x4 lerpedEyeRot = EyeRotationStart;\n"
 
     // warped positions are a bit more involved, hence a separate function
     "   oHmdSpcTexCoordR = TimewarpTexCoordToWarpedPos(TexCoord0, lerpedEyeRot);\n"
@@ -609,14 +610,14 @@ static D3D1x_(INPUT_ELEMENT_DESC) HeightmapVertexDesc[] =
 };
 
 static const char* PostProcessHeightmapTimewarpVertexShaderSrc =
-	"Texture2DMS<float,4> DepthTexture : register(t0);\n"
+    "Texture2DMS<float,4> DepthTexture : register(t0);\n"
     // Padding because we are uploading "standard uniform buffer" constants
     "float4x4 Padding1;\n"
     "float4x4 Padding2;\n"
     "float2 EyeToSourceUVScale;\n"
     "float2 EyeToSourceUVOffset;\n"
-	"float2 DepthDimSize;\n"
-	"float4x4 EyeXformStart;\n"
+    "float2 DepthDimSize;\n"
+    "float4x4 EyeXformStart;\n"
     "float4x4 EyeXformEnd;\n"
     //"float4x4 Projection;\n"
     "float4x4 InvProjection;\n"
@@ -624,7 +625,7 @@ static const char* PostProcessHeightmapTimewarpVertexShaderSrc =
     "float4 PositionFromDepth(float2 position, float2 inTexCoord)\n"
     "{\n"
     "   float depth = DepthTexture.Load(int2(inTexCoord * DepthDimSize), 0).x;\n"
-	"   float4 retVal = float4(position, depth, 1);\n"
+    "   float4 retVal = float4(position, depth, 1);\n"
     "   return retVal;\n"
     "}\n"
 
@@ -648,20 +649,20 @@ static const char* PostProcessHeightmapTimewarpVertexShaderSrc =
 
     "   float timewarpLerpFactor = TexCoord0.z;\n"
     "   float4x4 lerpedEyeRot = lerp(EyeXformStart, EyeXformEnd, timewarpLerpFactor);\n"
-    //"	float4x4 lerpedEyeRot = EyeXformStart;\n"
+    //"    float4x4 lerpedEyeRot = EyeXformStart;\n"
 
     "   oPosition = TimewarpPos(Position.xy, oTexCoord0, lerpedEyeRot);\n"
     "}\n";
 
 static const char* PostProcessHeightmapTimewarpPixelShaderSrc =
-	"Texture2D Texture : register(t0);\n"
+    "Texture2D Texture : register(t0);\n"
     "SamplerState Linear : register(s0);\n"
-	"\n"
+    "\n"
     "float4 main(in float4 oPosition : SV_Position, in float2 oTexCoord0 : TEXCOORD0) : SV_Target\n"
     "{\n"
     "   float3 result;\n"
-	"   result = Texture.Sample(Linear, oTexCoord0);\n"
-	"   return float4(result, 1.0);\n"
+    "   result = Texture.Sample(Linear, oTexCoord0);\n"
+    "   return float4(result, 1.0);\n"
     "}\n";
 
 #pragma endregion
@@ -683,8 +684,8 @@ static const char* FShaderSrcs[FShader_Count] =
     SolidPixelShaderSrc,
     GouraudPixelShaderSrc,
     TexturePixelShaderSrc,
-	AlphaTexturePixelShaderSrc,
-	AlphaBlendedTexturePixelShaderSrc,
+    AlphaTexturePixelShaderSrc,
+    AlphaBlendedTexturePixelShaderSrc,
     PostProcessPixelShaderWithChromAbSrc,
     LitSolidPixelShaderSrc,
     LitTexturePixelShaderSrc,
@@ -770,7 +771,7 @@ RenderDevice::RenderDevice(const RendererParams& p, HWND window)
     {
         for(UINT AdapterIndex = 0; ; AdapterIndex++)
         {
-			Adapter = NULL;
+            Adapter = NULL;
             HRESULT hr = DXGIFactory->EnumAdapters(AdapterIndex, &Adapter.GetRawRef());
             if (hr == DXGI_ERROR_NOT_FOUND)
                 break;
@@ -822,13 +823,13 @@ RenderDevice::RenderDevice(const RendererParams& p, HWND window)
                            NULL, flags, NULL, 0, D3D1x_(SDK_VERSION),
                            &Device.GetRawRef(), &featureLevel, &Context.GetRawRef());
 #endif
-	if (FAILED(hr))
-	{
+    if (FAILED(hr))
+    {
         OVR_LOG_COM_ERROR(hr);
         LogError("[D3D1X] Unable to create device: %x", hr);
         OVR_ASSERT(false);
-		return;
-	}
+        return;
+    }
 
     if (!RecreateSwapChain())
         return;
@@ -1133,15 +1134,15 @@ bool RenderDevice::RecreateSwapChain()
     scDesc.Windowed = Params.Fullscreen != Display_Fullscreen;
     scDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	if (SwapChain)
-	{
-		hr = SwapChain->SetFullscreenState(FALSE, NULL);
+    if (SwapChain)
+    {
+        hr = SwapChain->SetFullscreenState(FALSE, NULL);
         if (FAILED(hr))
         {
             OVR_LOG_COM_ERROR(hr);
         }
         SwapChain = NULL;
-	}
+    }
 
     Ptr<IDXGISwapChain> newSC;
     hr = DXGIFactory->CreateSwapChain(Device, &scDesc, &newSC.GetRawRef());
@@ -1170,7 +1171,7 @@ bool RenderDevice::RecreateSwapChain()
 
     Texture* depthBuffer = GetDepthBuffer(WindowWidth, WindowHeight, Params.Multisample);
     CurDepthBuffer = depthBuffer;
-	if (CurRenderTarget == NULL && depthBuffer != NULL)
+    if (CurRenderTarget == NULL && depthBuffer != NULL)
     {
         Context->OMSetRenderTargets(1, &BackBufferRT.GetRawRef(), depthBuffer->TexDsv);
     }
@@ -1189,36 +1190,36 @@ bool RenderDevice::SetParams(const RendererParams& newParams)
 
     return RecreateSwapChain();
 }
-	
+    
 ovrRenderAPIConfig RenderDevice::Get_ovrRenderAPIConfig() const
 {
 #if (OVR_D3D_VERSION == 10)
-	static ovrD3D10Config cfg;
-	cfg.D3D10.Header.API         = ovrRenderAPI_D3D10;
-	cfg.D3D10.Header.RTSize      = Sizei(WindowWidth, WindowHeight);
-	cfg.D3D10.Header.Multisample = Params.Multisample;
-	cfg.D3D10.pDevice            = Device;
-	cfg.D3D10.pBackBufferRT      = BackBufferRT;
-	cfg.D3D10.pSwapChain         = SwapChain;
+    static ovrD3D10Config cfg;
+    cfg.D3D10.Header.API         = ovrRenderAPI_D3D10;
+    cfg.D3D10.Header.RTSize      = Sizei(WindowWidth, WindowHeight);
+    cfg.D3D10.Header.Multisample = Params.Multisample;
+    cfg.D3D10.pDevice            = Device;
+    cfg.D3D10.pBackBufferRT      = BackBufferRT;
+    cfg.D3D10.pSwapChain         = SwapChain;
 #else
-	static ovrD3D11Config cfg;
-	cfg.D3D11.Header.API         = ovrRenderAPI_D3D11;
-	cfg.D3D11.Header.RTSize      = Sizei(WindowWidth, WindowHeight);
-	cfg.D3D11.Header.Multisample = Params.Multisample;
-	cfg.D3D11.pDevice            = Device;
-	cfg.D3D11.pDeviceContext     = Context;
-	cfg.D3D11.pBackBufferRT      = BackBufferRT;
-	cfg.D3D11.pSwapChain         = SwapChain;
+    static ovrD3D11Config cfg;
+    cfg.D3D11.Header.API         = ovrRenderAPI_D3D11;
+    cfg.D3D11.Header.RTSize      = Sizei(WindowWidth, WindowHeight);
+    cfg.D3D11.Header.Multisample = Params.Multisample;
+    cfg.D3D11.pDevice            = Device;
+    cfg.D3D11.pDeviceContext     = Context;
+    cfg.D3D11.pBackBufferRT      = BackBufferRT;
+    cfg.D3D11.pSwapChain         = SwapChain;
 #endif
-	return cfg.Config;
+    return cfg.Config;
 }
 
 ovrTexture Texture::Get_ovrTexture()
 {
-	ovrTexture tex;
+    ovrTexture tex;
 
-	OVR::Sizei newRTSize(Width, Height);
-	
+    OVR::Sizei newRTSize(Width, Height);
+    
 #if (OVR_D3D_VERSION == 10)
     ovrD3D10TextureData* texData = (ovrD3D10TextureData*)&tex;
     texData->Header.API            = ovrRenderAPI_D3D10;
@@ -1231,17 +1232,17 @@ ovrTexture Texture::Get_ovrTexture()
     texData->pTexture              = Tex;
     texData->pSRView               = TexSv;
 
-	return tex;
+    return tex;
 }
 
 void RenderDevice::SetWindowSize(int w, int h)
 {
-	// This code is rendered a no-op
-	// It interferes with proper driver operation in
-	// application mode and doesn't add any value in
-	// compatibility mode
-	OVR_UNUSED(w);
-	OVR_UNUSED(h);
+    // This code is rendered a no-op
+    // It interferes with proper driver operation in
+    // application mode and doesn't add any value in
+    // compatibility mode
+    OVR_UNUSED(w);
+    OVR_UNUSED(h);
 }
 
 bool RenderDevice::SetFullscreen(DisplayMode fullscreen)
@@ -1891,7 +1892,7 @@ Texture::Texture(RenderDevice* ren, int fmt, int w, int h) : Ren(ren), Tex(NULL)
 
 void* Texture::GetInternalImplementation() 
 { 
-	return Tex;
+    return Tex;
 }
 
 Texture::~Texture()
@@ -1959,14 +1960,14 @@ void RenderDevice::GenerateSubresourceData(
         {
             bytesPerBlock = 8;
         }
-		else if (format == DXGI_FORMAT_BC2_UNORM)
-		{
-			bytesPerBlock = 16;
-		}
-		else if (format == DXGI_FORMAT_BC3_UNORM)
-		{
-			bytesPerBlock = 16;
-		}
+        else if (format == DXGI_FORMAT_BC2_UNORM)
+        {
+            bytesPerBlock = 16;
+        }
+        else if (format == DXGI_FORMAT_BC3_UNORM)
+        {
+            bytesPerBlock = 16;
+        }
 
         unsigned blockWidth = 0;
         blockWidth = (subresWidth + 3) / 4;
@@ -2063,21 +2064,21 @@ Texture* RenderDevice::CreateTexture(int format, int width, int height, const vo
         imageDimUpperLimit = 1024;
     } 
 
-	if (format == Texture_DXT1 || format == Texture_DXT3 || format == Texture_DXT5)
+    if (format == Texture_DXT1 || format == Texture_DXT3 || format == Texture_DXT5)
     {
-		int convertedFormat;
-		switch (format) {
-		case Texture_DXT1:
-			convertedFormat = DXGI_FORMAT_BC1_UNORM;
-			break;
-		case Texture_DXT3:
-			convertedFormat = DXGI_FORMAT_BC2_UNORM;
-			break;
-		case Texture_DXT5:
-		default:
-			convertedFormat = DXGI_FORMAT_BC3_UNORM;
-			break;
-		}
+        int convertedFormat;
+        switch (format) {
+        case Texture_DXT1:
+            convertedFormat = DXGI_FORMAT_BC1_UNORM;
+            break;
+        case Texture_DXT3:
+            convertedFormat = DXGI_FORMAT_BC2_UNORM;
+            break;
+        case Texture_DXT5:
+        default:
+            convertedFormat = DXGI_FORMAT_BC3_UNORM;
+            break;
+        }
         unsigned largestMipWidth   = 0;
         unsigned largestMipHeight  = 0;
         unsigned effectiveMipCount = mipcount;
@@ -2164,22 +2165,22 @@ Texture* RenderDevice::CreateTexture(int format, int width, int height, const vo
         int         bpp;
         switch(format & Texture_TypeMask)
         {
-		case Texture_BGRA:
-			bpp = 4;
-			d3dformat = (format & Texture_SRGB) ? DXGI_FORMAT_B8G8R8A8_UNORM_SRGB : DXGI_FORMAT_B8G8R8A8_UNORM;
-			break;
+        case Texture_BGRA:
+            bpp = 4;
+            d3dformat = (format & Texture_SRGB) ? DXGI_FORMAT_B8G8R8A8_UNORM_SRGB : DXGI_FORMAT_B8G8R8A8_UNORM;
+            break;
         case Texture_RGBA:
             bpp = 4;
-			d3dformat = (format & Texture_SRGB) ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
+            d3dformat = (format & Texture_SRGB) ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
             break;
         case Texture_R:
             bpp = 1;
             d3dformat = DXGI_FORMAT_R8_UNORM;
             break;
-		case Texture_A:
-			bpp = 1;
-			d3dformat = DXGI_FORMAT_A8_UNORM;
-			break;
+        case Texture_A:
+            bpp = 1;
+            d3dformat = DXGI_FORMAT_A8_UNORM;
+            break;
         case Texture_Depth:
             bpp = 0;
             d3dformat = createDepthSrv ? DXGI_FORMAT_R32_TYPELESS : DXGI_FORMAT_D32_FLOAT;
@@ -2192,12 +2193,12 @@ Texture* RenderDevice::CreateTexture(int format, int width, int height, const vo
         NewTex->Samples = samples;
 
         D3D1x_(TEXTURE2D_DESC) dsDesc;
-		dsDesc.Width     = width;
-		dsDesc.Height    = height;
+        dsDesc.Width     = width;
+        dsDesc.Height    = height;
         dsDesc.MipLevels = (format == (Texture_RGBA | Texture_GenMipmaps) && data) ? GetNumMipLevels(width, height) : 1;
         dsDesc.ArraySize = 1;
         dsDesc.Format    = d3dformat;
-		dsDesc.SampleDesc.Count = samples;
+        dsDesc.SampleDesc.Count = samples;
         dsDesc.SampleDesc.Quality = 0;
         dsDesc.Usage     = D3D1x_(USAGE_DEFAULT);
         dsDesc.BindFlags = D3D1x_(BIND_SHADER_RESOURCE);
@@ -2231,7 +2232,7 @@ Texture* RenderDevice::CreateTexture(int format, int width, int height, const vo
             {
                 D3D1x_(SHADER_RESOURCE_VIEW_DESC) depthSrv;
                 depthSrv.Format = DXGI_FORMAT_R32_FLOAT;
-				depthSrv.ViewDimension = samples > 1 ? D3D1x_(SRV_DIMENSION_TEXTURE2DMS) : D3D1x_(SRV_DIMENSION_TEXTURE2D);
+                depthSrv.ViewDimension = samples > 1 ? D3D1x_(SRV_DIMENSION_TEXTURE2DMS) : D3D1x_(SRV_DIMENSION_TEXTURE2D);
                 depthSrv.Texture2D.MostDetailedMip = 0;
                 depthSrv.Texture2D.MipLevels = dsDesc.MipLevels;
                 NewTex->TexSv = NULL;
@@ -2398,10 +2399,10 @@ void RenderDevice::Render(const Matrix4f& matrix, Model* model)
            matrix, 0, (unsigned)model->Indices.GetSize(), model->GetPrimType());
 }
 
-void RenderDevice::RenderWithAlpha(	const Fill* fill, Render::Buffer* vertices, Render::Buffer* indices,
-									const Matrix4f& matrix, int offset, int count, PrimitiveType rprim)
+void RenderDevice::RenderWithAlpha(    const Fill* fill, Render::Buffer* vertices, Render::Buffer* indices,
+                                    const Matrix4f& matrix, int offset, int count, PrimitiveType rprim)
 {
-	Context->OMSetBlendState(BlendState, NULL, 0xffffffff);
+    Context->OMSetBlendState(BlendState, NULL, 0xffffffff);
     Render(fill, vertices, indices, matrix, offset, count, rprim);
     Context->OMSetBlendState(NULL, NULL, 0xffffffff);
 }
@@ -2502,20 +2503,20 @@ void RenderDevice::Render(const Fill* fill, Render::Buffer* vertices, Render::Bu
 
 size_t RenderDevice::QueryGPUMemorySize()
 {
-	IDXGIDevice* pDXGIDevice;
-	HRESULT hr = Device->QueryInterface(__uuidof(IDXGIDevice), (void **)&pDXGIDevice);
+    IDXGIDevice* pDXGIDevice;
+    HRESULT hr = Device->QueryInterface(__uuidof(IDXGIDevice), (void **)&pDXGIDevice);
     if (FAILED(hr))
     {
         OVR_LOG_COM_ERROR(hr);
     }
-	IDXGIAdapter * pDXGIAdapter;
-	hr = pDXGIDevice->GetAdapter(&pDXGIAdapter);
+    IDXGIAdapter * pDXGIAdapter;
+    hr = pDXGIDevice->GetAdapter(&pDXGIAdapter);
     if (FAILED(hr))
     {
         OVR_LOG_COM_ERROR(hr);
     }
     DXGI_ADAPTER_DESC adapterDesc;
-	hr = pDXGIAdapter->GetDesc(&adapterDesc);
+    hr = pDXGIAdapter->GetDesc(&adapterDesc);
     if (FAILED(hr))
     {
         OVR_LOG_COM_ERROR(hr);
@@ -2526,13 +2527,13 @@ size_t RenderDevice::QueryGPUMemorySize()
 
 void RenderDevice::Present ( bool withVsync )
 {
-	for( int i = 0; i < 4; ++i )
-	{
-		if( OVR::Util::ImageWindow::GlobalWindow( i ) )
-		{
-			OVR::Util::ImageWindow::GlobalWindow( i )->Process();
-		}
-	}
+    for( int i = 0; i < 4; ++i )
+    {
+        if( OVR::Util::ImageWindow::GlobalWindow( i ) )
+        {
+            OVR::Util::ImageWindow::GlobalWindow( i )->Process();
+        }
+    }
 
     HRESULT hr;
     if ( withVsync )
@@ -2553,13 +2554,13 @@ void RenderDevice::Present ( bool withVsync )
 void RenderDevice::WaitUntilGpuIdle()
 {
 #if 1
-	// If enabling this option and using an NVIDIA GPU,
-	// then make sure your "max pre-rendered frames" is set to 1 under the NVIDIA GPU settings.
+    // If enabling this option and using an NVIDIA GPU,
+    // then make sure your "max pre-rendered frames" is set to 1 under the NVIDIA GPU settings.
 
-	// Flush GPU data and don't stall CPU waiting for GPU to complete
-	Context->Flush();
+    // Flush GPU data and don't stall CPU waiting for GPU to complete
+    Context->Flush();
 #else
-	// Flush and Stall CPU while waiting for GPU to complete rendering all of the queued draw calls
+    // Flush and Stall CPU while waiting for GPU to complete rendering all of the queued draw calls
     D3D1x_QUERY_DESC queryDesc = { D3D1x_(QUERY_EVENT), 0 };
     Ptr<ID3D1xQuery> query;
     BOOL             done = FALSE;
@@ -2599,9 +2600,9 @@ void RenderDevice::FillGradientRect(float left, float top, float right, float bo
 
 void RenderDevice::RenderText(const struct Font* font, const char* str, float x, float y, float size, Color c, const Matrix4f* view)
 {
-	Context->OMSetBlendState(BlendState, NULL, 0xffffffff);
-	OVR::Render::RenderDevice::RenderText(font, str, x, y, size, c, view);
-	Context->OMSetBlendState(NULL, NULL, 0xffffffff);
+    Context->OMSetBlendState(BlendState, NULL, 0xffffffff);
+    OVR::Render::RenderDevice::RenderText(font, str, x, y, size, c, view);
+    Context->OMSetBlendState(NULL, NULL, 0xffffffff);
 }
 
 void RenderDevice::RenderImage(float left, float top, float right, float bottom, ShaderFill* image, unsigned char alpha, const Matrix4f* view)
@@ -2635,3 +2636,5 @@ void RenderDevice::EndGpuEvent()
 
 }}}
 
+
+#endif

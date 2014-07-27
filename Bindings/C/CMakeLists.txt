@@ -3,7 +3,8 @@ project (OVR_C)
 include_directories(Include Src)
 
 # Make sure to set up the OVR include paths
-include_directories(../../3rdParty/glew/include)
+# Cross platform access to shader functionality
+include_directories(../../3rdParty/glext)
 include_directories(${OculusVR_SOURCE_DIR}/Include)
 include_directories(${OculusVR_SOURCE_DIR}/Src)
 include_directories(${OculusVR_SOURCE_DIR}/Src/Kernel)

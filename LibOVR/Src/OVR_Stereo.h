@@ -30,6 +30,7 @@ limitations under the License.
 #include "Sensors/OVR_DeviceConstants.h"
 #include "Displays/OVR_Display.h"
 #include "OVR_Profile.h"
+#include "OVR_CAPI.h"
 
 // CAPI Forward declaration.
 typedef struct ovrFovPort_ ovrFovPort;
@@ -53,6 +54,21 @@ enum StereoEye
 };
 
 
+//-----------------------------------------------------------------------------------
+// ***** ScaleAndOffset
+
+struct ScaleAndOffset2D
+{
+  Vector2f Scale;
+  Vector2f Offset;
+
+  ScaleAndOffset2D(float sx = 0.0f, float sy = 0.0f, float ox = 0.0f, float oy = 0.0f)
+    : Scale(sx, sy), Offset(ox, oy)
+  { }
+};
+
+struct FovPort;
+ScaleAndOffset2D    CreateNDCScaleAndOffsetFromFov(FovPort fov);
 //-----------------------------------------------------------------------------------
 // ***** FovPort
 
@@ -79,8 +95,18 @@ struct FovPort
         UpTan(u), DownTan(d), LeftTan(l), RightTan(r) { }
 
     // C-interop support: FovPort <-> ovrFovPort (implementation in OVR_CAPI.cpp).
-    FovPort(const ovrFovPort& src);
-    operator ovrFovPort () const;
+    FovPort(const ovrFovPort& src)
+      : UpTan(src.UpTan), DownTan(src.DownTan), LeftTan(src.LeftTan), RightTan(src.RightTan) { }
+
+    operator ovrFovPort () const {
+      ovrFovPort result;
+      result.LeftTan  = LeftTan;
+      result.RightTan = RightTan;
+      result.UpTan    = UpTan;
+      result.DownTan  = DownTan;
+      return result;
+  }
+
 
     static FovPort CreateFromRadians(float horizontalFov, float verticalFov)
     {
@@ -113,8 +139,10 @@ struct FovPort
     }
 
     // Converts Fov Tan angle units to [-1,1] render target NDC space
-    Vector2f TanAngleToRendertargetNDC(Vector2f const &tanEyeAngle);
-
+    Vector2f TanAngleToRendertargetNDC(Vector2f const &tanEyeAngle) {
+      ScaleAndOffset2D eyeToSourceNDC = CreateNDCScaleAndOffsetFromFov(*this);
+      return tanEyeAngle * eyeToSourceNDC.Scale + eyeToSourceNDC.Offset;
+  }
 
     // Compute per-channel minimum and maximum of Fov.
     static FovPort Min(const FovPort& a, const FovPort& b)
@@ -136,19 +164,6 @@ struct FovPort
     }
 };
 
-
-//-----------------------------------------------------------------------------------
-// ***** ScaleAndOffset
-
-struct ScaleAndOffset2D
-{
-    Vector2f Scale;
-    Vector2f Offset;
-
-    ScaleAndOffset2D(float sx = 0.0f, float sy = 0.0f, float ox = 0.0f, float oy = 0.0f)
-      : Scale(sx, sy), Offset(ox, oy)        
-    { }
-};
 
 
 //-----------------------------------------------------------------------------------
@@ -274,65 +289,65 @@ struct DistortionRenderDesc
 // Win32 Oculus VR Display Driver Shim Information
 struct Win32ShimInfo
 {
-	int DeviceNumber;
-	int NativeWidth;
-	int NativeHeight;
-	int Rotation;
-	int UseMirroring;
+    int DeviceNumber;
+    int NativeWidth;
+    int NativeHeight;
+    int Rotation;
+    int UseMirroring;
 
-	Win32ShimInfo() :
-		DeviceNumber(-1),
-		NativeWidth(-1),
-		NativeHeight(-1),
-		Rotation(-1),
-		UseMirroring(1)
-	{
-	}
+    Win32ShimInfo() :
+        DeviceNumber(-1),
+        NativeWidth(-1),
+        NativeHeight(-1),
+        Rotation(-1),
+        UseMirroring(1)
+    {
+    }
 };
 
 class HMDInfo
 {
 public:
-	// Name string describing the product: "Oculus Rift DK1", etc.
-	String      ProductName;
-	String      Manufacturer;
+    // Name string describing the product: "Oculus Rift DK1", etc.
+    String      ProductName;
+    String      Manufacturer;
 
-	unsigned    Version;
+    unsigned    Version;
 
-	// Characteristics of the HMD screen and enclosure
-	HmdTypeEnum HmdType;
-	Size<int>   ResolutionInPixels;
-	Size<float> ScreenSizeInMeters;
-	float       ScreenGapSizeInMeters;
-	float       CenterFromTopInMeters;
-	float       LensSeparationInMeters;
+    // Characteristics of the HMD screen and enclosure
+    HmdTypeEnum HmdType;
+    Size<int>   ResolutionInPixels;
+    Size<float> ScreenSizeInMeters;
+    float       ScreenGapSizeInMeters;
+    float       CenterFromTopInMeters;
+    float       LensSeparationInMeters;
 
-	// Timing & shutter data. All values in seconds.
-	struct ShutterInfo
-	{
-		HmdShutterTypeEnum  Type;
-		float   VsyncToNextVsync;                // 1/framerate
-		float   VsyncToFirstScanline;            // for global shutter, vsync->shutter open.
-		float   FirstScanlineToLastScanline;     // for global shutter, will be zero.
-		float   PixelSettleTime;                 // estimated.
-		float   PixelPersistence;                // Full persistence = 1/framerate.
-	}           Shutter;
+    // Timing & shutter data. All values in seconds.
+    struct ShutterInfo
+    {
+        HmdShutterTypeEnum  Type;
+        float   VsyncToNextVsync;                // 1/framerate
+        float   VsyncToFirstScanline;            // for global shutter, vsync->shutter open.
+        float   FirstScanlineToLastScanline;     // for global shutter, will be zero.
+        float   PixelSettleTime;                 // estimated.
+        float   PixelPersistence;                // Full persistence = 1/framerate.
+    }           Shutter;
 
-	// Desktop coordinate position of the screen (can be negative; may not be present on all platforms)
-	int         DesktopX;
-	int         DesktopY;
+    // Desktop coordinate position of the screen (can be negative; may not be present on all platforms)
+    int         DesktopX;
+    int         DesktopY;
 
-	// Windows:
-	// "\\\\.\\DISPLAY3", etc. Can be used in EnumDisplaySettings/CreateDC.
-	String      DisplayDeviceName;
-	Win32ShimInfo ShimInfo;
+    // Windows:
+    // "\\\\.\\DISPLAY3", etc. Can be used in EnumDisplaySettings/CreateDC.
+    String      DisplayDeviceName;
+    Win32ShimInfo ShimInfo;
 
-	// MacOS:
-	int         DisplayId;
+    // MacOS:
+    int         DisplayId;
 
-	bool	    InCompatibilityMode;
+    bool        InCompatibilityMode;
 
-	// Printed serial number for the HMD; should match external sticker
+    // Printed serial number for the HMD; should match external sticker
     String      PrintedSerial;
 
     // Tracker descriptor information:
@@ -346,27 +361,27 @@ public:
     float   CameraFrustumNearZInMeters;
     float   CameraFrustumFarZInMeters;
 
-	// Constructor initializes all values to 0s.
-	// To create a "virtualized" HMDInfo, use CreateDebugHMDInfo instead.
-	HMDInfo() :
-		Version(0),
-		HmdType(HmdType_None),
-		ResolutionInPixels(0),
-		ScreenSizeInMeters(0.0f),
-		ScreenGapSizeInMeters(0.0f),
-		CenterFromTopInMeters(0),
-		LensSeparationInMeters(0),
-		DisplayId(-1),
-		InCompatibilityMode(false)
-	{
-		DesktopX = 0;
-		DesktopY = 0;
-		Shutter.Type = HmdShutter_LAST;
-		Shutter.VsyncToNextVsync = 0.0f;
-		Shutter.VsyncToFirstScanline = 0.0f;
-		Shutter.FirstScanlineToLastScanline = 0.0f;
-		Shutter.PixelSettleTime = 0.0f;
-		Shutter.PixelPersistence = 0.0f;
+    // Constructor initializes all values to 0s.
+    // To create a "virtualized" HMDInfo, use CreateDebugHMDInfo instead.
+    HMDInfo() :
+        Version(0),
+        HmdType(HmdType_None),
+        ResolutionInPixels(0),
+        ScreenSizeInMeters(0.0f),
+        ScreenGapSizeInMeters(0.0f),
+        CenterFromTopInMeters(0),
+        LensSeparationInMeters(0),
+        DisplayId(-1),
+        InCompatibilityMode(false)
+    {
+        DesktopX = 0;
+        DesktopY = 0;
+        Shutter.Type = HmdShutter_LAST;
+        Shutter.VsyncToNextVsync = 0.0f;
+        Shutter.VsyncToFirstScanline = 0.0f;
+        Shutter.FirstScanlineToLastScanline = 0.0f;
+        Shutter.PixelSettleTime = 0.0f;
+        Shutter.PixelPersistence = 0.0f;
 
         CameraFrustumHFovInRadians = 0;
         CameraFrustumVFovInRadians = 0;
@@ -374,25 +389,25 @@ public:
         CameraFrustumFarZInMeters = 0;
     }
 
-	// Operator = copies local fields only (base class must be correct already)
-	void operator=(const HMDInfo& src)
-	{
-		ProductName = src.ProductName;
-		Manufacturer = src.Manufacturer;
-		Version = src.Version;
-		HmdType = src.HmdType;
-		ResolutionInPixels = src.ResolutionInPixels;
-		ScreenSizeInMeters = src.ScreenSizeInMeters;
-		ScreenGapSizeInMeters = src.ScreenGapSizeInMeters;
-		CenterFromTopInMeters = src.CenterFromTopInMeters;
-		LensSeparationInMeters = src.LensSeparationInMeters;
-		DesktopX = src.DesktopX;
-		DesktopY = src.DesktopY;
-		Shutter = src.Shutter;
-		DisplayDeviceName = src.DisplayDeviceName;
-		ShimInfo = src.ShimInfo;
-		DisplayId = src.DisplayId;
-		InCompatibilityMode = src.InCompatibilityMode;
+    // Operator = copies local fields only (base class must be correct already)
+    void operator=(const HMDInfo& src)
+    {
+        ProductName = src.ProductName;
+        Manufacturer = src.Manufacturer;
+        Version = src.Version;
+        HmdType = src.HmdType;
+        ResolutionInPixels = src.ResolutionInPixels;
+        ScreenSizeInMeters = src.ScreenSizeInMeters;
+        ScreenGapSizeInMeters = src.ScreenGapSizeInMeters;
+        CenterFromTopInMeters = src.CenterFromTopInMeters;
+        LensSeparationInMeters = src.LensSeparationInMeters;
+        DesktopX = src.DesktopX;
+        DesktopY = src.DesktopY;
+        Shutter = src.Shutter;
+        DisplayDeviceName = src.DisplayDeviceName;
+        ShimInfo = src.ShimInfo;
+        DisplayId = src.DisplayId;
+        InCompatibilityMode = src.InCompatibilityMode;
         VendorId = src.VendorId;
         ProductId = src.ProductId;
         FirmwareMajor = src.FirmwareMajor;
@@ -404,25 +419,25 @@ public:
         CameraFrustumFarZInMeters = src.CameraFrustumFarZInMeters;
     }
 
-	void SetScreenParameters(int hres, int vres,
-							 float hsize, float vsize,
-							 float vCenterFromTopInMeters, float lensSeparationInMeters,
-							 bool compatibilityMode)
-	{
-		ResolutionInPixels = Sizei(hres, vres);
-		ScreenSizeInMeters = Sizef(hsize, vsize);
-		CenterFromTopInMeters = vCenterFromTopInMeters;
-		LensSeparationInMeters = lensSeparationInMeters;
-		InCompatibilityMode = compatibilityMode;
-	}
+    void SetScreenParameters(int hres, int vres,
+                             float hsize, float vsize,
+                             float vCenterFromTopInMeters, float lensSeparationInMeters,
+                             bool compatibilityMode)
+    {
+        ResolutionInPixels = Sizei(hres, vres);
+        ScreenSizeInMeters = Sizef(hsize, vsize);
+        CenterFromTopInMeters = vCenterFromTopInMeters;
+        LensSeparationInMeters = lensSeparationInMeters;
+        InCompatibilityMode = compatibilityMode;
+    }
 
-	bool IsSameDisplay(const HMDInfo& o) const
-	{
-		return DisplayId == o.DisplayId &&
-			DisplayDeviceName.CompareNoCase(o.DisplayDeviceName) == 0;
-	}
+    bool IsSameDisplay(const HMDInfo& o) const
+    {
+        return DisplayId == o.DisplayId &&
+            DisplayDeviceName.CompareNoCase(o.DisplayDeviceName) == 0;
+    }
 
-	static bool CreateFromSensorAndDisplay(SensorDevice* sensor, Display* display, HMDInfo* hmdi);
+    static bool CreateFromSensorAndDisplay(SensorDevice* sensor, Display* display, HMDInfo* hmdi);
 };
 
 

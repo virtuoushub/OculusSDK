@@ -26,9 +26,7 @@ limitations under the License.
 // once with OVR_D3D_VERSION=11.
 
 
-#ifndef OVR_D3D_VERSION
-#error define OVR_D3D_VERSION to 10 or 11
-#endif
+#ifdef OVR_D3D_VERSION
 
 #include "Kernel/OVR_String.h"
 #include "Kernel/OVR_Array.h"
@@ -211,7 +209,7 @@ public:
     Ptr<ID3D1xShaderResourceView>   TexSv;
     Ptr<ID3D1xRenderTargetView>     TexRtv;
     Ptr<ID3D1xDepthStencilView>     TexDsv;
-	Ptr<ID3D1xTexture2D>			TexStaging;
+    Ptr<ID3D1xTexture2D>            TexStaging;
     mutable Ptr<ID3D1xSamplerState> Sampler;
     int                             Width, Height;
     int                             Samples;
@@ -236,9 +234,9 @@ public:
 
     virtual void Set(int slot, Render::ShaderStage stage = Render::Shader_Fragment) const;
 
-	virtual ovrTexture Get_ovrTexture();
+    virtual ovrTexture Get_ovrTexture();
 
-	virtual void* GetInternalImplementation();
+    virtual void* GetInternalImplementation();
 
 };
 
@@ -308,14 +306,14 @@ public:
     virtual void SetWindowSize(int w, int h);
     virtual bool SetParams(const RendererParams& newParams);
 
-	// Returns details needed by CAPI distortion rendering.
-	virtual ovrRenderAPIConfig Get_ovrRenderAPIConfig() const;
+    // Returns details needed by CAPI distortion rendering.
+    virtual ovrRenderAPIConfig Get_ovrRenderAPIConfig() const;
 
     virtual void Present ( bool withVsync );
     virtual void WaitUntilGpuIdle();
 
     virtual bool SetFullscreen(DisplayMode fullscreen);
-	virtual size_t QueryGPUMemorySize();
+    virtual size_t QueryGPUMemorySize();
 
     virtual void Clear(float r = 0, float g = 0, float b = 0, float a = 1,
                        float depth = 1,
@@ -350,7 +348,7 @@ public:
     // Overrident to apply proper blend state.
     virtual void FillRect(float left, float top, float right, float bottom, Color c, const Matrix4f* view=NULL);
     virtual void FillGradientRect(float left, float top, float right, float bottom, Color col_top, Color col_btm, const Matrix4f* view);
-	virtual void RenderText(const struct Font* font, const char* str, float x, float y, float size, Color c, const Matrix4f* view=NULL);
+    virtual void RenderText(const struct Font* font, const char* str, float x, float y, float size, Color c, const Matrix4f* view=NULL);
     virtual void RenderImage(float left, float top, float right, float bottom, ShaderFill* image, unsigned char alpha=255, const Matrix4f* view=NULL);
 
     virtual void Render(const Matrix4f& matrix, Model* model);
@@ -378,4 +376,5 @@ public:
 
 }}}
 
+#endif
 #endif
