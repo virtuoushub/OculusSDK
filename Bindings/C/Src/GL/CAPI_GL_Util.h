@@ -37,9 +37,139 @@ limitations under the License.
 #include <Windows.h>
 #endif
 
-#include "GL/glew.h"
+#if defined(OVR_OS_MAC)
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#else
+#ifndef GL_GLEXT_PROTOTYPES
+#define GL_GLEXT_PROTOTYPES
+#endif
+#include <GL/gl.h>
+#include <GL/glext.h>
+#if defined(OVR_OS_WIN32)
+#include <GL/wglext.h>
+#elif defined(OVR_OS_LINUX)
+#include <GL/glx.h>
+#endif
+#endif
 
 namespace OVR { namespace CAPI { namespace GL {
+
+// GL extension Hooks for Non-Mac.
+#if !defined(OVR_OS_MAC)
+
+// Let Windows apps build without linking GL.
+#if defined(OVR_OS_WIN32)
+
+typedef GLenum (__stdcall *PFNGLGETERRORPROC) ();
+typedef void (__stdcall *PFNGLENABLEPROC) (GLenum);
+typedef void (__stdcall *PFNGLDISABLEPROC) (GLenum);
+typedef void (__stdcall *PFNGLGETFLOATVPROC) (GLenum, GLfloat*);
+typedef const GLubyte * (__stdcall *PFNGLGETSTRINGPROC) (GLenum);
+typedef void (__stdcall *PFNGLGETINTEGERVPROC) (GLenum, GLint*);
+typedef PROC (__stdcall *PFNWGLGETPROCADDRESS) (LPCSTR);
+typedef void (__stdcall *PFNGLFLUSHPROC) ();
+typedef void (__stdcall *PFNGLFINISHPROC) ();
+typedef void (__stdcall *PFNGLDRAWARRAYSPROC) (GLenum mode, GLint first, GLsizei count);
+typedef void (__stdcall *PFNGLCLEARPROC) (GLbitfield);
+typedef void (__stdcall *PFNGLCOLORMASKPROC) (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+typedef void (__stdcall *PFNGLDRAWELEMENTSPROC) (GLenum mode, GLsizei count, GLenum type, const GLvoid *indices);
+typedef void (__stdcall *PFNGLGENTEXTURESPROC) (GLsizei n, GLuint *textures);
+typedef void (__stdcall *PFNGLDELETETEXTURESPROC) (GLsizei n, GLuint *textures);
+typedef void (__stdcall *PFNGLBINDTEXTUREPROC) (GLenum target, GLuint texture);
+typedef void (__stdcall *PFNGLTEXIMAGE2DPROC) (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLint format, GLenum type, const GLvoid *pixels);
+typedef void (__stdcall *PFNGLCLEARCOLORPROC) (GLfloat r, GLfloat g, GLfloat b, GLfloat a);
+typedef void (__stdcall *PFNGLCLEARDEPTHPROC) (GLclampd depth);
+typedef void (__stdcall *PFNGLTEXPARAMETERIPROC) (GLenum target, GLenum pname, GLint param);
+typedef void (__stdcall *PFNGLVIEWPORTPROC) (GLint x, GLint y, GLsizei width, GLsizei height);
+typedef void (__stdcall *PFNGLBLENDFUNCPROC) (GLenum sfactor, GLenum dfactor);
+typedef void (__stdcall *PFNGLFRONTFACEPROC) (GLenum mode);
+
+extern PFNWGLGETPROCADDRESS                     wglGetProcAddress;
+extern PFNWGLGETSWAPINTERVALEXTPROC             wglGetSwapIntervalEXT;
+extern PFNWGLSWAPINTERVALEXTPROC                wglSwapIntervalEXT;
+
+extern PFNGLGETERRORPROC                        glGetError;
+extern PFNGLENABLEPROC                          glEnable;
+extern PFNGLENABLEIPROC                         glEnablei;
+extern PFNGLDISABLEPROC                         glDisable;
+extern PFNGLDISABLEIPROC                        glDisablei;
+extern PFNGLCOLORMASKPROC                       glColorMask;
+extern PFNGLCOLORMASKIPROC                      glColorMaski;
+extern PFNGLGETFLOATVPROC                       glGetFloatv;
+extern PFNGLGETSTRINGPROC                       glGetString;
+extern PFNGLGETINTEGERVPROC                     glGetIntegerv;
+extern PFNGLGETINTEGERI_VPROC                   glGetIntegeri_v;
+extern PFNGLCLEARPROC                           glClear;
+extern PFNGLCLEARCOLORPROC                      glClearColor;
+extern PFNGLCLEARDEPTHPROC                      glClearDepth;
+extern PFNGLVIEWPORTPROC                        glViewport;
+extern PFNGLDRAWARRAYSPROC                      glDrawArrays;
+extern PFNGLDRAWELEMENTSPROC                    glDrawElements;
+extern PFNGLGENTEXTURESPROC                     glGenTextures;
+extern PFNGLDELETETEXTURESPROC                  glDeleteTextures;
+extern PFNGLBINDTEXTUREPROC                     glBindTexture;
+extern PFNGLTEXIMAGE2DPROC                      glTexImage2D;
+extern PFNGLTEXPARAMETERIPROC                   glTexParameteri;
+extern PFNGLFLUSHPROC                           glFlush;
+extern PFNGLFINISHPROC                          glFinish;
+extern PFNGLBLENDFUNCPROC                       glBlendFunc;
+extern PFNGLFRONTFACEPROC                       glFrontFace;
+
+#elif defined(OVR_OS_LINUX)
+
+extern PFNGLXSWAPINTERVALEXTPROC                glXSwapIntervalEXT;
+
+#endif // defined(OVR_OS_WIN32)
+
+extern PFNGLGENFRAMEBUFFERSPROC                 glGenFramebuffers;
+extern PFNGLDELETEFRAMEBUFFERSPROC              glDeleteFramebuffers;
+extern PFNGLDELETESHADERPROC                    glDeleteShader;
+extern PFNGLCHECKFRAMEBUFFERSTATUSPROC          glCheckFramebufferStatus;
+extern PFNGLFRAMEBUFFERRENDERBUFFERPROC         glFramebufferRenderbuffer;
+extern PFNGLFRAMEBUFFERTEXTURE2DPROC            glFramebufferTexture2D;
+extern PFNGLBINDFRAMEBUFFERPROC                 glBindFramebuffer;
+extern PFNGLACTIVETEXTUREPROC                   glActiveTexture;
+extern PFNGLDISABLEVERTEXATTRIBARRAYPROC        glDisableVertexAttribArray;
+extern PFNGLVERTEXATTRIBPOINTERPROC             glVertexAttribPointer;
+extern PFNGLENABLEVERTEXATTRIBARRAYPROC         glEnableVertexAttribArray;
+extern PFNGLBINDBUFFERPROC                      glBindBuffer;
+extern PFNGLUNIFORMMATRIX4FVPROC                glUniformMatrix4fv;
+extern PFNGLDELETEBUFFERSPROC                   glDeleteBuffers;
+extern PFNGLBUFFERDATAPROC                      glBufferData;
+extern PFNGLGENBUFFERSPROC                      glGenBuffers;
+extern PFNGLMAPBUFFERPROC                       glMapBuffer;
+extern PFNGLUNMAPBUFFERPROC                     glUnmapBuffer;
+extern PFNGLGETSHADERINFOLOGPROC                glGetShaderInfoLog;
+extern PFNGLGETSHADERIVPROC                     glGetShaderiv;
+extern PFNGLCOMPILESHADERPROC                   glCompileShader;
+extern PFNGLSHADERSOURCEPROC                    glShaderSource;
+extern PFNGLCREATESHADERPROC                    glCreateShader;
+extern PFNGLCREATEPROGRAMPROC                   glCreateProgram;
+extern PFNGLATTACHSHADERPROC                    glAttachShader;
+extern PFNGLDETACHSHADERPROC                    glDetachShader;
+extern PFNGLDELETEPROGRAMPROC                   glDeleteProgram;
+extern PFNGLUNIFORM1IPROC                       glUniform1i;
+extern PFNGLGETUNIFORMLOCATIONPROC              glGetUniformLocation;
+extern PFNGLGETACTIVEUNIFORMPROC                glGetActiveUniform;
+extern PFNGLUSEPROGRAMPROC                      glUseProgram;
+extern PFNGLGETPROGRAMINFOLOGPROC               glGetProgramInfoLog;
+extern PFNGLGETPROGRAMIVPROC                    glGetProgramiv;
+extern PFNGLLINKPROGRAMPROC                     glLinkProgram;
+extern PFNGLBINDATTRIBLOCATIONPROC              glBindAttribLocation;
+extern PFNGLGETATTRIBLOCATIONPROC               glGetAttribLocation;
+extern PFNGLUNIFORM4FVPROC                      glUniform4fv;
+extern PFNGLUNIFORM3FVPROC                      glUniform3fv;
+extern PFNGLUNIFORM2FVPROC                      glUniform2fv;
+extern PFNGLUNIFORM1FVPROC                      glUniform1fv;
+extern PFNGLGENVERTEXARRAYSPROC                 glGenVertexArrays;
+extern PFNGLDELETEVERTEXARRAYSPROC              glDeleteVertexArrays;
+extern PFNGLBINDVERTEXARRAYPROC                 glBindVertexArray;
+
+extern void InitGLExtensions();
+
+#endif // !defined(OVR_OS_MAC)
+
 
 // Rendering primitive type used to render Model.
 enum PrimitiveType
@@ -144,7 +274,7 @@ public:
 
 class Texture : public RefCountBase<Texture>
 {
-	bool IsUserAllocated;
+    bool IsUserAllocated;
 
 public:
     RenderParams* pParams;
@@ -205,9 +335,9 @@ protected:
         int    Type; // currently number of floats in vector
     };
     Array<Uniform> UniformInfo;
-	
+
 public:
-	GLuint    Prog;
+    GLuint    Prog;
     GLint     ProjLoc, ViewLoc;
     GLint     TexLoc[8];
     bool      UsesLighting;
@@ -222,7 +352,7 @@ public:
 
     virtual void Set(PrimitiveType prim) const
     {
-		glUseProgram(Prog);
+        glUseProgram(Prog);
 
         for (int i = 0; i < Shader_Count; i++)
             if (Shaders[i])
@@ -267,7 +397,7 @@ public:
     }
 
 protected:
-	GLint GetGLShader(Shader* s);
+    GLint GetGLShader(Shader* s);
     bool Link();
 };
 
@@ -288,15 +418,15 @@ public:
     void*       GetInputLayout() const  { return InputLayout; }
 
     virtual void Set(PrimitiveType prim = Prim_Unknown) const {
-		Shaders->Set(prim);
-		for(int i = 0; i < 8; i++)
-		{
-			if(Textures[i])
-			{
-				Textures[i]->Set(i);
-			}
-		}
-	}
+        Shaders->Set(prim);
+        for(int i = 0; i < 8; i++)
+        {
+            if(Textures[i])
+            {
+                Textures[i]->Set(i);
+            }
+        }
+    }
 
     virtual void SetTexture(int i, class Texture* tex) { if (i < 8) Textures[i] = tex; }
 };
@@ -335,32 +465,32 @@ public:
     unsigned char*  UniformData;
     int             UniformsSize;
 
-	enum VarType
-	{
-		VARTYPE_FLOAT,
-		VARTYPE_INT,
-		VARTYPE_BOOL,
-	};
+    enum VarType
+    {
+        VARTYPE_FLOAT,
+        VARTYPE_INT,
+        VARTYPE_BOOL,
+    };
 
-	struct Uniform
-	{
-		const char* Name;
-		VarType Type;
-		int     Offset, Size;
-	};
+    struct Uniform
+    {
+        const char* Name;
+        VarType Type;
+        int     Offset, Size;
+    };
     const Uniform* UniformRefl;
     size_t UniformReflSize;
 
-	ShaderBase(RenderParams* rp, ShaderStage stage) : Shader(stage), pParams(rp), UniformData(0), UniformsSize(0) {}
-	~ShaderBase()
-	{
-		if (UniformData)    
-			OVR_FREE(UniformData);
-	}
+    ShaderBase(RenderParams* rp, ShaderStage stage) : Shader(stage), pParams(rp), UniformData(0), UniformsSize(0) {}
+    ~ShaderBase()
+    {
+        if (UniformData)
+            OVR_FREE(UniformData);
+    }
 
     void InitUniforms(const Uniform* refl, size_t reflSize);
-	bool SetUniform(const char* name, int n, const float* v);
-	bool SetUniformBool(const char* name, int n, const bool* v);
+    bool SetUniform(const char* name, int n, const float* v);
+    bool SetUniformBool(const char* name, int n, const bool* v);
 };
 
 
@@ -371,51 +501,51 @@ class ShaderImpl : public ShaderBase
 
 public:
     ShaderImpl(RenderParams* rp, void* s, size_t size, const Uniform* refl, size_t reflSize)
-		: ShaderBase(rp, SStage)
-		, GLShader(0)
+        : ShaderBase(rp, SStage)
+        , GLShader(0)
     {
-		bool success;
+        bool success;
         OVR_UNUSED(size);
         success = Compile((const char*) s);
         OVR_ASSERT(success);
-		InitUniforms(refl, reflSize);
+        InitUniforms(refl, reflSize);
     }
     ~ShaderImpl()
     {      
-		if (GLShader)
-		{
-			glDeleteShader(GLShader);
-			GLShader = 0;
-		}
+        if (GLShader)
+        {
+            glDeleteShader(GLShader);
+            GLShader = 0;
+        }
     }
     bool Compile(const char* src)
-	{
-		if (!GLShader)
-			GLShader = glCreateShader(GLStage());
+    {
+        if (!GLShader)
+            GLShader = glCreateShader(GLStage());
 
-		glShaderSource(GLShader, 1, &src, 0);
-		glCompileShader(GLShader);
-		GLint r;
-		glGetShaderiv(GLShader, GL_COMPILE_STATUS, &r);
-		if (!r)
-		{
-			GLchar msg[1024];
-			glGetShaderInfoLog(GLShader, sizeof(msg), 0, msg);
-			if (msg[0])
-				OVR_DEBUG_LOG(("Compiling shader\n%s\nfailed: %s\n", src, msg));
+        glShaderSource(GLShader, 1, &src, 0);
+        glCompileShader(GLShader);
+        GLint r;
+        glGetShaderiv(GLShader, GL_COMPILE_STATUS, &r);
+        if (!r)
+        {
+            GLchar msg[1024];
+            glGetShaderInfoLog(GLShader, sizeof(msg), 0, msg);
+            if (msg[0])
+                OVR_DEBUG_LOG(("Compiling shader\n%s\nfailed: %s\n", src, msg));
 
-			return 0;
-		}
-		return 1;
-	}
-	
+            return 0;
+        }
+        return 1;
+    }
+
     GLenum GLStage() const
     {
-		return SType;
-	}
+        return SType;
+    }
 
 private:
-	GLuint GLShader;
+    GLuint GLShader;
 };
 
 typedef ShaderImpl<Shader_Vertex,  GL_VERTEX_SHADER> VertexShader;

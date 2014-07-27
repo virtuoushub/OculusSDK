@@ -45,11 +45,8 @@ endif()
 add_subdirectory(LibOVR)
 set_target_properties(OculusVR PROPERTIES FOLDER "Oculus")
 
-# Cross platform GL access.  Used by the C API and by
-# the sample applications
-add_definitions(-DGLEW_STATIC)
-add_subdirectory(3rdParty/glew)
-set_target_properties(glew PROPERTIES FOLDER "3rdParty")
+# Cross platform access to shader functionality
+include_directories(${CMAKE_SOURCE_DIR}/3rdParty/glext)
 
 add_subdirectory(Bindings/C)
 set_target_properties(OVR_C PROPERTIES FOLDER "Oculus")
@@ -62,7 +59,6 @@ set_target_properties(OVR_C PROPERTIES FOLDER "Oculus")
 #option(OCULUS_BUILD_SAMPLES "Build Oculus demos" TRUE)
 if(OCULUS_BUILD_SAMPLES)
     # Make sure to set up the OVR include paths
-    include_directories(3rdParty/glew/include)
     include_directories(${OculusVR_SOURCE_DIR}/Include)
     include_directories(${OculusVR_SOURCE_DIR}/Src)
     include_directories(${OculusVR_SOURCE_DIR}/Src/Kernel)
@@ -73,8 +69,6 @@ if(OCULUS_BUILD_SAMPLES)
  #   add_subdirectory(3rdParty/glfw)
  #   include_directories(${CMAKE_SOURCE_DIR}/3rdParty/glfw/include)
 
-    # Cross platform access to shader functionality
-#    include_directories(${CMAKE_SOURCE_DIR}/3rdParty/glext)
 
     # Used by the sample code to read the tuscany resources
     add_subdirectory(3rdParty/TinyXml)

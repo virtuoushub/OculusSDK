@@ -20,7 +20,6 @@ set(EXTRA_LIBS OculusVR)
 list(APPEND EXTRA_LIBS ${OVR_LIBRARIES})
 
 # All platforms require GLEW and OpenGL
-list(APPEND EXTRA_LIBS glew)
 find_package(OpenGL REQUIRED)
 list(APPEND EXTRA_LIBS ${OPENGL_LIBRARIES})
 target_link_libraries(OVR_C ${EXTRA_LIBS})
