@@ -55,27 +55,27 @@ static const int VRServicePort = 30322; // 0x7672 = "vr" little-endian
 // HMDInfo section related to networking
 struct HMDNetworkInfo
 {
-	HMDNetworkInfo() :
-		NetId(InvalidVirtualHmdId)
-	{
-	}
+    HMDNetworkInfo() :
+        NetId(InvalidVirtualHmdId)
+    {
+    }
 
-	// Network identifier for HMD
-	VirtualHmdId NetId;
+    // Network identifier for HMD
+    VirtualHmdId NetId;
 
-	// Name of the shared memory object
-	String       SharedMemoryName;
+    // Name of the shared memory object
+    String       SharedMemoryName;
 
-	void Serialize(Net::BitStream* bs)
-	{
-		bs->Write(NetId);
-		bs->Write(SharedMemoryName);
-	}
-	bool Deserialize(Net::BitStream* bs)
-	{
-		bs->Read(NetId);
-		return bs->Read(SharedMemoryName);
-	}
+    void Serialize(Net::BitStream* bs)
+    {
+        bs->Write(NetId);
+        bs->Write(SharedMemoryName);
+    }
+    bool Deserialize(Net::BitStream* bs)
+    {
+        bs->Read(NetId);
+        return bs->Read(SharedMemoryName);
+    }
 };
 
 
@@ -94,17 +94,17 @@ public:
     NetSessionCommon();
     virtual ~NetSessionCommon();
 
-	Net::Plugins::RPC1* GetRPC1() const
+    Net::Plugins::RPC1* GetRPC1() const
     {
         return pRPC;
     }
-	Net::Session* GetSession() const
+    Net::Session* GetSession() const
     {
         return pSession;
     }
 
-	static void SerializeHMDInfo(Net::BitStream* bitStream, HMDInfo* hmdInfo);
-	static bool DeserializeHMDInfo(Net::BitStream* bitStream, HMDInfo* hmdInfo);
+    static void SerializeHMDInfo(Net::BitStream* bitStream, HMDInfo* hmdInfo);
+    static bool DeserializeHMDInfo(Net::BitStream* bitStream, HMDInfo* hmdInfo);
 
 public:
     // Getter/setter tools
@@ -133,7 +133,7 @@ public:
 protected:
     bool                Terminated; // Thread termination flag
     Net::Session*       pSession;   // Networking session
-	Net::Plugins::RPC1* pRPC;       // Remote procedure calls object
+    Net::Plugins::RPC1* pRPC;       // Remote procedure calls object
 };
 
 

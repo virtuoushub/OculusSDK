@@ -57,133 +57,133 @@ extern LINK_APPLICATION_DRIVER appDriver;
 
 BOOL WINAPI OVRIsInitializingDisplay(PVOID context, UINT width, UINT height)
 {
-	OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
-	if (con->ExpectedWidth == (int)width && con->ExpectedHeight == (int)height)
-		return TRUE;
+    OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
+    if (con->ExpectedWidth == (int)width && con->ExpectedHeight == (int)height)
+        return TRUE;
 
-	return FALSE;
+    return FALSE;
 }
 
 BOOL WINAPI OVRExpectedResolution( PVOID context, UINT* width, UINT* height, UINT* rotationInDegrees )
 {
-	OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
+    OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
 
-	*width = con->ExpectedWidth;
-	*height = con->ExpectedHeight;
-	*rotationInDegrees = con->Rotation;
-	return TRUE;
+    *width = con->ExpectedWidth;
+    *height = con->ExpectedHeight;
+    *rotationInDegrees = con->Rotation;
+    return TRUE;
 }
 
 BOOL WINAPI OVRIsCreatingBackBuffer(PVOID context)
 {
-	OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
-	if( con->ExpectedWidth != -1 && con->ExpectedHeight != -1 )
-		return TRUE;
+    OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
+    if( con->ExpectedWidth != -1 && con->ExpectedHeight != -1 )
+        return TRUE;
 
-	return FALSE;
+    return FALSE;
 }
 
 BOOL WINAPI OVRShouldVSync( )
 {
-	return FALSE;
+    return FALSE;
 }
 
 
 ULONG WINAPI OVRRiftForContext(PVOID context, HANDLE driverHandle)
 {
-	OVR_UNUSED( driverHandle );
-	OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
+    OVR_UNUSED( driverHandle );
+    OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
 
     return con->ChildUid;
 }
 
 HWND WINAPI OVRGetWindowForContext(PVOID context)
 {
-	OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
+    OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
 
-	if( con->Active )
-	{
-		return con->hWindow;
-	}
-	else
-	{
-		return 0;
-	}
+    if( con->Active )
+    {
+        return con->hWindow;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 BOOL WINAPI OVRShouldPresentOnContext(PVOID context)
 {
-	OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
+    OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
 
-	return con->Active && ( con->hWindow == OVR::Win32::RenderFocusReader::GetInstance()->ReadActiveWindow() );
+    return con->Active && ( con->hWindow == OVR::Win32::RenderFocusReader::GetInstance()->ReadActiveWindow() );
 }
 
 BOOL WINAPI OVRCloseRiftForContext( PVOID context, HANDLE driverHandle, ULONG rift )
 {
-	OVR_UNUSED( context ); OVR_UNUSED( driverHandle ); OVR_UNUSED( rift );
-	// TODO
-	return TRUE;
+    OVR_UNUSED( context ); OVR_UNUSED( driverHandle ); OVR_UNUSED( rift );
+    // TODO
+    return TRUE;
 }
 
 BOOL WINAPI OVRWindowDisplayResolution( PVOID context, UINT* width, UINT* height,
-									   UINT* titleHeight, UINT* borderWidth,
-									   BOOL* vsyncEnabled )
+                                       UINT* titleHeight, UINT* borderWidth,
+                                       BOOL* vsyncEnabled )
 {
-	OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
-	void* handle = con->hWindow;
+    OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
+    void* handle = con->hWindow;
 
-	if( handle )
-	{
-		RECT winRect = { 0 };
-		GetWindowRect( (HWND)handle, &winRect );
+    if( handle )
+    {
+        RECT winRect = { 0 };
+        GetWindowRect( (HWND)handle, &winRect );
 
-		RECT rect = {0};
-		if( GetClientRect( (HWND)handle, &rect ) )
-		{
-			LONG barHeight = (winRect.bottom - winRect.top) - (rect.bottom - rect.top);
-			LONG borderSize = (winRect.right - winRect.left) - (rect.right - rect.left);
+        RECT rect = {0};
+        if( GetClientRect( (HWND)handle, &rect ) )
+        {
+            LONG barHeight = (winRect.bottom - winRect.top) - (rect.bottom - rect.top);
+            LONG borderSize = (winRect.right - winRect.left) - (rect.right - rect.left);
 
-			*titleHeight = barHeight - borderSize + (borderSize / 2 );
-			*borderWidth = borderSize / 2;
-			*width = rect.right - rect.left + (borderSize / 2);
-			*height = rect.bottom - rect.top + *titleHeight;
-		}
-		else
-		{
-			return FALSE;
-		}
-	}
-	else
-	{
-		return FALSE;
-	}
+            *titleHeight = barHeight - borderSize + (borderSize / 2 );
+            *borderWidth = borderSize / 2;
+            *width = rect.right - rect.left + (borderSize / 2);
+            *height = rect.bottom - rect.top + *titleHeight;
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+    else
+    {
+        return FALSE;
+    }
 
-	*vsyncEnabled = TRUE;
+    *vsyncEnabled = TRUE;
 
-	return TRUE;
+    return TRUE;
 }
 
 BOOL WINAPI OVRShouldEnableDebug()
 {
-	return FALSE;
+    return FALSE;
 }
 
 BOOL WINAPI OVRMirroringEnabled( PVOID context )
 {
-	OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
+    OVR::Win32::DisplayShim* con = (OVR::Win32::DisplayShim*)context;
 
-	return con->UseMirroring;
+    return con->UseMirroring;
 }
 
 namespace OVR { namespace Win32 {
 
 DisplayShim::DisplayShim() :
-	ChildUid( 0 ),
-	ExpectedWidth( 1280 ),
-	ExpectedHeight( 800 ),
-	Rotation( 0 ),
-	hWindow( 0 ),
-	UseMirroring( TRUE )
+    ChildUid( 0 ),
+    ExpectedWidth( 1280 ),
+    ExpectedHeight( 800 ),
+    Rotation( 0 ),
+    hWindow( 0 ),
+    UseMirroring( TRUE )
 {
 
 }
@@ -195,35 +195,35 @@ DisplayShim::~DisplayShim()
 
 bool DisplayShim::Initialize( bool inCompatibility )
 {
-	if( !inCompatibility )
-		checkUMDriverOverrides( this );
+    if( !inCompatibility )
+        checkUMDriverOverrides( this );
 
-	return true;
+    return true;
 }
 
 bool DisplayShim::Shutdown()
 {
-	return true;
+    return true;
 }
 
 bool DisplayShim::Update(Win32ShimInfo* shimInfo)
 {
-	ChildUid = shimInfo->DeviceNumber;
-	ExpectedWidth = shimInfo->NativeWidth;
-	ExpectedHeight = shimInfo->NativeHeight;
-	Rotation = shimInfo->Rotation;
-	UseMirroring = shimInfo->UseMirroring != 0;
-	return true;
+    ChildUid = shimInfo->DeviceNumber;
+    ExpectedWidth = shimInfo->NativeWidth;
+    ExpectedHeight = shimInfo->NativeHeight;
+    Rotation = shimInfo->Rotation;
+    UseMirroring = shimInfo->UseMirroring != 0;
+    return true;
 }
 
 void* DisplayShim::GetDX11SwapChain()
 {
-	if( appDriver.pfnGetDX11SwapChain )
-	{
-		return (*appDriver.pfnGetDX11SwapChain)(this);
-	}
+    if( appDriver.pfnGetDX11SwapChain )
+    {
+        return (*appDriver.pfnGetDX11SwapChain)(this);
+    }
 
-	return NULL;
+    return NULL;
 }
 
 

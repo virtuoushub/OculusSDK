@@ -55,7 +55,7 @@ public:
         TimeManager(timeManager),
         RState(renderState),
         RegisteredPostDistortionCallback(NULL),
-		LastUsedOverdriveTextureIndex(-1),
+        LastUsedOverdriveTextureIndex(-1),
         LatencyTestActive(false),
         LatencyTest2Active(false)
     {
@@ -90,11 +90,11 @@ public:
         RegisteredPostDistortionCallback = postDistortionCallback;
     }
 
-	// Stores the current graphics pipeline state so it can be restored later.
-	void SaveGraphicsState() { if (!(RState.DistortionCaps & ovrDistortionCap_NoRestore)) GfxState->Save(); }
+    // Stores the current graphics pipeline state so it can be restored later.
+    void SaveGraphicsState() { if (!(RState.DistortionCaps & ovrDistortionCap_NoRestore)) GfxState->Save(); }
 
-	// Restores the saved graphics pipeline state.
-	void RestoreGraphicsState() { if (!(RState.DistortionCaps & ovrDistortionCap_NoRestore)) GfxState->Restore(); }
+    // Restores the saved graphics pipeline state.
+    void RestoreGraphicsState() { if (!(RState.DistortionCaps & ovrDistortionCap_NoRestore)) GfxState->Restore(); }
 
     // *** Creation Factory logic
     
@@ -112,11 +112,11 @@ public:
     void SetLatencyTest2Color(unsigned char* color);
     
 protected:
-	// Used for pixel luminance overdrive on DK2 displays
-	// A copy of back buffer images will be ping ponged
-	// TODO: figure out 0 dynamically based on DK2 latency?
-	static const int	NumOverdriveTextures = 2;
-	int					LastUsedOverdriveTextureIndex;
+    // Used for pixel luminance overdrive on DK2 displays
+    // A copy of back buffer images will be ping ponged
+    // TODO: figure out 0 dynamically based on DK2 latency?
+    static const int    NumOverdriveTextures = 2;
+    int                    LastUsedOverdriveTextureIndex;
 
     bool                LatencyTestActive;
     unsigned char       LatencyTestDrawColor[3];
@@ -124,11 +124,11 @@ protected:
     unsigned char       LatencyTest2DrawColor[3];
 
     bool IsOverdriveActive()
-	{
-		// doesn't make sense to use overdrive when vsync is disabled as we cannot guarantee
-		// when the rendered frame will be displayed
-		return LastUsedOverdriveTextureIndex >= 0 && !((RState.EnabledHmdCaps & ovrHmdCap_NoVSync) > 0);
-	}
+    {
+        // doesn't make sense to use overdrive when vsync is disabled as we cannot guarantee
+        // when the rendered frame will be displayed
+        return LastUsedOverdriveTextureIndex >= 0 && !((RState.EnabledHmdCaps & ovrHmdCap_NoVSync) > 0);
+    }
 
     double WaitTillTime(double absTime);
 

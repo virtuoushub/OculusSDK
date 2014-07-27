@@ -42,28 +42,28 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 // {46231713-49FD-4922-84E3-9FF907C06803}
 DEFINE_GUID(GUID_DEVINTERFACE_OVRRIFTMGR, 
-	0x46231713, 0x49fd, 0x4922, 0x84, 0xe3, 0x9f, 0xf9, 0x7, 0xc0, 0x68, 0x3);
+    0x46231713, 0x49fd, 0x4922, 0x84, 0xe3, 0x9f, 0xf9, 0x7, 0xc0, 0x68, 0x3);
 
-#define QUERYADAPTER_MAGICSIZE		17836
-#define QUERYADAPTER_MAGICHEADER	0x4f565246 // OVRF
-#define QUERYADAPTER_MAXPATH		2048
+#define QUERYADAPTER_MAGICSIZE        17836
+#define QUERYADAPTER_MAGICHEADER    0x4f565246 // OVRF
+#define QUERYADAPTER_MAXPATH        2048
 
 #define FUNCTION_INDEX 0xb800
 
 #pragma pack(push,1)
 
-#define OVR_RIFT_MODE_OFF			0	// Disabled
-#define OVR_RIFT_MODE_ENABLED		1   // Enabled
-#define OVR_RIFT_MODE_EXTEND		2   // Extending 2D displays. Without this flag
-										//	2D displays are disabled when the Rift
-										//	is active
-#define OVR_RIFT_MODE_FRONTBUFFER	4	// Enable front buffer only for Rift
-#define OVR_RIFT_MODE_LOCKMOUSE		8	// Prevent mouse from entering bounds
+#define OVR_RIFT_MODE_OFF            0    // Disabled
+#define OVR_RIFT_MODE_ENABLED        1   // Enabled
+#define OVR_RIFT_MODE_EXTEND        2   // Extending 2D displays. Without this flag
+                                        //    2D displays are disabled when the Rift
+                                        //    is active
+#define OVR_RIFT_MODE_FRONTBUFFER    4    // Enable front buffer only for Rift
+#define OVR_RIFT_MODE_LOCKMOUSE        8    // Prevent mouse from entering bounds
 
-#define OVR_ESCAPE_TYPE_HANDLE		1   // Escape to notify driver of our collected handles
+#define OVR_ESCAPE_TYPE_HANDLE        1   // Escape to notify driver of our collected handles
 
-#define OVR_FlipImmediate			0x2
-#define OVR_FlipOnNextVSync			0x4
+#define OVR_FlipImmediate            0x2
+#define OVR_FlipOnNextVSync            0x4
 
 //-----------------------------------------------------------------------------------
 // Structures for application to UM driver
@@ -77,25 +77,25 @@ typedef BOOL     (WINAPI *WinGetModuleHandleExA)( DWORD, LPCSTR, HMODULE* );
 typedef BOOL     (WINAPI *WinGetModuleHandleExW)( DWORD, LPCWSTR, HMODULE* );
 
 // Overridden DirectX 9 entry points
-typedef void*	 (WINAPI *WinDirect3DCreate9)(UINT SDKVersion);
+typedef void*     (WINAPI *WinDirect3DCreate9)(UINT SDKVersion);
 typedef HRESULT  (WINAPI *WinDirect3DCreate9Ex)(UINT SDKVersion, void** aDevice);
 
 // Overridden DXGI entry points
 typedef HRESULT (WINAPI *WinCreateDXGIFactory)(
-	__in   REFIID riid,
-	__out  void **ppFactory
-	);
+    __in   REFIID riid,
+    __out  void **ppFactory
+    );
 
 typedef HRESULT (WINAPI *WinCreateDXGIFactory1)(
-	__in   REFIID riid,
-	__out  void **ppFactory
-	);
+    __in   REFIID riid,
+    __out  void **ppFactory
+    );
 
 typedef HRESULT (WINAPI *WinCreateDXGIFactory2)(
-	__in   UINT flags,
-	__in   const IID &riid,
-	__out  void **ppFactory
-	);
+    __in   UINT flags,
+    __in   const IID &riid,
+    __out  void **ppFactory
+    );
 
 // Application usermode callbacks from usermode driver. These 
 // functions are all provided by the calling application that uses
@@ -151,38 +151,38 @@ typedef int (WINAPI* ActiveAPIVersion)( PVOID );
 
 typedef struct _LINK_APPLICATION_DRIVER
 {
-	UINT32                      version;
-	PVOID						context;
+    UINT32                      version;
+    PVOID                        context;
 
-	union 
-	{
-		struct  
-		{
-			IsInitializingDisplay		pfnInitializingDisplay;
-			RiftForContext				pfnRiftForContext;
-			CloseRiftForContext			pfnCloseRiftForContext;
-			WindowDisplayResolution		pfnWindowDisplayResolution;
-			IsCreatingBackBuffer		pfnIsCreatingBackBuffer;
-			ShouldEnableDebug			pfnShouldEnableDebug;
-			ShouldVSync					pfnShouldVSync;
-			ExpectedResolution			pfnExpectedResolution;
-			MirroringEnabled			pfnMirroringEnabled;
-			GetDX11SwapChain			pfnGetDX11SwapChain;
-			GetWindowForContext			pfnGetWindowForContext;
-			PresentRiftOnContext		pfnPresentRiftOnContext;
-			ActiveAPIVersion			pfnActiveAPIVersion;
-		};
+    union 
+    {
+        struct  
+        {
+            IsInitializingDisplay        pfnInitializingDisplay;
+            RiftForContext                pfnRiftForContext;
+            CloseRiftForContext            pfnCloseRiftForContext;
+            WindowDisplayResolution        pfnWindowDisplayResolution;
+            IsCreatingBackBuffer        pfnIsCreatingBackBuffer;
+            ShouldEnableDebug            pfnShouldEnableDebug;
+            ShouldVSync                    pfnShouldVSync;
+            ExpectedResolution            pfnExpectedResolution;
+            MirroringEnabled            pfnMirroringEnabled;
+            GetDX11SwapChain            pfnGetDX11SwapChain;
+            GetWindowForContext            pfnGetWindowForContext;
+            PresentRiftOnContext        pfnPresentRiftOnContext;
+            ActiveAPIVersion            pfnActiveAPIVersion;
+        };
 
-		PROC	placeholders[128];
-	};
+        PROC    placeholders[128];
+    };
 
 
-	// Used by Runtime filter for linking with original libraries
-	WinDirect3DCreate9			pfnDirect3DCreate9;
-	WinDirect3DCreate9Ex		pfnDirect3DCreate9Ex;
-	WinCreateDXGIFactory		pfnCreateDXGIFactory;
-	WinCreateDXGIFactory1		pfnCreateDXGIFactory1;
-	WinCreateDXGIFactory2		pfnCreateDXGIFactory2;
+    // Used by Runtime filter for linking with original libraries
+    WinDirect3DCreate9            pfnDirect3DCreate9;
+    WinDirect3DCreate9Ex        pfnDirect3DCreate9Ex;
+    WinCreateDXGIFactory        pfnCreateDXGIFactory;
+    WinCreateDXGIFactory1        pfnCreateDXGIFactory1;
+    WinCreateDXGIFactory2        pfnCreateDXGIFactory2;
 } LINK_APPLICATION_DRIVER, *PLINK_APPLICATION_DRIVER;
 
 #pragma warning(pop)
@@ -197,9 +197,9 @@ typedef HRESULT (WINAPI *PreloadLibraryRTFn) ( PLINK_APPLICATION_DRIVER appDrive
 
 typedef struct _QUERY_KM_DRIVER
 {
-	UINT32 magic;								// Friend or foe identifier for our filter driver
-												// See: QUERYADAPTER_MAGICHEADER
-	UINT32 maxVidPnSources;						// Returns the maximum number of video present network sources
+    UINT32 magic;                                // Friend or foe identifier for our filter driver
+                                                // See: QUERYADAPTER_MAGICHEADER
+    UINT32 maxVidPnSources;                        // Returns the maximum number of video present network sources
 } QUERY_KM_DRIVER, *PQUERY_KM_DRIVER;
 
 #ifndef _D3DUKMDT_H_
@@ -208,95 +208,95 @@ typedef UINT D3DKMT_HANDLE;
 
 typedef struct _HandleNotepad
 {
-	// These are assigned around CreateResource
-	HANDLE			hUsermodeInResource;
-	HANDLE			hUsermodeOutResource;
+    // These are assigned around CreateResource
+    HANDLE            hUsermodeInResource;
+    HANDLE            hUsermodeOutResource;
 
-	// These are assigned within the kernel with
-	// DxgkDdiCreateAllocation and
-	// DxgkDdiOpenAllocation
-	D3DKMT_HANDLE	hAllocation;
-	PVOID			hDeviceSpecificHandle;
-	PVOID			hKernelDriverHandle;
+    // These are assigned within the kernel with
+    // DxgkDdiCreateAllocation and
+    // DxgkDdiOpenAllocation
+    D3DKMT_HANDLE    hAllocation;
+    PVOID            hDeviceSpecificHandle;
+    PVOID            hKernelDriverHandle;
 
-	// These are assigned around pfnAllocateCb
-	HANDLE			hUsermodeSharedResource;
-	D3DKMT_HANDLE	hKernelModeSharedResource;
+    // These are assigned around pfnAllocateCb
+    HANDLE            hUsermodeSharedResource;
+    D3DKMT_HANDLE    hKernelModeSharedResource;
 
-	ULONG			childUid;
+    ULONG            childUid;
 
-	UINT			pitch;
+    UINT            pitch;
 
 } HandleNotepad, *PHandleNotepad;
 
 
 typedef struct _ALLOC_PRIVATE_STRUCTURE
 {
-	UINT32 magic;								// Friend or foe identifier for our filter driver
+    UINT32 magic;                                // Friend or foe identifier for our filter driver
 
-	PVOID originalPrivataDataPtr;				// Location in usermode of the original private data structure
-	UINT  originalPrivateSize;					// Size of private data structure at the end of this header
+    PVOID originalPrivataDataPtr;                // Location in usermode of the original private data structure
+    UINT  originalPrivateSize;                    // Size of private data structure at the end of this header
 
-	PVOID hAllocationHandle;					// User-mode-assigned allocation handle for CreateAllocation
-	PVOID hDeviceSpecificHandle;				// Assigned in kernal OpenAllocation
-	PVOID hInternalHandle;						// Assigned in kernal CreateAllocation
-	UINT  pitch;								// Hinted surface pitch
+    PVOID hAllocationHandle;                    // User-mode-assigned allocation handle for CreateAllocation
+    PVOID hDeviceSpecificHandle;                // Assigned in kernal OpenAllocation
+    PVOID hInternalHandle;                        // Assigned in kernal CreateAllocation
+    UINT  pitch;                                // Hinted surface pitch
 
-	BYTE originalPrivateData[1];				// Variable length
+    BYTE originalPrivateData[1];                // Variable length
 
 
 } ALLOC_PRIVATE_STRUCTURE, *PALLOC_PRIVATE_STRUCTURE;
 
 typedef struct _ESCAPE_STRUCTURE
 {
-	UINT32 magic;								// Friend or foe identifier for our filter driver
+    UINT32 magic;                                // Friend or foe identifier for our filter driver
 
-	UINT32 escapeType;							// Specifier for individual type of escape message
-												// Type 1 for notepad
-	union {
-		HandleNotepad notepad;
-	};
+    UINT32 escapeType;                            // Specifier for individual type of escape message
+                                                // Type 1 for notepad
+    union {
+        HandleNotepad notepad;
+    };
 } ESCAPE_STRUCTURE, *PESCAPE_STRUCTURE;
 
 // Structures for internal operation of KM driver
 
 typedef struct _RIFT_SYNC
 {
-	ULONG	childUid;				// ChildUid as reported by RIFT_STATUS
-	ULONG   vsync;					// 1 for vsync, 0 for immediate
+    ULONG    childUid;                // ChildUid as reported by RIFT_STATUS
+    ULONG   vsync;                    // 1 for vsync, 0 for immediate
 } RIFT_SYNC, *PRIFT_SYNC;
 
 typedef struct _RIFT_MODE
 {
-	ULONG	childUid;				// ChildUid as reported by RIFT_STATUS
-	ULONG	mode;					// Bitmap of mode values, defined by OVR_RIFT_HOME_*
-	HANDLE	userModeHandle;			// Handle of render target created in user mode
-									// that's usable as a primary 
+    ULONG    childUid;                // ChildUid as reported by RIFT_STATUS
+    ULONG    mode;                    // Bitmap of mode values, defined by OVR_RIFT_HOME_*
+    HANDLE    userModeHandle;            // Handle of render target created in user mode
+                                    // that's usable as a primary 
 } RIFT_MODE, *PRIFT_MODE;
 
 typedef struct _RIFT_STATUS
 {
-	ULONG childUid;				// Display driver assigned Uid for this display
-	ULONG mode;					// Active rift mode, see OVR_RIFT_MODE_*
-	ULONG serialNumber;			// Serial number as reported in the Rift's EDID
-	ULONG textureHandle;		// Handle of shared render resource -- NULL if not shared 
+    ULONG childUid;                // Display driver assigned Uid for this display
+    ULONG mode;                    // Active rift mode, see OVR_RIFT_MODE_*
+    ULONG serialNumber;            // Serial number as reported in the Rift's EDID
+    ULONG textureHandle;        // Handle of shared render resource -- NULL if not shared 
 } RIFT_STATUS, *PRIFT_STATUS;
 
 typedef struct _RIFT_STATUS_ARRAY
 {
-	ULONG arraySize;			// Size of pre-allocated RIFT_STATUS structures. 
-	RIFT_STATUS status[1];		// Array of status blocks containing connection information on each Rift
+    ULONG arraySize;            // Size of pre-allocated RIFT_STATUS structures. 
+    RIFT_STATUS status[1];        // Array of status blocks containing connection information on each Rift
 } RIFT_STATUS_ARRAY, *PRIFT_STATUS_ARRAY;
 
 #pragma pack(pop)
 
 // IOCTL for UM application to KM driver
 
-#define OVR_STATUS_SUCCESS					 0
-#define OVR_STATUS_FAIL						-1
-#define OVR_STATUS_DRIVER_IN_USE			-2
-#define OVR_STATUS_MODE_ALREADY_ACTIVE		-3
-#define OVR_STATUS_RIFT_NOT_PRESENT			-4
+#define OVR_STATUS_SUCCESS                     0
+#define OVR_STATUS_FAIL                        -1
+#define OVR_STATUS_DRIVER_IN_USE            -2
+#define OVR_STATUS_MODE_ALREADY_ACTIVE        -3
+#define OVR_STATUS_RIFT_NOT_PRESENT            -4
 
 //
 // Returns the number of Rift displays attached to the video adapter
@@ -308,7 +308,7 @@ typedef struct _RIFT_STATUS_ARRAY
 // Output Buffer: LONG - count of Rift displays attached to video adapter
 //
 #define IOCTL_RIFTMGR_GET_RIFT_COUNT CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX, METHOD_BUFFERED, FILE_ANY_ACCESS)
+    FUNCTION_INDEX, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
 //
 // Fills out a pre-allocated array with information on the individually attached
@@ -324,90 +324,90 @@ typedef struct _RIFT_STATUS_ARRAY
 //
 // Input Buffer: PRIFT_STATUS - Pointer to allocated status array
 // Output Buffer: LONG - Count of Rift displays reported in the structure. -1 if out of
-//						 memory						
+//                         memory                        
 //
 #define IOCTL_RIFTMGR_GET_RIFT_ARRAY CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 1, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 1, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Changes the mode of an attached Rift (DEPRECATED)
 // Input Buffer: PRIFT_MODE - Pointer to a mode structure specifying the childUid and
-//							  mode for a particular Rift
-// Output Buffer: LONG		- Non-zero on error, 0 on successful mode change
+//                              mode for a particular Rift
+// Output Buffer: LONG        - Non-zero on error, 0 on successful mode change
 //
 #define IOCTL_RIFTMGR_SET_RIFT_MODE CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 2, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 2, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Lock the primary of the rift and obtain an address
-// Input Buffer: ULONG			- ChildUid of a Rift as previously discovered
-// Output Buffer: ULONG_PTR		- Pointer to a usermode mapped address of the primary
+// Input Buffer: ULONG            - ChildUid of a Rift as previously discovered
+// Output Buffer: ULONG_PTR        - Pointer to a usermode mapped address of the primary
 #define IOCTL_RIFTMGR_GET_RIFT_PRIMARY CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 3, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 3, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Release Rift primary
-// Input Buffer: PULONG_PTR		- ChildUid of a Rift as previously discovered and virtual pointer
+// Input Buffer: PULONG_PTR        - ChildUid of a Rift as previously discovered and virtual pointer
 // Output Buffer: NOTHING
 #define IOCTL_RIFTMGR_RELEASE_RIFT_PRIMARY CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 4, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 4, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 
 // Point the rift to another render target
-// Input Buffer: PHANDLE		- Array of handles, rift and the render target resource
+// Input Buffer: PHANDLE        - Array of handles, rift and the render target resource
 // Output Buffer: NOTHING
 #define IOCTL_RIFTMGR_SETRIFTBUFFER CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 5, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 5, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Enable or disable vsync on Rift present
-// Input Buffer: PRIFT_SYNC		- Pointer to a mode structure specifying the childUid and
-//								  and sync
+// Input Buffer: PRIFT_SYNC        - Pointer to a mode structure specifying the childUid and
+//                                  and sync
 // Output Buffer: NOTHING
 #define IOCTL_RIFTMGR_SETVSYNCMODE CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 6, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 6, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Get scan line
-// Input Buffer: ULONG			- ChildUid of a Rift as previously discovered
-// Output Buffer: ULONG			- 31st bit is set if in vertical blank, high 15 bits has per second 
-//								  frame number (0-74), low 16 bits has scanline (0-1919)
+// Input Buffer: ULONG            - ChildUid of a Rift as previously discovered
+// Output Buffer: ULONG            - 31st bit is set if in vertical blank, high 15 bits has per second 
+//                                  frame number (0-74), low 16 bits has scanline (0-1919)
 #define IOCTL_RIFTMGR_GETSCANLINE CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 7, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 7, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Enable or disable compatibility mode. Entering compatibility mode will fail if
 // the Rift is already actively scanning out a surface
-// Input Buffer: BOOL			- Nonzero if compatibility mode is desired, zero if it's not
-// Output Buffer: LONG			- Result value (see OVR statuses)
-//								   0 = success
-//								  -1 = general failure
-//								  -2 = failure, rift scanning out
+// Input Buffer: BOOL            - Nonzero if compatibility mode is desired, zero if it's not
+// Output Buffer: LONG            - Result value (see OVR statuses)
+//                                   0 = success
+//                                  -1 = general failure
+//                                  -2 = failure, rift scanning out
 #define IOCTL_RIFTMGR_SETCOMPATIBILITYMODE CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 8, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 8, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Call to obtain the current status of compatibility mode
 // Input Buffer: NOTHING
-// Output Buffer: LONG			- Result value 
-//								  0 = Not in compatibility mode
-//								  Non-zero = In compatibility mode
+// Output Buffer: LONG            - Result value 
+//                                  0 = Not in compatibility mode
+//                                  Non-zero = In compatibility mode
 #define IOCTL_RIFTMGR_GETCOMPATIBILITYMODE CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 9, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 9, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Call to set the power mode of a particular Rift
-// Input Buffer: PULONG_PTR		- ChildUid of a Rift as previously discovered and ULONG value
-//							      second ULONG has value of 
-//								  0 to simply obtain the power status of the display
-//								  1 to set the display into a full power state (needs a primary to fully scan out)
-//								  2 to set the display into sleep mode
-//								  3 to set the display into full power off mode (WARNING: Will potentially trash primary)
-// Output Buffer: LONG			- Result value 
-//								  0 = Failure to obtain power status
-//								  1 = Full power
-//								  2 = Sleep
-//								  3 = Power off
+// Input Buffer: PULONG_PTR        - ChildUid of a Rift as previously discovered and ULONG value
+//                                  second ULONG has value of 
+//                                  0 to simply obtain the power status of the display
+//                                  1 to set the display into a full power state (needs a primary to fully scan out)
+//                                  2 to set the display into sleep mode
+//                                  3 to set the display into full power off mode (WARNING: Will potentially trash primary)
+// Output Buffer: LONG            - Result value 
+//                                  0 = Failure to obtain power status
+//                                  1 = Full power
+//                                  2 = Sleep
+//                                  3 = Power off
 #define IOCTL_RIFTMGR_DISPLAYPOWER CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 10, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 10, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 // Return the EDID of the display in the output buffer. The driver
 // will copy as many bytes as possible to fill the buffer.
-// Input Buffer: ULONG			- ChildUid of a Rift as previously discovered
-// Output Buffer: PCHAR			- Preallocated buffer of a variable size to store the EDID from the display
+// Input Buffer: ULONG            - ChildUid of a Rift as previously discovered
+// Output Buffer: PCHAR            - Preallocated buffer of a variable size to store the EDID from the display
 #define IOCTL_RIFTMGR_GETEDID CTL_CODE(FILE_DEVICE_VIDEO, \
-	FUNCTION_INDEX + 11, METHOD_NEITHER, FILE_ANY_ACCESS)
+    FUNCTION_INDEX + 11, METHOD_NEITHER, FILE_ANY_ACCESS)
 
 #endif

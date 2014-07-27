@@ -60,7 +60,7 @@ HWND RenderFocusReader::ReadActiveWindow()
 
 RenderFocusReader::RenderFocusReader()
 {
-	NoSharedMemory = false;
+    NoSharedMemory = false;
 
     PushDestroyCallbacks();
 }

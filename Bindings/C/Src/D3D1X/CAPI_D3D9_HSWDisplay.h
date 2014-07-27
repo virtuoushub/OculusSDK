@@ -41,9 +41,9 @@ namespace OVR { namespace CAPI { namespace D3D9 {
     // There currently isn't a D3D9::RenderParams, as D3D9 support is currently only very basic.
     struct HSWRenderParams
     {
-	    IDirect3DDevice9*    Device;
-	    IDirect3DSwapChain9* SwapChain;
-	    ovrSizei             ScreenSize; 
+        IDirect3DDevice9*    Device;
+        IDirect3DSwapChain9* SwapChain;
+        ovrSizei             ScreenSize; 
     };
 
     class HSWDisplay : public CAPI::HSWDisplay

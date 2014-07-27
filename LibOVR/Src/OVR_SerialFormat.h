@@ -38,8 +38,8 @@ namespace OVR {
 
 enum SerialFormatType
 {
-	SerialFormatType_Invalid = -1, // Invalid format
-	SerialFormatType_DK2 = 0,	   // Format used for DK2
+    SerialFormatType_Invalid = -1, // Invalid format
+    SerialFormatType_DK2 = 0,       // Format used for DK2
 };
 
 // Returns the expected serial format based on the first byte of the buffer
@@ -51,16 +51,16 @@ SerialFormatType DetectBufferFormat(uint8_t firstByte, int sizeInBytes);
 
 enum DK2ProductId
 {
-	DK2ProductId_DK1    = 1, // DK1
-	DK2ProductId_DK2    = 2, // Product Id used for initial DK2 launch
-	DK2ProductId_Refurb = 3, // Refurbished DK2
+    DK2ProductId_DK1    = 1, // DK1
+    DK2ProductId_DK2    = 2, // Product Id used for initial DK2 launch
+    DK2ProductId_Refurb = 3, // Refurbished DK2
 };
 
 enum DK2PartId
 {
-	DK2PartId_HMD    = 0, // HMD
-	DK2PartId_PTC    = 1, // PTC(camera)
-	DK2PartId_Carton = 2, // Carton: An HMD + PTC combo (should not be stamped on a component) AKA Overpack
+    DK2PartId_HMD    = 0, // HMD
+    DK2PartId_PTC    = 1, // PTC(camera)
+    DK2PartId_Carton = 2, // Carton: An HMD + PTC combo (should not be stamped on a component) AKA Overpack
 };
 
 typedef DK2PartId DK2LabelType; // Printed Serial Number version
@@ -70,24 +70,24 @@ typedef DK2PartId DK2LabelType; // Printed Serial Number version
 class DK2BinarySerialFormat
 {
 public:
-	static const SerialFormatType FormatType = SerialFormatType_DK2; // first byte
+    static const SerialFormatType FormatType = SerialFormatType_DK2; // first byte
 
-	DK2ProductId ProductId;         // [4 bits] 2 = DK2
-	DK2PartId    PartId;            // [4 bits] 0 means HMD, 1 means PTC(camera)
-	int          MinutesSinceEpoch; // [3 bytes] Number of minutes that have elapsed since the epoch: May 1st, 2014
-	// [0] = high byte, [1] = middle byte, [2] = low byte
-	int          UnitNumber;        // [2 bytes] Value that increments each time a new serial number is created.  Resets to zero each day
-	// [0] = high byte, [1] = low byte
-	uint8_t      MacHash[5];        // [5 bytes] 5 most significant bytes of MD5 hash from first ethernet adapter mac address
+    DK2ProductId ProductId;         // [4 bits] 2 = DK2
+    DK2PartId    PartId;            // [4 bits] 0 means HMD, 1 means PTC(camera)
+    int          MinutesSinceEpoch; // [3 bytes] Number of minutes that have elapsed since the epoch: May 1st, 2014
+    // [0] = high byte, [1] = middle byte, [2] = low byte
+    int          UnitNumber;        // [2 bytes] Value that increments each time a new serial number is created.  Resets to zero each day
+    // [0] = high byte, [1] = low byte
+    uint8_t      MacHash[5];        // [5 bytes] 5 most significant bytes of MD5 hash from first ethernet adapter mac address
 
-	bool operator==(const DK2BinarySerialFormat& rhs);
+    bool operator==(const DK2BinarySerialFormat& rhs);
 
 public:
-	// Returns false if the input is invalid in some way
-	bool FromBuffer(const uint8_t buffer[12], bool allowUnknownTypes = false);
+    // Returns false if the input is invalid in some way
+    bool FromBuffer(const uint8_t buffer[12], bool allowUnknownTypes = false);
 
-	// Fills the provided buffer with 12 bytes
-	void ToBuffer(uint8_t buffer[12]);
+    // Fills the provided buffer with 12 bytes
+    void ToBuffer(uint8_t buffer[12]);
 };
 
 
@@ -95,25 +95,25 @@ public:
 class DK2PrintedSerialFormat
 {
 public:
-	DK2ProductId ProductId;         // [1 char] 2 = DK2, 3 = Reconditioned bundle
-	DK2LabelType LabelType;         // [1 char] 0 means HMD, 1 means PTC(camera), 2 means Overpack(bundle)
-	int          MinutesSinceEpoch; // [4 char] Number of minutes that have elapsed since the epoch: May 1st, 2014
-	int          UnitNumber;        // [3 char] Value that increments each time a new serial number is created.  Resets to zero each day
-	uint8_t      MacHashLow[3];     // [3 char] 3 least significant bytes of mac hash
+    DK2ProductId ProductId;         // [1 char] 2 = DK2, 3 = Reconditioned bundle
+    DK2LabelType LabelType;         // [1 char] 0 means HMD, 1 means PTC(camera), 2 means Overpack(bundle)
+    int          MinutesSinceEpoch; // [4 char] Number of minutes that have elapsed since the epoch: May 1st, 2014
+    int          UnitNumber;        // [3 char] Value that increments each time a new serial number is created.  Resets to zero each day
+    uint8_t      MacHashLow[3];     // [3 char] 3 least significant bytes of mac hash
 
-	bool operator==(const DK2PrintedSerialFormat& rhs);
-	bool operator==(const DK2BinarySerialFormat& rhs);
+    bool operator==(const DK2PrintedSerialFormat& rhs);
+    bool operator==(const DK2BinarySerialFormat& rhs);
 
 public:
-	// Convert from binary to printed
-	void FromBinary(const DK2BinarySerialFormat& bin);
+    // Convert from binary to printed
+    void FromBinary(const DK2BinarySerialFormat& bin);
 
-	// Returns false if the input is invalid in some way
-	// Convert from a 12 character printed serial number
-	bool FromBase32(const char* str, bool allowUnknownTypes = false);
+    // Returns false if the input is invalid in some way
+    // Convert from a 12 character printed serial number
+    bool FromBase32(const char* str, bool allowUnknownTypes = false);
 
-	// Returns a long human-readable base32 string (20 characters), NOT a printed serial number
-	String ToBase32();
+    // Returns a long human-readable base32 string (20 characters), NOT a printed serial number
+    String ToBase32();
 };
 
 

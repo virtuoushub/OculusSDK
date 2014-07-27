@@ -128,10 +128,10 @@ struct RPC_S2C_Authorization
 // Result of a session function
 enum SessionResult
 {
-	SessionResult_OK,
-	SessionResult_BindFailure,
-	SessionResult_ListenFailure,
-	SessionResult_ConnectFailure,
+    SessionResult_OK,
+    SessionResult_BindFailure,
+    SessionResult_ListenFailure,
+    SessionResult_ConnectFailure,
     SessionResult_AlreadyConnected,
 };
 
@@ -166,7 +166,7 @@ public:
         RemotePatchVersion(0)
     {
     }
-	virtual ~Connection() // Allow delete from base
+    virtual ~Connection() // Allow delete from base
     {
     }
 
@@ -189,8 +189,8 @@ class NetworkConnection : public Connection
 {
 protected:
     NetworkConnection()
-	{
-	}
+    {
+    }
     virtual ~NetworkConnection()
     {
     }
@@ -214,7 +214,7 @@ public:
         }
     }
 
-	SockAddr Address;
+    SockAddr Address;
 
     OVR::Mutex         StateMutex;
     OVR::WaitCondition ConnectingWait;
@@ -234,7 +234,7 @@ public:
     }
 
 public:
-	Ptr<TCPSocket> pSocket;
+    Ptr<TCPSocket> pSocket;
 };
 
 
@@ -243,7 +243,7 @@ public:
 class PacketizedTCPConnection : public TCPConnection
 {
 public:
-	PacketizedTCPConnection()
+    PacketizedTCPConnection()
     {
         Transport = TransportType_PacketizedTCP;
     }
@@ -272,16 +272,16 @@ public:
 class BerkleyListenerDescription : public ListenerDescription
 {
 public:
-	static const int DefaultMaxIncomingConnections =  64;
-	static const int DefaultMaxConnections         = 128;
+    static const int DefaultMaxIncomingConnections =  64;
+    static const int DefaultMaxConnections         = 128;
 
-	BerkleyListenerDescription() :
-		MaxIncomingConnections(DefaultMaxIncomingConnections),
-		MaxConnections(DefaultMaxConnections)
-	{
-	}
+    BerkleyListenerDescription() :
+        MaxIncomingConnections(DefaultMaxIncomingConnections),
+        MaxConnections(DefaultMaxConnections)
+    {
+    }
 
-	Ptr<BerkleySocket> BoundSocketToListenWith;
+    Ptr<BerkleySocket> BoundSocketToListenWith;
     int                MaxIncomingConnections;
     int                MaxConnections;
 };
@@ -291,9 +291,9 @@ public:
 // Receive payload
 struct ReceivePayload
 {
-	Connection* pConnection; // Source connection
-	uint8_t*      pData;       // Pointer to data received
-	int         Bytes;       // Number of bytes of data received
+    Connection* pConnection; // Source connection
+    uint8_t*      pData;       // Pointer to data received
+    int         Bytes;       // Number of bytes of data received
 };
 
 //-----------------------------------------------------------------------------
@@ -323,22 +323,22 @@ public:
 class SendParameters
 {
 public:
-	SendParameters() :
-		pData(NULL),
-		Bytes(0)
-	{
-	}
-	SendParameters(Ptr<Connection> _pConnection, const void* _pData, int _bytes) :
-		pConnection(_pConnection),
-		pData(_pData),
-		Bytes(_bytes)
-	{
-	}
+    SendParameters() :
+        pData(NULL),
+        Bytes(0)
+    {
+    }
+    SendParameters(Ptr<Connection> _pConnection, const void* _pData, int _bytes) :
+        pConnection(_pConnection),
+        pData(_pData),
+        Bytes(_bytes)
+    {
+    }
 
 public:
-	Ptr<Connection> pConnection; // Connection to use
-	const void*     pData;       // Pointer to data to send
-	int             Bytes;       // Number of bytes of data received
+    Ptr<Connection> pConnection; // Connection to use
+    const void*     pData;       // Pointer to data to send
+    int             Bytes;       // Number of bytes of data received
 };
 
 
@@ -347,25 +347,25 @@ public:
 struct ConnectParameters
 {
 public:
-	ConnectParameters() :
-		Transport(TransportType_None)
-	{
-	}
+    ConnectParameters() :
+        Transport(TransportType_None)
+    {
+    }
 
-	TransportType Transport;
+    TransportType Transport;
 };
 
 struct ConnectParametersBerkleySocket : public ConnectParameters
 {
-	SockAddr           RemoteAddress;
-	Ptr<BerkleySocket> BoundSocketToConnectWith;
+    SockAddr           RemoteAddress;
+    Ptr<BerkleySocket> BoundSocketToConnectWith;
     bool                Blocking;
 
-	ConnectParametersBerkleySocket()
+    ConnectParametersBerkleySocket()
     {
     }
 
-	ConnectParametersBerkleySocket(Socket* s, SockAddr* addr) :
+    ConnectParametersBerkleySocket(Socket* s, SockAddr* addr) :
         RemoteAddress(*addr)
     {
         BoundSocketToConnectWith = (BerkleySocket*)s;
@@ -377,11 +377,11 @@ struct ConnectParametersBerkleySocket : public ConnectParameters
 // Listener receive result
 enum ListenerReceiveResult
 {
-	/// The SessionListener used this message and it shouldn't be given to the user.
-	LRR_RETURN = 0,
+    /// The SessionListener used this message and it shouldn't be given to the user.
+    LRR_RETURN = 0,
 
-	/// The SessionListener is going to hold on to this message.  Do not deallocate it but do not pass it to other plugins either.
-	LRR_BREAK,
+    /// The SessionListener is going to hold on to this message.  Do not deallocate it but do not pass it to other plugins either.
+    LRR_BREAK,
 
     /// This message will be processed by other SessionListeners, and at last by the user.
     LRR_CONTINUE,
@@ -395,13 +395,13 @@ enum ListenerReceiveResult
 class SessionListener
 {
 public:
-	// Data events
+    // Data events
     virtual void OnReceive(ReceivePayload* pPayload, ListenerReceiveResult* lrrOut) { OVR_UNUSED2(pPayload, lrrOut);  }
 
-	// Connection was closed
+    // Connection was closed
     virtual void OnDisconnected(Connection* conn) = 0;
 
-	// Connection was created (some data was exchanged to verify protocol compatibility too)
+    // Connection was created (some data was exchanged to verify protocol compatibility too)
     virtual void OnConnected(Connection* conn) = 0;
 
     // Server accepted client
@@ -417,7 +417,7 @@ public:
     // Disconnected during initial handshake
     virtual void OnHandshakeAttemptFailed(Connection* conn)    { OnConnectionAttemptFailed(conn); }
 
-	// Other
+    // Other
     virtual void OnAddedToSession(Session* session)            { OVR_UNUSED(session); }
     virtual void OnRemovedFromSession(Session* session)        { OVR_UNUSED(session); }
 };
@@ -438,13 +438,13 @@ public:
     {
     }
 
-	virtual SessionResult Listen(ListenerDescription* pListenerDescription);
-	virtual SessionResult Connect(ConnectParameters* cp);
-	virtual int           Send(SendParameters* payload);
+    virtual SessionResult Listen(ListenerDescription* pListenerDescription);
+    virtual SessionResult Connect(ConnectParameters* cp);
+    virtual int           Send(SendParameters* payload);
     virtual void          Broadcast(BroadcastParameters* payload);
     virtual void          Poll(bool listeners = true);
-	virtual void          AddSessionListener(SessionListener* se);
-	virtual void          RemoveSessionListener(SessionListener* se);
+    virtual void          AddSessionListener(SessionListener* se);
+    virtual void          RemoveSessionListener(SessionListener* se);
     virtual SInt32        GetActiveSocketsCount();
 
     // Packetized TCP convenience functions
@@ -462,11 +462,11 @@ public:
     Ptr<Connection> GetConnectionAtIndex(int index);
 
 protected:
-	virtual Ptr<Connection> AllocConnection(TransportType transportType);
+    virtual Ptr<Connection> AllocConnection(TransportType transportType);
 
     Lock SocketListenersLock, ConnectionsLock, SessionListenersLock;
     bool                      HasLoopbackListener; // Has loopback listener installed?
-	Array< Ptr<TCPSocket> >   SocketListeners;     // List of active sockets
+    Array< Ptr<TCPSocket> >   SocketListeners;     // List of active sockets
     Array< Ptr<Connection> >  AllConnections;      // List of active connections stuck at the versioning handshake
     Array< Ptr<Connection> >  FullConnections;     // List of active connections past the versioning handshake
     Array< SessionListener* > SessionListeners;    // List of session listeners
@@ -477,11 +477,11 @@ protected:
     int                   invokeSessionListeners(ReceivePayload*);
     void                  invokeSessionEvent(void(SessionListener::*f)(Connection*), Connection* pConnection);
 
-	// TCP
-	virtual void          TCP_OnRecv(Socket* pSocket, uint8_t* pData, int bytesRead);
-	virtual void          TCP_OnClosed(TCPSocket* pSocket);
-	virtual void          TCP_OnAccept(TCPSocket* pListener, SockAddr* pSockAddr, SocketHandle newSock);
-	virtual void          TCP_OnConnected(TCPSocket* pSocket);
+    // TCP
+    virtual void          TCP_OnRecv(Socket* pSocket, uint8_t* pData, int bytesRead);
+    virtual void          TCP_OnClosed(TCPSocket* pSocket);
+    virtual void          TCP_OnAccept(TCPSocket* pListener, SockAddr* pSockAddr, SocketHandle newSock);
+    virtual void          TCP_OnConnected(TCPSocket* pSocket);
 };
 
 

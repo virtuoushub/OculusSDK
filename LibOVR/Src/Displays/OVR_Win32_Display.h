@@ -40,7 +40,7 @@ namespace OVR { namespace Win32 {
 struct DisplayDesc
 {
     HmdTypeEnum DeviceTypeGuess; // This is a guess about what type of HMD it is connected to
-	String      DisplayID;       // This is the device identifier string from MONITORINFO (for app usage)
+    String      DisplayID;       // This is the device identifier string from MONITORINFO (for app usage)
     String      ModelName;       // This is a "DK2" type string
     String      EdidSerialNumber;
     Sizei       LogicalResolutionInPixels;
@@ -55,10 +55,10 @@ struct DisplayDesc
 // Describes EDID information as reported from our display driver.
 struct DisplayEDID
 {
-	String MonitorName;
-	UINT16 ModelNumber;
-	String VendorName;
-	String SerialNumber;
+    String MonitorName;
+    UINT16 ModelNumber;
+    String VendorName;
+    String SerialNumber;
 };
 
 class Win32DisplaySearchHandle : public DisplaySearchHandle
@@ -67,16 +67,16 @@ public:
     static const int ArraySize = 16;
 
     Win32::DisplayDesc cachedDescriptorArray[ArraySize];
-    bool			   extended;
-    bool			   application;
-    int				   extendedDisplayCount;
-    int				   applicationDisplayCount;
-    int				   displayCount;
+    bool               extended;
+    bool               application;
+    int                   extendedDisplayCount;
+    int                   applicationDisplayCount;
+    int                   displayCount;
 
     Win32DisplaySearchHandle()
     {
     }
-	virtual ~Win32DisplaySearchHandle()
+    virtual ~Win32DisplaySearchHandle()
     {
     }
 };
@@ -88,30 +88,30 @@ public:
 class Win32DisplayGeneric : public Display
 {
 public:
-	Win32DisplayGeneric( const DisplayDesc& dd ) :
-		Display(dd.DeviceTypeGuess,
-				dd.DisplayID,
-				dd.ModelName,
-				dd.EdidSerialNumber,
-				dd.LogicalResolutionInPixels,
-				dd.NativeResolutionInPixels,
-				dd.DesktopDisplayOffset,
-				0,
-				0,
-				false)
+    Win32DisplayGeneric( const DisplayDesc& dd ) :
+        Display(dd.DeviceTypeGuess,
+                dd.DisplayID,
+                dd.ModelName,
+                dd.EdidSerialNumber,
+                dd.LogicalResolutionInPixels,
+                dd.NativeResolutionInPixels,
+                dd.DesktopDisplayOffset,
+                0,
+                0,
+                false)
     {
-	}
+    }
 
-	virtual ~Win32DisplayGeneric()
-	{
-	}
+    virtual ~Win32DisplayGeneric()
+    {
+    }
 
-	// Generic displays are not capable of mirroring
-	virtual MirrorMode SetMirrorMode( MirrorMode newMode ) 
-	{ 
-		OVR_UNUSED( newMode ); 
-		return MirrorDisabled; 
-	} 
+    // Generic displays are not capable of mirroring
+    virtual MirrorMode SetMirrorMode( MirrorMode newMode ) 
+    { 
+        OVR_UNUSED( newMode ); 
+        return MirrorDisabled; 
+    } 
 };
 
 
@@ -121,46 +121,46 @@ public:
 // Oculus driver based display object.
 class Win32DisplayDriver : public Display
 {
-	HANDLE		hDevice;
-	ULONG		ChildId;
-	DisplayEDID Edid;
+    HANDLE        hDevice;
+    ULONG        ChildId;
+    DisplayEDID Edid;
 
 public:
     Win32DisplayDriver(const HmdTypeEnum  deviceTypeGuess,
                        const String&      displayID,
-					   const String&      modelName,
-					   const String&      edidSerial,
+                       const String&      modelName,
+                       const String&      edidSerial,
                        const Sizei&       logicalRes,
-					   const Sizei&       nativeRes,
-					   const Vector2i&    displayOffset,
+                       const Sizei&       nativeRes,
+                       const Vector2i&    displayOffset,
                        const DisplayEDID& edid,
-					   HANDLE hdevice,
-					   ULONG child,
-					   uint32_t rotation) :
-		Display(deviceTypeGuess,
-				displayID,
-				modelName,
-				edidSerial,
-				logicalRes,
-				nativeRes,
-				displayOffset,
-				child,
-				rotation,
-				true),
-		hDevice(hdevice),
-		ChildId(child),
-		Edid(edid)
+                       HANDLE hdevice,
+                       ULONG child,
+                       uint32_t rotation) :
+        Display(deviceTypeGuess,
+                displayID,
+                modelName,
+                edidSerial,
+                logicalRes,
+                nativeRes,
+                displayOffset,
+                child,
+                rotation,
+                true),
+        hDevice(hdevice),
+        ChildId(child),
+        Edid(edid)
     {
-	}
+    }
 
-	virtual ~Win32DisplayDriver()
-	{
-	}
+    virtual ~Win32DisplayDriver()
+    {
+    }
 
-	virtual MirrorMode SetMirrorMode( MirrorMode newMode );
+    virtual MirrorMode SetMirrorMode( MirrorMode newMode );
 
     // Support sleep/wake
-	virtual bool SetDisplaySleep(bool off);
+    virtual bool SetDisplaySleep(bool off);
 };
 
 

@@ -40,126 +40,126 @@ namespace OVR { namespace Tracking {
 // this family of filters.
 static Pose<double> calcPredictedPose(const PoseState<double>& poseState, double predictionDt)
 {
-	Pose<double> pose = poseState.ThePose;
-	const double linearCoef = 1.0;
-	Vector3d angularVelocity = poseState.AngularVelocity;
-	double angularSpeed = angularVelocity.Length();
+    Pose<double> pose = poseState.ThePose;
+    const double linearCoef = 1.0;
+    Vector3d angularVelocity = poseState.AngularVelocity;
+    double angularSpeed = angularVelocity.Length();
 
-	// This could be tuned so that linear and angular are combined with different coefficients
-	double speed = angularSpeed + linearCoef * poseState.LinearVelocity.Length();
+    // This could be tuned so that linear and angular are combined with different coefficients
+    double speed = angularSpeed + linearCoef * poseState.LinearVelocity.Length();
 
-	const double slope = 0.2; // The rate at which the dynamic prediction interval varies
-	double candidateDt = slope * speed; // TODO: Replace with smoothstep function
+    const double slope = 0.2; // The rate at which the dynamic prediction interval varies
+    double candidateDt = slope * speed; // TODO: Replace with smoothstep function
 
-	double dynamicDt = predictionDt;
+    double dynamicDt = predictionDt;
 
-	// Choose the candidate if it is shorter, to improve stability
-	if (candidateDt < predictionDt)
-	{
-		dynamicDt = candidateDt;
-	}
+    // Choose the candidate if it is shorter, to improve stability
+    if (candidateDt < predictionDt)
+    {
+        dynamicDt = candidateDt;
+    }
 
-	if (angularSpeed > 0.001)
-	{
-		pose.Rotation = pose.Rotation * Quatd(angularVelocity, angularSpeed * dynamicDt);
-	}
+    if (angularSpeed > 0.001)
+    {
+        pose.Rotation = pose.Rotation * Quatd(angularVelocity, angularSpeed * dynamicDt);
+    }
 
-	pose.Translation += poseState.LinearVelocity * dynamicDt;
+    pose.Translation += poseState.LinearVelocity * dynamicDt;
 
-	return pose;
+    return pose;
 }
 
 
 //// SensorStateReader
 
 SensorStateReader::SensorStateReader() :
-	Updater(NULL),
+    Updater(NULL),
     LastLatWarnTime(0.)
 {
 }
 
 void SensorStateReader::SetUpdater(const CombinedSharedStateUpdater* updater)
 {
-	Updater = updater;
+    Updater = updater;
 }
 
 void SensorStateReader::RecenterPose()
 {
-	if (!Updater)
-	{
-		return;
-	}
+    if (!Updater)
+    {
+        return;
+    }
 
-	/*
-		This resets position to center in x, y, z, and resets yaw to center.
-		Other rotation components are not affected.
-	*/
+    /*
+        This resets position to center in x, y, z, and resets yaw to center.
+        Other rotation components are not affected.
+    */
 
-	const LocklessSensorState lstate = Updater->SharedSensorState.GetState();
+    const LocklessSensorState lstate = Updater->SharedSensorState.GetState();
 
-	Posed worldFromCpf = lstate.WorldFromImu.ThePose * lstate.ImuFromCpf;
+    Posed worldFromCpf = lstate.WorldFromImu.ThePose * lstate.ImuFromCpf;
 
-	double hmdYaw, hmdPitch, hmdRoll;
-	worldFromCpf.Rotation.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&hmdYaw, &hmdPitch, &hmdRoll);
+    double hmdYaw, hmdPitch, hmdRoll;
+    worldFromCpf.Rotation.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&hmdYaw, &hmdPitch, &hmdRoll);
 
-	Posed worldFromCentered(Quatd(Axis_Y, hmdYaw), worldFromCpf.Translation);
+    Posed worldFromCentered(Quatd(Axis_Y, hmdYaw), worldFromCpf.Translation);
 
-	CenteredFromWorld = worldFromCentered.Inverted();
+    CenteredFromWorld = worldFromCentered.Inverted();
 }
 
 bool SensorStateReader::GetSensorStateAtTime(double absoluteTime, TrackingState& ss) const
 {
-	if (!Updater)
-	{
+    if (!Updater)
+    {
         ss.StatusFlags = 0;
         return false;
-	}
+    }
 
-	const LocklessSensorState lstate = Updater->SharedSensorState.GetState();
+    const LocklessSensorState lstate = Updater->SharedSensorState.GetState();
 
     // Update time
-	ss.HeadPose.TimeInSeconds = absoluteTime;
+    ss.HeadPose.TimeInSeconds = absoluteTime;
 
-	// Update the status flags
-	ss.StatusFlags = lstate.StatusFlags;
-	// If no hardware is connected, override the tracking flags
-	if (0 == (ss.StatusFlags & Status_HMDConnected))
-	{
-		ss.StatusFlags &= ~Status_TrackingMask;
-	}
-	if (0 == (ss.StatusFlags & Status_PositionConnected))
-	{
-		ss.StatusFlags &= ~(Status_PositionTracked | Status_CameraPoseTracked);
-	}
+    // Update the status flags
+    ss.StatusFlags = lstate.StatusFlags;
+    // If no hardware is connected, override the tracking flags
+    if (0 == (ss.StatusFlags & Status_HMDConnected))
+    {
+        ss.StatusFlags &= ~Status_TrackingMask;
+    }
+    if (0 == (ss.StatusFlags & Status_PositionConnected))
+    {
+        ss.StatusFlags &= ~(Status_PositionTracked | Status_CameraPoseTracked);
+    }
 
-	// If tracking info is invalid,
+    // If tracking info is invalid,
     if (0 == (ss.StatusFlags & Status_TrackingMask))
-	{
+    {
         return false;
-	}
+    }
 
-	// Delta time from the last available data
-	double pdt = absoluteTime - lstate.WorldFromImu.TimeInSeconds;
-	static const double maxPdt = 0.1;
+    // Delta time from the last available data
+    double pdt = absoluteTime - lstate.WorldFromImu.TimeInSeconds;
+    static const double maxPdt = 0.1;
 
-	// If delta went negative due to synchronization problems between processes or just a lag spike,
-	if (pdt < 0.)
-	{
-		pdt = 0.;
-	}
-	else if (pdt > maxPdt)
-	{
+    // If delta went negative due to synchronization problems between processes or just a lag spike,
+    if (pdt < 0.)
+    {
+        pdt = 0.;
+    }
+    else if (pdt > maxPdt)
+    {
         if (LastLatWarnTime != lstate.WorldFromImu.TimeInSeconds)
         {
             LastLatWarnTime = lstate.WorldFromImu.TimeInSeconds;
             LogText("[SensorStateReader] Prediction interval too high: %f s, clamping at %f s\n", pdt, maxPdt);
         }
-		pdt = maxPdt;
-	}
+        pdt = maxPdt;
+    }
 
-	ss.HeadPose = PoseStatef(lstate.WorldFromImu);
-	// Do prediction logic and ImuFromCpf transformation
-	ss.HeadPose.ThePose = Posef(CenteredFromWorld * calcPredictedPose(lstate.WorldFromImu, pdt) * lstate.ImuFromCpf);
+    ss.HeadPose = PoseStatef(lstate.WorldFromImu);
+    // Do prediction logic and ImuFromCpf transformation
+    ss.HeadPose.ThePose = Posef(CenteredFromWorld * calcPredictedPose(lstate.WorldFromImu, pdt) * lstate.ImuFromCpf);
 
     ss.CameraPose = Posef(CenteredFromWorld * lstate.WorldFromCamera);
 
@@ -168,39 +168,39 @@ bool SensorStateReader::GetSensorStateAtTime(double absoluteTime, TrackingState&
 
     ss.RawSensorData = lstate.RawSensorData;
 
-	return true;
+    return true;
 }
 
 bool SensorStateReader::GetPoseAtTime(double absoluteTime, Posef& transform) const
 {
-	TrackingState ss;
-	if (!GetSensorStateAtTime(absoluteTime, ss))
-	{
-		return false;
-	}
+    TrackingState ss;
+    if (!GetSensorStateAtTime(absoluteTime, ss))
+    {
+        return false;
+    }
 
-	transform = ss.HeadPose.ThePose;
+    transform = ss.HeadPose.ThePose;
 
-	return true;
+    return true;
 }
 
 uint32_t SensorStateReader::GetStatus() const
 {
-	if (!Updater)
-	{
-		return 0;
-	}
+    if (!Updater)
+    {
+        return 0;
+    }
 
-	const LocklessSensorState lstate = Updater->SharedSensorState.GetState();
+    const LocklessSensorState lstate = Updater->SharedSensorState.GetState();
 
-	// If invalid,
-	if (0 == (lstate.StatusFlags & Status_TrackingMask))
-	{
-		// Return 0 indicating no orientation nor position tracking
-		return 0;
-	}
+    // If invalid,
+    if (0 == (lstate.StatusFlags & Status_TrackingMask))
+    {
+        // Return 0 indicating no orientation nor position tracking
+        return 0;
+    }
 
-	return lstate.StatusFlags;
+    return lstate.StatusFlags;
 }
 
 

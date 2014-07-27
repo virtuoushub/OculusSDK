@@ -42,11 +42,11 @@ namespace OVR {
 class DisplaySearchHandle : virtual public RefCountBaseV<DisplaySearchHandle>
 {
 public:
-	DisplaySearchHandle() {}
+    DisplaySearchHandle() {}
 
-	virtual ~DisplaySearchHandle() {}
+    virtual ~DisplaySearchHandle() {}
 
-	void operator= (const DisplaySearchHandle&) {}
+    void operator= (const DisplaySearchHandle&) {}
 };
 
 //-------------------------------------------------------------------------------------
@@ -60,76 +60,76 @@ public:
 //
 // Examples of implementations of Display are the following:
 // Display_Win32_Generic - Compatibly mode implementation that maintains operation on
-//						   systems without drivers.
+//                           systems without drivers.
 // Display_Win32_Driver  - Driver-Based display
 // Display_OSX_Generic   - Additional compatibility mode implementation for OS X
 
 class Display : public RefCountBase<Display>
 {
 protected:
-	enum MirrorMode
-	{
-		MirrorEnabled = 0,
-		MirrorDisabled = 1
-	};
+    enum MirrorMode
+    {
+        MirrorEnabled = 0,
+        MirrorDisabled = 1
+    };
 
-	MirrorMode mirrorMode;
+    MirrorMode mirrorMode;
 
-	Display(
+    Display(
             HmdTypeEnum deviceTypeGuess,
 #ifdef OVR_OS_MAC
             uint32_t displayID,
 #else
-			const String& displayID,
+            const String& displayID,
 #endif
-			const String& modelName,
-			const String& editSerial,
+            const String& modelName,
+            const String& editSerial,
             const Sizei& logicalRes,
-			const Sizei& nativeRes,
-			const Vector2i& displayOffset, 
-			const uint64_t devNumber,
-			const uint32_t rotation,
-			const bool appExclusive):
-		DeviceTypeGuess(deviceTypeGuess),
+            const Sizei& nativeRes,
+            const Vector2i& displayOffset, 
+            const uint64_t devNumber,
+            const uint32_t rotation,
+            const bool appExclusive):
+        DeviceTypeGuess(deviceTypeGuess),
         DisplayID(displayID),
-		ModelName(modelName),
-		EdidSerialNumber(editSerial),
-		LogicalResolutionInPixels(logicalRes),
-		NativeResolutionInPixels(nativeRes),
-		DesktopDisplayOffset(displayOffset),
-		DeviceNumber(devNumber),
-		Rotation(rotation),
-		ApplicationExclusive(appExclusive)
+        ModelName(modelName),
+        EdidSerialNumber(editSerial),
+        LogicalResolutionInPixels(logicalRes),
+        NativeResolutionInPixels(nativeRes),
+        DesktopDisplayOffset(displayOffset),
+        DeviceNumber(devNumber),
+        Rotation(rotation),
+        ApplicationExclusive(appExclusive)
     {
-	}
+    }
 
     void operator = (const Display&) { } // Quiet warning.
 
 public:
-	virtual ~Display() { }
+    virtual ~Display() { }
 
-	// ----- Platform specific static Display functionality -----
+    // ----- Platform specific static Display functionality -----
 
-	// Mandatory function that sets up the display environment with
-	// any necessary shimming and function hooks. This should be one
-	// of the very first things your application does when it
-	// initializes LibOVR
-	static bool        Initialize();
+    // Mandatory function that sets up the display environment with
+    // any necessary shimming and function hooks. This should be one
+    // of the very first things your application does when it
+    // initializes LibOVR
+    static bool        Initialize();
 
-	// Returns a count of the detected displays. These are Rift displays
-	// attached directly to an active display port
-	static int          GetDisplayCount( DisplaySearchHandle* handle = NULL, bool extended = true, bool applicationOnly = true, bool extendedEDIDSerials = false );
-	// Returns a specific index of a display. Displays are sorted in no particular order.
-	static Ptr<Display> GetDisplay( int index = 0, DisplaySearchHandle* handle = NULL ); 
+    // Returns a count of the detected displays. These are Rift displays
+    // attached directly to an active display port
+    static int          GetDisplayCount( DisplaySearchHandle* handle = NULL, bool extended = true, bool applicationOnly = true, bool extendedEDIDSerials = false );
+    // Returns a specific index of a display. Displays are sorted in no particular order.
+    static Ptr<Display> GetDisplay( int index = 0, DisplaySearchHandle* handle = NULL ); 
 
 
     // Returns true if we are referencing the same display; useful for matching display
     // objects with the ones already detected.
     bool MatchDisplay(const Display* other)
     {
-		// Note this is not checking the DeviceName, which corresponds to which monitor the device is.
-		// This allows matching to match a display that has changed how it is plugged in.
-		return (DisplayID == other->DisplayID) &&
+        // Note this is not checking the DeviceName, which corresponds to which monitor the device is.
+        // This allows matching to match a display that has changed how it is plugged in.
+        return (DisplayID == other->DisplayID) &&
                (EdidSerialNumber == other->EdidSerialNumber) &&
                (NativeResolutionInPixels == other->NativeResolutionInPixels) &&
                (DesktopDisplayOffset == other->DesktopDisplayOffset) &&
@@ -137,7 +137,7 @@ public:
     }
 
 
-	// ----- Device independent instance based Display functionality -----
+    // ----- Device independent instance based Display functionality -----
 
     // Device type guess based on display info.
     const HmdTypeEnum   DeviceTypeGuess;
@@ -145,8 +145,8 @@ public:
     // CGDirectDisplayID for the rift.
     const uint32_t      DisplayID; 
 #else
-	// A string denoting the display device name so that apps can recognize the monitor
-	const String        DisplayID;
+    // A string denoting the display device name so that apps can recognize the monitor
+    const String        DisplayID;
 #endif
     // A literal string containing the name of the model, i.e. Rift DK2
     const String        ModelName;
@@ -166,18 +166,18 @@ public:
     // For displays that are attached to the desktop, this return value has meaning.
     // Otherwise it should always return origin
     const Vector2i      DesktopDisplayOffset;
-	// For Windows machines this value stores the ChildUid used to identify this display
-	const uint64_t	    DeviceNumber;
-	// Stores the device specific default rotation of the screen
-	// E.g. DK2 is rotated 90 degrees as it is a portrait display
-	const uint32_t	    Rotation;
-	// Is set if the Display is capable in Application-Only mode
-	const bool			ApplicationExclusive;
+    // For Windows machines this value stores the ChildUid used to identify this display
+    const uint64_t        DeviceNumber;
+    // Stores the device specific default rotation of the screen
+    // E.g. DK2 is rotated 90 degrees as it is a portrait display
+    const uint32_t        Rotation;
+    // Is set if the Display is capable in Application-Only mode
+    const bool            ApplicationExclusive;
 
-	// Functionality for rendering within the window
-	virtual MirrorMode SetMirrorMode( MirrorMode newMode ) = 0;
+    // Functionality for rendering within the window
+    virtual MirrorMode SetMirrorMode( MirrorMode newMode ) = 0;
 
-	// Functionality for enabling/disabling display
+    // Functionality for enabling/disabling display
     virtual bool SetDisplaySleep(bool off)
     {
         // Override to implement if supported
@@ -187,7 +187,7 @@ public:
 
     // In compatibility mode?
     static bool InCompatibilityMode();
-	static DisplaySearchHandle* GetDisplaySearchHandle();
+    static DisplaySearchHandle* GetDisplaySearchHandle();
 };
 
 

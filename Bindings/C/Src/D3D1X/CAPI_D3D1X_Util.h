@@ -115,7 +115,7 @@ static const int D3D1x_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT = D3D1X_(COMM
 typedef ID3D10Blob                 ID3D1xBlob;
 
 #if (OVR_D3D_VERSION == 10)
-    typedef ID3D10Device		        ID3D1xDeviceContext;
+    typedef ID3D10Device                ID3D1xDeviceContext;
 #else
     typedef ID3D11DeviceContext         ID3D1xDeviceContext;
 #endif
@@ -133,7 +133,7 @@ class Buffer;
 // Rendering parameters/pointers describing D3DX rendering setup.
 struct RenderParams
 {
-    ID3D1xDevice*			pDevice;
+    ID3D1xDevice*            pDevice;
     ID3D1xDeviceContext*    pContext;
     ID3D1xRenderTargetView* pBackBufferRT;
     IDXGISwapChain*         pSwapChain;
@@ -333,30 +333,30 @@ public:
     unsigned char*  UniformData;
     int             UniformsSize;
 
-	enum VarType
-	{
-		VARTYPE_FLOAT,
-		VARTYPE_INT,
-		VARTYPE_BOOL,
-	};
+    enum VarType
+    {
+        VARTYPE_FLOAT,
+        VARTYPE_INT,
+        VARTYPE_BOOL,
+    };
 
-	struct Uniform
-	{
-		const char* Name;
-		VarType Type;
-		int     Offset, Size;
-	};
+    struct Uniform
+    {
+        const char* Name;
+        VarType Type;
+        int     Offset, Size;
+    };
     const Uniform* UniformRefl;
     size_t UniformReflSize;
 
-	ShaderBase(RenderParams* rp, ShaderStage stage);
-	~ShaderBase();
+    ShaderBase(RenderParams* rp, ShaderStage stage);
+    ~ShaderBase();
 
     ShaderStage GetStage() const { return Stage; }
 
     void InitUniforms(const Uniform* refl, size_t reflSize);
-	bool SetUniform(const char* name, int n, const float* v);
-	bool SetUniformBool(const char* name, int n, const bool* v);
+    bool SetUniform(const char* name, int n, const float* v);
+    bool SetUniformBool(const char* name, int n, const bool* v);
  
     void UpdateBuffer(Buffer* b);
 };

@@ -53,15 +53,15 @@ Scene*             pRoomScene = 0;
 
 // Specifics for whether the SDK or the APP is doing the distortion.
 #if SDK_RENDER
-	#define OVR_D3D_VERSION 11
-	#include "OVR_CAPI_D3D.h"
-	ovrD3D11Texture    EyeTexture[2];
+    #define OVR_D3D_VERSION 11
+    #include "OVR_CAPI_D3D.h"
+    ovrD3D11Texture    EyeTexture[2];
 #else
-	ShaderSet *         Shaders;  
-	ID3D11InputLayout * VertexIL;
-	Ptr<Buffer>         MeshVBs[2];
-	Ptr<Buffer>         MeshIBs[2]; 
-	ovrVector2f         UVScaleOffset[2][2];
+    ShaderSet *         Shaders;  
+    ID3D11InputLayout * VertexIL;
+    Ptr<Buffer>         MeshVBs[2];
+    Ptr<Buffer>         MeshIBs[2]; 
+    ovrVector2f         UVScaleOffset[2][2];
 #endif
    
 //-------------------------------------------------------------------------------------
@@ -69,27 +69,27 @@ int Init()
 {
     // Initializes LibOVR, and the Rift
     ovr_Initialize();
-	HMD = ovrHmd_Create(0);
+    HMD = ovrHmd_Create(0);
     if (!HMD)
     {
         MessageBoxA(NULL,"Oculus Rift not detected.","", MB_OK);
         return(1);
     }
-	if (HMD->ProductName[0] == '\0') 
+    if (HMD->ProductName[0] == '\0') 
         MessageBoxA(NULL,"Rift detected, display not enabled.","", MB_OK);
 
-	//Setup Window and Graphics - use window frame if relying on Oculus driver
-	const int backBufferMultisample = 1;
+    //Setup Window and Graphics - use window frame if relying on Oculus driver
+    const int backBufferMultisample = 1;
     bool UseAppWindowFrame = (HMD->HmdCaps & ovrHmdCap_ExtendDesktop) ? false : true;
     HWND window = Util_InitWindowAndGraphics(Recti(HMD->WindowsPos, HMD->Resolution),
                                          FullScreen, backBufferMultisample, UseAppWindowFrame,&pRender);
-	if (!window) return 1;
-	ovrHmd_AttachToWindow(HMD, window, NULL, NULL);
+    if (!window) return 1;
+    ovrHmd_AttachToWindow(HMD, window, NULL, NULL);
 
     //Configure Stereo settings.
     Sizei recommenedTex0Size = ovrHmd_GetFovTextureSize(HMD, ovrEye_Left,  HMD->DefaultEyeFov[0], 1.0f);
     Sizei recommenedTex1Size = ovrHmd_GetFovTextureSize(HMD, ovrEye_Right, HMD->DefaultEyeFov[1], 1.0f);
-	Sizei RenderTargetSize;
+    Sizei RenderTargetSize;
     RenderTargetSize.w = recommenedTex0Size.w + recommenedTex1Size.w;
     RenderTargetSize.h = max ( recommenedTex0Size.h, recommenedTex1Size.h );
 
@@ -111,7 +111,7 @@ int Init()
     EyeRenderViewport[1].Size = EyeRenderViewport[0].Size;
 
     #if SDK_RENDER
-	// Query D3D texture data.
+    // Query D3D texture data.
     EyeTexture[0].D3D11.Header.API            = ovrRenderAPI_D3D11;
     EyeTexture[0].D3D11.Header.TextureSize    = RenderTargetSize;
     EyeTexture[0].D3D11.Header.RenderViewport = EyeRenderViewport[0];
@@ -133,95 +133,95 @@ int Init()
     d3d11cfg.D3D11.pSwapChain         = pRender->SwapChain;
 
     if (!ovrHmd_ConfigureRendering(HMD, &d3d11cfg.Config,
-		                           ovrDistortionCap_Chromatic | ovrDistortionCap_Vignette |
+                                   ovrDistortionCap_Chromatic | ovrDistortionCap_Vignette |
                                    ovrDistortionCap_TimeWarp | ovrDistortionCap_Overdrive,
-								   eyeFov, EyeRenderDesc))	return(1);
+                                   eyeFov, EyeRenderDesc))    return(1);
     #else
-	//Shader vertex format
-	D3D11_INPUT_ELEMENT_DESC DistortionMeshVertexDesc[] = {
-		{"Position", 0, DXGI_FORMAT_R32G32_FLOAT,   0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"Position", 1, DXGI_FORMAT_R32_FLOAT,      0, 8,  D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"Position", 2, DXGI_FORMAT_R32_FLOAT,      0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT,   0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TexCoord", 1, DXGI_FORMAT_R32G32_FLOAT,   0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TexCoord", 2, DXGI_FORMAT_R32G32_FLOAT,   0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0}};
-	
-	//Distortion vertex shader
-	const char* vertexShader = 
-		"float2 EyeToSourceUVScale, EyeToSourceUVOffset;                                        \n"
-		"float4x4 EyeRotationStart, EyeRotationEnd;                                             \n"
-		"float2 TimewarpTexCoord(float2 TexCoord, float4x4 rotMat)                              \n"
-		"{                                                                                      \n"
-		// Vertex inputs are in TanEyeAngle space for the R,G,B channels (i.e. after chromatic 
-		// aberration and distortion). These are now "real world" vectors in direction (x,y,1) 
-		// relative to the eye of the HMD.	Apply the 3x3 timewarp rotation to these vectors.
-		"    float3 transformed = float3( mul ( rotMat, float4(TexCoord.xy, 1, 1) ).xyz);       \n"
-		// Project them back onto the Z=1 plane of the rendered images.
-		"    float2 flattened = (transformed.xy / transformed.z);                               \n"
-		// Scale them into ([0,0.5],[0,1]) or ([0.5,0],[0,1]) UV lookup space (depending on eye)
-		"    return(EyeToSourceUVScale * flattened + EyeToSourceUVOffset);                      \n"
-		"}                                                                                      \n"
-		"void main(in float2  Position   : POSITION,  in float timewarpLerpFactor : POSITION1,  \n"
-		"          in float   Vignette   : POSITION2, in float2 TexCoord0         : TEXCOORD0,  \n"
-		"          in float2  TexCoord1  : TEXCOORD1, in float2 TexCoord2         : TEXCOORD2,  \n"
-		"          out float4 oPosition  : SV_Position,                                         \n"
-		"          out float2 oTexCoord0 : TEXCOORD0, out float2 oTexCoord1 : TEXCOORD1,        \n"
-		"          out float2 oTexCoord2 : TEXCOORD2, out float  oVignette  : TEXCOORD3)        \n"
-		"{                                                                                      \n"
-		"    float4x4 lerpedEyeRot = lerp(EyeRotationStart, EyeRotationEnd, timewarpLerpFactor);\n"
-		"    oTexCoord0  = TimewarpTexCoord(TexCoord0,lerpedEyeRot);                            \n"
-		"    oTexCoord1  = TimewarpTexCoord(TexCoord1,lerpedEyeRot);                            \n"
-		"    oTexCoord2  = TimewarpTexCoord(TexCoord2,lerpedEyeRot);                            \n"
-		"    oPosition = float4(Position.xy, 0.5, 1.0);    oVignette = Vignette;                \n"
-		"}";
+    //Shader vertex format
+    D3D11_INPUT_ELEMENT_DESC DistortionMeshVertexDesc[] = {
+        {"Position", 0, DXGI_FORMAT_R32G32_FLOAT,   0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"Position", 1, DXGI_FORMAT_R32_FLOAT,      0, 8,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"Position", 2, DXGI_FORMAT_R32_FLOAT,      0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT,   0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TexCoord", 1, DXGI_FORMAT_R32G32_FLOAT,   0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TexCoord", 2, DXGI_FORMAT_R32G32_FLOAT,   0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0}};
+    
+    //Distortion vertex shader
+    const char* vertexShader = 
+        "float2 EyeToSourceUVScale, EyeToSourceUVOffset;                                        \n"
+        "float4x4 EyeRotationStart, EyeRotationEnd;                                             \n"
+        "float2 TimewarpTexCoord(float2 TexCoord, float4x4 rotMat)                              \n"
+        "{                                                                                      \n"
+        // Vertex inputs are in TanEyeAngle space for the R,G,B channels (i.e. after chromatic 
+        // aberration and distortion). These are now "real world" vectors in direction (x,y,1) 
+        // relative to the eye of the HMD.    Apply the 3x3 timewarp rotation to these vectors.
+        "    float3 transformed = float3( mul ( rotMat, float4(TexCoord.xy, 1, 1) ).xyz);       \n"
+        // Project them back onto the Z=1 plane of the rendered images.
+        "    float2 flattened = (transformed.xy / transformed.z);                               \n"
+        // Scale them into ([0,0.5],[0,1]) or ([0.5,0],[0,1]) UV lookup space (depending on eye)
+        "    return(EyeToSourceUVScale * flattened + EyeToSourceUVOffset);                      \n"
+        "}                                                                                      \n"
+        "void main(in float2  Position   : POSITION,  in float timewarpLerpFactor : POSITION1,  \n"
+        "          in float   Vignette   : POSITION2, in float2 TexCoord0         : TEXCOORD0,  \n"
+        "          in float2  TexCoord1  : TEXCOORD1, in float2 TexCoord2         : TEXCOORD2,  \n"
+        "          out float4 oPosition  : SV_Position,                                         \n"
+        "          out float2 oTexCoord0 : TEXCOORD0, out float2 oTexCoord1 : TEXCOORD1,        \n"
+        "          out float2 oTexCoord2 : TEXCOORD2, out float  oVignette  : TEXCOORD3)        \n"
+        "{                                                                                      \n"
+        "    float4x4 lerpedEyeRot = lerp(EyeRotationStart, EyeRotationEnd, timewarpLerpFactor);\n"
+        "    oTexCoord0  = TimewarpTexCoord(TexCoord0,lerpedEyeRot);                            \n"
+        "    oTexCoord1  = TimewarpTexCoord(TexCoord1,lerpedEyeRot);                            \n"
+        "    oTexCoord2  = TimewarpTexCoord(TexCoord2,lerpedEyeRot);                            \n"
+        "    oPosition = float4(Position.xy, 0.5, 1.0);    oVignette = Vignette;                \n"
+        "}";
 
-	//Distortion pixel shader
-	const char* pixelShader = 
-		"Texture2D Texture   : register(t0);                                                    \n"
-		"SamplerState Linear : register(s0);                                                    \n"
-		"float4 main(in float4 oPosition  : SV_Position,  in float2 oTexCoord0 : TEXCOORD0,     \n"
-		"            in float2 oTexCoord1 : TEXCOORD1,    in float2 oTexCoord2 : TEXCOORD2,     \n"
-		"            in float  oVignette  : TEXCOORD3)    : SV_Target                           \n"
-		"{                                                                                      \n"
-		// 3 samples for fixing chromatic aberrations
-		"    float R = Texture.Sample(Linear, oTexCoord0.xy).r;                                 \n"
-		"    float G = Texture.Sample(Linear, oTexCoord1.xy).g;                                 \n"
-		"    float B = Texture.Sample(Linear, oTexCoord2.xy).b;                                 \n"
-		"    return (oVignette*float4(R,G,B,1));                                                \n"
-		"}";
-	pRender->InitShaders(vertexShader, pixelShader, &Shaders, &VertexIL,DistortionMeshVertexDesc,6);
+    //Distortion pixel shader
+    const char* pixelShader = 
+        "Texture2D Texture   : register(t0);                                                    \n"
+        "SamplerState Linear : register(s0);                                                    \n"
+        "float4 main(in float4 oPosition  : SV_Position,  in float2 oTexCoord0 : TEXCOORD0,     \n"
+        "            in float2 oTexCoord1 : TEXCOORD1,    in float2 oTexCoord2 : TEXCOORD2,     \n"
+        "            in float  oVignette  : TEXCOORD3)    : SV_Target                           \n"
+        "{                                                                                      \n"
+        // 3 samples for fixing chromatic aberrations
+        "    float R = Texture.Sample(Linear, oTexCoord0.xy).r;                                 \n"
+        "    float G = Texture.Sample(Linear, oTexCoord1.xy).g;                                 \n"
+        "    float B = Texture.Sample(Linear, oTexCoord2.xy).b;                                 \n"
+        "    return (oVignette*float4(R,G,B,1));                                                \n"
+        "}";
+    pRender->InitShaders(vertexShader, pixelShader, &Shaders, &VertexIL,DistortionMeshVertexDesc,6);
 
     for ( int eyeNum = 0; eyeNum < 2; eyeNum++ )
     {
         // Allocate mesh vertices, registering with renderer using the OVR vertex format.
         ovrDistortionMesh meshData;
         ovrHmd_CreateDistortionMesh(HMD, (ovrEyeType) eyeNum, eyeFov[eyeNum],
-			                        ovrDistortionCap_Chromatic | ovrDistortionCap_TimeWarp, &meshData);
+                                    ovrDistortionCap_Chromatic | ovrDistortionCap_TimeWarp, &meshData);
         MeshVBs[eyeNum] = *pRender->CreateBuffer();
         MeshVBs[eyeNum]->Data(Buffer_Vertex,meshData.pVertexData,sizeof(ovrDistortionVertex)*meshData.VertexCount);
         MeshIBs[eyeNum] = *pRender->CreateBuffer();
         MeshIBs[eyeNum]->Data(Buffer_Index,meshData.pIndexData,sizeof(unsigned short) * meshData.IndexCount);
         ovrHmd_DestroyDistortionMesh( &meshData );
 
-		//Create eye render description for use later
-		EyeRenderDesc[eyeNum] = ovrHmd_GetRenderDesc(HMD, (ovrEyeType) eyeNum,  eyeFov[eyeNum]);
+        //Create eye render description for use later
+        EyeRenderDesc[eyeNum] = ovrHmd_GetRenderDesc(HMD, (ovrEyeType) eyeNum,  eyeFov[eyeNum]);
 
-		//Do scale and offset
-		ovrHmd_GetRenderScaleAndOffset(eyeFov[eyeNum],RenderTargetSize, EyeRenderViewport[eyeNum], UVScaleOffset[eyeNum]);
-	}
+        //Do scale and offset
+        ovrHmd_GetRenderScaleAndOffset(eyeFov[eyeNum],RenderTargetSize, EyeRenderViewport[eyeNum], UVScaleOffset[eyeNum]);
+    }
 
     #endif
 
     ovrHmd_SetEnabledCaps(HMD, ovrHmdCap_LowPersistence | ovrHmdCap_DynamicPrediction);
 
-	// Start the sensor which informs of the Rift's pose and motion
+    // Start the sensor which informs of the Rift's pose and motion
     ovrHmd_ConfigureTracking(HMD, ovrTrackingCap_Orientation |
                             ovrTrackingCap_MagYawCorrection |
                             ovrTrackingCap_Position, 0);
 
     // This creates lights and models.
-  	pRoomScene = new Scene;
-	PopulateRoomScene(pRoomScene, pRender);
+      pRoomScene = new Scene;
+    PopulateRoomScene(pRoomScene, pRender);
 
     return (0);
 }
@@ -231,87 +231,87 @@ void ProcessAndRender()
 {
     static ovrPosef eyeRenderPose[2]; 
 
-	// Start timing
+    // Start timing
     #if SDK_RENDER
-	ovrHmd_BeginFrame(HMD, 0); 
+    ovrHmd_BeginFrame(HMD, 0); 
     #else
-	ovrHmd_BeginFrameTiming(HMD, 0); 
+    ovrHmd_BeginFrameTiming(HMD, 0); 
     // Retrieve data useful for handling the Health and Safety Warning - unused, but here for reference
     ovrHSWDisplayState hswDisplayState;
     ovrHmd_GetHSWDisplayState(HMD, &hswDisplayState);
     #endif
 
-	// Adjust eye position and rotation from controls, maintaining y position from HMD.
-	static float    BodyYaw(3.141592f);
-	static Vector3f HeadPos(0.0f, 1.6f, -5.0f);
-	HeadPos.y = ovrHmd_GetFloat(HMD, OVR_KEY_EYE_HEIGHT, HeadPos.y);
-	bool freezeEyeRender = Util_RespondToControls(BodyYaw, HeadPos, eyeRenderPose[1].Orientation);
+    // Adjust eye position and rotation from controls, maintaining y position from HMD.
+    static float    BodyYaw(3.141592f);
+    static Vector3f HeadPos(0.0f, 1.6f, -5.0f);
+    HeadPos.y = ovrHmd_GetFloat(HMD, OVR_KEY_EYE_HEIGHT, HeadPos.y);
+    bool freezeEyeRender = Util_RespondToControls(BodyYaw, HeadPos, eyeRenderPose[1].Orientation);
 
      pRender->BeginScene();
     
-	// Render the two undistorted eye views into their render buffers.
+    // Render the two undistorted eye views into their render buffers.
     if (!freezeEyeRender) // freeze to debug for time warp
     {
         pRender->SetRenderTarget ( pRendertargetTexture );
         pRender->SetViewport (Recti(0,0, pRendertargetTexture->GetWidth(),
                                          pRendertargetTexture->GetHeight() ));  
         pRender->Clear();
-		for (int eyeIndex = 0; eyeIndex < ovrEye_Count; eyeIndex++)
-		{
+        for (int eyeIndex = 0; eyeIndex < ovrEye_Count; eyeIndex++)
+        {
             ovrEyeType eye = HMD->EyeRenderOrder[eyeIndex];
             eyeRenderPose[eye] = ovrHmd_GetEyePose(HMD, eye);
 
             // Get view and projection matrices
-			Matrix4f rollPitchYaw       = Matrix4f::RotationY(BodyYaw);
-			Matrix4f finalRollPitchYaw  = rollPitchYaw * Matrix4f(eyeRenderPose[eye].Orientation);
-			Vector3f finalUp            = finalRollPitchYaw.Transform(Vector3f(0,1,0));
-			Vector3f finalForward       = finalRollPitchYaw.Transform(Vector3f(0,0,-1));
-			Vector3f shiftedEyePos      = HeadPos + rollPitchYaw.Transform(eyeRenderPose[eye].Position);
+            Matrix4f rollPitchYaw       = Matrix4f::RotationY(BodyYaw);
+            Matrix4f finalRollPitchYaw  = rollPitchYaw * Matrix4f(eyeRenderPose[eye].Orientation);
+            Vector3f finalUp            = finalRollPitchYaw.Transform(Vector3f(0,1,0));
+            Vector3f finalForward       = finalRollPitchYaw.Transform(Vector3f(0,0,-1));
+            Vector3f shiftedEyePos      = HeadPos + rollPitchYaw.Transform(eyeRenderPose[eye].Position);
             Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp); 
-			Matrix4f proj = ovrMatrix4f_Projection(EyeRenderDesc[eye].Fov, 0.01f, 10000.0f, true);
+            Matrix4f proj = ovrMatrix4f_Projection(EyeRenderDesc[eye].Fov, 0.01f, 10000.0f, true);
 
-			pRender->SetViewport(Recti(EyeRenderViewport[eye]));
-			pRender->SetProjection(proj);
-			pRender->SetDepthMode(true, true);
-			pRoomScene->Render(pRender, Matrix4f::Translation(EyeRenderDesc[eye].ViewAdjust) * view);
-		}
+            pRender->SetViewport(Recti(EyeRenderViewport[eye]));
+            pRender->SetProjection(proj);
+            pRender->SetDepthMode(true, true);
+            pRoomScene->Render(pRender, Matrix4f::Translation(EyeRenderDesc[eye].ViewAdjust) * view);
+        }
     }
     pRender->FinishScene();
 
-    #if SDK_RENDER	// Let OVR do distortion rendering, Present and flush/sync
-	ovrHmd_EndFrame(HMD, eyeRenderPose, &EyeTexture[0].Texture);
+    #if SDK_RENDER    // Let OVR do distortion rendering, Present and flush/sync
+    ovrHmd_EndFrame(HMD, eyeRenderPose, &EyeTexture[0].Texture);
     #else
-	// Clear screen
-	pRender->SetDefaultRenderTarget();
-	pRender->SetFullViewport();
-	pRender->Clear(0.0f, 0.0f, 0.0f, 0.0f);
+    // Clear screen
+    pRender->SetDefaultRenderTarget();
+    pRender->SetFullViewport();
+    pRender->Clear(0.0f, 0.0f, 0.0f, 0.0f);
 
-	// Setup shader
-	ShaderFill distortionShaderFill(Shaders);
-	distortionShaderFill.SetTexture(0, pRendertargetTexture);
-	distortionShaderFill.SetInputLayout(VertexIL);
+    // Setup shader
+    ShaderFill distortionShaderFill(Shaders);
+    distortionShaderFill.SetTexture(0, pRendertargetTexture);
+    distortionShaderFill.SetInputLayout(VertexIL);
 
-	for(int eyeNum = 0; eyeNum < 2; eyeNum++)
-	{
-		// Get and set shader constants
-		Shaders->SetUniform2f("EyeToSourceUVScale",   UVScaleOffset[eyeNum][0].x, UVScaleOffset[eyeNum][0].y);
-		Shaders->SetUniform2f("EyeToSourceUVOffset",  UVScaleOffset[eyeNum][1].x, UVScaleOffset[eyeNum][1].y);
- 		ovrMatrix4f timeWarpMatrices[2];
-		ovrHmd_GetEyeTimewarpMatrices(HMD, (ovrEyeType)eyeNum, eyeRenderPose[eyeNum], timeWarpMatrices);
-		Shaders->SetUniform4x4f("EyeRotationStart", timeWarpMatrices[0]);  //Nb transposed when set
-		Shaders->SetUniform4x4f("EyeRotationEnd",   timeWarpMatrices[1]);  //Nb transposed when set
-		// Perform distortion
-		pRender->Render(&distortionShaderFill, MeshVBs[eyeNum], MeshIBs[eyeNum],sizeof(ovrDistortionVertex));
-	}
+    for(int eyeNum = 0; eyeNum < 2; eyeNum++)
+    {
+        // Get and set shader constants
+        Shaders->SetUniform2f("EyeToSourceUVScale",   UVScaleOffset[eyeNum][0].x, UVScaleOffset[eyeNum][0].y);
+        Shaders->SetUniform2f("EyeToSourceUVOffset",  UVScaleOffset[eyeNum][1].x, UVScaleOffset[eyeNum][1].y);
+         ovrMatrix4f timeWarpMatrices[2];
+        ovrHmd_GetEyeTimewarpMatrices(HMD, (ovrEyeType)eyeNum, eyeRenderPose[eyeNum], timeWarpMatrices);
+        Shaders->SetUniform4x4f("EyeRotationStart", timeWarpMatrices[0]);  //Nb transposed when set
+        Shaders->SetUniform4x4f("EyeRotationEnd",   timeWarpMatrices[1]);  //Nb transposed when set
+        // Perform distortion
+        pRender->Render(&distortionShaderFill, MeshVBs[eyeNum], MeshIBs[eyeNum],sizeof(ovrDistortionVertex));
+    }
 
-	pRender->SetDefaultRenderTarget();
+    pRender->SetDefaultRenderTarget();
 
-	pRender->Present( true ); // Vsync enabled
+    pRender->Present( true ); // Vsync enabled
 
     // Only flush GPU for ExtendDesktop; not needed in Direct App Renering with Oculus driver.
     if (HMD->HmdCaps & ovrHmdCap_ExtendDesktop)
-		pRender->WaitUntilGpuIdle();  
-	ovrHmd_EndFrameTiming(HMD);
+        pRender->WaitUntilGpuIdle();  
+    ovrHmd_EndFrameTiming(HMD);
     #endif
 }
 
@@ -338,20 +338,20 @@ ovrHmd_EndFrame(hmd);
 //-------------------------------------------------------------------------------------
 void Release(void)
 {
-	if (pRendertargetTexture) pRendertargetTexture->Release();
+    if (pRendertargetTexture) pRendertargetTexture->Release();
 
     #if !SDK_RENDER
-	for(int eyeNum = 0; eyeNum < 2; eyeNum++)
-	{
-		MeshVBs[eyeNum].Clear();
-		MeshIBs[eyeNum].Clear();
-	}
-	if (Shaders)
-	{
-		Shaders->UnsetShader(Shader_Vertex);
-		Shaders->UnsetShader(Shader_Pixel);
+    for(int eyeNum = 0; eyeNum < 2; eyeNum++)
+    {
+        MeshVBs[eyeNum].Clear();
+        MeshIBs[eyeNum].Clear();
+    }
+    if (Shaders)
+    {
+        Shaders->UnsetShader(Shader_Vertex);
+        Shaders->UnsetShader(Shader_Pixel);
         Shaders->Release();
-	}
+    }
     #endif
 
     ovrHmd_Destroy(HMD);

@@ -143,7 +143,7 @@ struct HASWVertex
 {
     Vector3f  Pos;
     Color     C;
-    float     U, V;	
+    float     U, V;    
 
     HASWVertex(const Vector3f& p, const Color& c = Color(64,0,0,255), float u = 0, float v = 0)
         : Pos(p), C(c), U(u), V(v)
@@ -178,9 +178,9 @@ bool HSWDisplay::Initialize(const ovrRenderAPIConfig* apiConfig)
 
     if(config)
     {
-	    RenderParams.Device     = config->D3D9.pDevice;
+        RenderParams.Device     = config->D3D9.pDevice;
         RenderParams.SwapChain  = config->D3D9.pSwapChain;
-	    RenderParams.ScreenSize = config->D3D9.Header.RTSize;
+        RenderParams.ScreenSize = config->D3D9.Header.RTSize;
     }
     else
     {
@@ -370,9 +370,9 @@ void HSWDisplay::RenderInternal(ovrEyeType eye, const ovrTexture* eyeTexture)
 
         RenderParams.Device->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
         RenderParams.Device->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
-		RenderParams.Device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+        RenderParams.Device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
         RenderParams.Device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-		RenderParams.Device->SetRenderState(D3DRS_LIGHTING, FALSE);
+        RenderParams.Device->SetRenderState(D3DRS_LIGHTING, FALSE);
         RenderParams.Device->SetRenderState(D3DRS_ZENABLE, FALSE);
         RenderParams.Device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
         RenderParams.Device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);

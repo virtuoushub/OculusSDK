@@ -2,7 +2,7 @@
 
 Filename    :   OVR_Win32_DisplayShim.cpp
 Content     :   Shared static functions for inclusion that allow for an application
-		        to inject the usermode driver into an application
+                to inject the usermode driver into an application
 Created     :   March 21, 2014
 Authors     :   Dean Beeler
 
@@ -39,8 +39,8 @@ BOOL WINAPI OVRShouldVSync( );
 ULONG WINAPI OVRRiftForContext( PVOID context, HANDLE driverHandle );
 BOOL WINAPI OVRCloseRiftForContext( PVOID context, HANDLE driverHandle, ULONG rift );
 BOOL WINAPI OVRWindowDisplayResolution( PVOID context, UINT* width, UINT* height,
-									   UINT* titleHeight, UINT* borderWidth,
-									   BOOL* vsyncEnabled );
+                                       UINT* titleHeight, UINT* borderWidth,
+                                       BOOL* vsyncEnabled );
 BOOL WINAPI OVRExpectedResolution( PVOID context, UINT* width, UINT* height, UINT* rotationInDegrees );
 BOOL WINAPI OVRShouldEnableDebug();
 BOOL WINAPI OVRMirroringEnabled( PVOID context );
@@ -59,8 +59,8 @@ static const char* OptimusDrivers = "nvumdshimx.dll nvumdshim.dll";
 
 typedef enum OVRTargetAPI
 {
-	DirectX,
-	OpenGL
+    DirectX,
+    OpenGL
 };
 
 static PVOID lastContext = NULL;
@@ -69,395 +69,395 @@ static INT apiVersion = 10;
 
 static CHAR* ReadRegStr(HKEY keySub, const char* keyName, const char* valName)
 {
-	CHAR *val = NULL;
-	REGSAM access = KEY_READ;
-	HKEY hKey;
+    CHAR *val = NULL;
+    REGSAM access = KEY_READ;
+    HKEY hKey;
 
 TryAgainWOW64:
-	NTSTATUS res = RegOpenKeyExA( keySub, keyName, 0, access, &hKey );
-	if ( res == ERROR_SUCCESS ) 
-	{ 
-		DWORD valLen;
-		res = RegQueryValueExA( hKey, valName, NULL, NULL, NULL, &valLen );
-		if( res == ERROR_SUCCESS ) {
-			val = (CHAR*)calloc( valLen + 1, sizeof(CHAR) );
-			res = RegQueryValueExA( hKey, valName, NULL, NULL, (LPBYTE)val, &valLen );
+    NTSTATUS res = RegOpenKeyExA( keySub, keyName, 0, access, &hKey );
+    if ( res == ERROR_SUCCESS ) 
+    { 
+        DWORD valLen;
+        res = RegQueryValueExA( hKey, valName, NULL, NULL, NULL, &valLen );
+        if( res == ERROR_SUCCESS ) {
+            val = (CHAR*)calloc( valLen + 1, sizeof(CHAR) );
+            res = RegQueryValueExA( hKey, valName, NULL, NULL, (LPBYTE)val, &valLen );
 
-			if( res == ERROR_SUCCESS )
-			{
-				CHAR* byte = val;
-				for( DWORD j = 0; j < valLen; ++j )
-				{
-					if( byte[j] == 0 )
-						byte[j] = ' ';
-				}
-			}
-			else
-			{
-				free( val );
-				val = NULL;
-			}
-		}
-		RegCloseKey( hKey ); 
-	}
+            if( res == ERROR_SUCCESS )
+            {
+                CHAR* byte = val;
+                for( DWORD j = 0; j < valLen; ++j )
+                {
+                    if( byte[j] == 0 )
+                        byte[j] = ' ';
+                }
+            }
+            else
+            {
+                free( val );
+                val = NULL;
+            }
+        }
+        RegCloseKey( hKey ); 
+    }
 
-	if( res == ERROR_FILE_NOT_FOUND && keySub == HKEY_LOCAL_MACHINE && access == KEY_READ  ) {
+    if( res == ERROR_FILE_NOT_FOUND && keySub == HKEY_LOCAL_MACHINE && access == KEY_READ  ) {
 #ifdef _WIN64
-		access = KEY_READ | KEY_WOW64_32KEY;
+        access = KEY_READ | KEY_WOW64_32KEY;
 #else
-		access = KEY_READ | KEY_WOW64_64KEY;
+        access = KEY_READ | KEY_WOW64_64KEY;
 #endif
-		goto TryAgainWOW64;
-	}
-	return val;
+        goto TryAgainWOW64;
+    }
+    return val;
 }
 
 #define OLD_DATA_BACKUP_SIZE 16
 
-WinLoadLibraryA			oldProcA = NULL;
-WinLoadLibraryExA		oldProcExA = NULL;
-WinLoadLibraryW			oldProcW = NULL;
-WinLoadLibraryExW		oldProcExW = NULL;
-WinGetModuleHandleExA	oldProcModExA = NULL;
-WinGetModuleHandleExW	oldProcModExW = NULL;
-WinDirect3DCreate9		oldDirectX9Create = NULL;
-BYTE					oldDirectX9CreateData[OLD_DATA_BACKUP_SIZE];
-WinDirect3DCreate9Ex	oldDirectX9ExCreate = NULL;
-BYTE					oldDirectX9ExCreateData[OLD_DATA_BACKUP_SIZE];
-WinCreateDXGIFactory	oldCreateDXGIFactory = NULL;
-BYTE					oldCreateDXGIFactoryData[OLD_DATA_BACKUP_SIZE];
-WinCreateDXGIFactory1	oldCreateDXGIFactory1 = NULL;
-BYTE					oldCreateDXGIFactory1Data[OLD_DATA_BACKUP_SIZE];
+WinLoadLibraryA            oldProcA = NULL;
+WinLoadLibraryExA        oldProcExA = NULL;
+WinLoadLibraryW            oldProcW = NULL;
+WinLoadLibraryExW        oldProcExW = NULL;
+WinGetModuleHandleExA    oldProcModExA = NULL;
+WinGetModuleHandleExW    oldProcModExW = NULL;
+WinDirect3DCreate9        oldDirectX9Create = NULL;
+BYTE                    oldDirectX9CreateData[OLD_DATA_BACKUP_SIZE];
+WinDirect3DCreate9Ex    oldDirectX9ExCreate = NULL;
+BYTE                    oldDirectX9ExCreateData[OLD_DATA_BACKUP_SIZE];
+WinCreateDXGIFactory    oldCreateDXGIFactory = NULL;
+BYTE                    oldCreateDXGIFactoryData[OLD_DATA_BACKUP_SIZE];
+WinCreateDXGIFactory1    oldCreateDXGIFactory1 = NULL;
+BYTE                    oldCreateDXGIFactory1Data[OLD_DATA_BACKUP_SIZE];
 WinCreateDXGIFactory2   oldCreateDXGIFactory2 = NULL;
-BYTE					oldCreateDXGIFactory2Data[OLD_DATA_BACKUP_SIZE];
+BYTE                    oldCreateDXGIFactory2Data[OLD_DATA_BACKUP_SIZE];
 
 static bool checkForOverride( LPCSTR libFileName, OVRTargetAPI& targetApi )
 {
-	for (int i=0; ; i++)
-	{
-		CHAR keyString[256] = {0};
+    for (int i=0; ; i++)
+    {
+        CHAR keyString[256] = {0};
 
-		sprintf_s( keyString, 256, GFX_DRIVER_KEY_FMT, i );
+        sprintf_s( keyString, 256, GFX_DRIVER_KEY_FMT, i );
 
-		CHAR* providerName = ReadRegStr( HKEY_LOCAL_MACHINE, keyString, "ProviderName" );
+        CHAR* providerName = ReadRegStr( HKEY_LOCAL_MACHINE, keyString, "ProviderName" );
 
-		// No provider name means we're out of display enumerations
-		if( providerName == NULL )
-			break;
+        // No provider name means we're out of display enumerations
+        if( providerName == NULL )
+            break;
 
-		free( providerName );
+        free( providerName );
 
-		// Check 64-bit driver names followed by 32-bit driver names
-		const char* driverKeys[] = {"UserModeDriverName", "UserModeDriverNameWoW", "OpenGLDriverName", "OpenGLDriverNameWoW", "InstalledDisplayDrivers" };
-		for( int j = 0; j < 6; ++j )
-		{
-			CHAR userModeList[4096] = {0};
-			
-			switch(j)
-			{
-				case 5:
-					strcpy_s( userModeList, 4095, OptimusDrivers );
-					break;
-				default:
-					{
-						CHAR* regString = ReadRegStr( HKEY_LOCAL_MACHINE, keyString, driverKeys[j] );
-						if( regString )
-						{
-							strcpy_s( userModeList, 4095, regString );
-							free( regString );
-						}
+        // Check 64-bit driver names followed by 32-bit driver names
+        const char* driverKeys[] = {"UserModeDriverName", "UserModeDriverNameWoW", "OpenGLDriverName", "OpenGLDriverNameWoW", "InstalledDisplayDrivers" };
+        for( int j = 0; j < 6; ++j )
+        {
+            CHAR userModeList[4096] = {0};
+            
+            switch(j)
+            {
+                case 5:
+                    strcpy_s( userModeList, 4095, OptimusDrivers );
+                    break;
+                default:
+                    {
+                        CHAR* regString = ReadRegStr( HKEY_LOCAL_MACHINE, keyString, driverKeys[j] );
+                        if( regString )
+                        {
+                            strcpy_s( userModeList, 4095, regString );
+                            free( regString );
+                        }
 
-					}
-					break;
-			}
+                    }
+                    break;
+            }
 
-			char *nextToken = NULL;
+            char *nextToken = NULL;
 
-			if( userModeList )
-			{
-				char* first = strtok_s( userModeList, " ", &nextToken );
-				while( first )
-				{
-					if( strstr( libFileName, first ) != 0 )
-					{
-						if( j < 2 )
-							targetApi = DirectX;
-						else
-							targetApi = OpenGL;
+            if( userModeList )
+            {
+                char* first = strtok_s( userModeList, " ", &nextToken );
+                while( first )
+                {
+                    if( strstr( libFileName, first ) != 0 )
+                    {
+                        if( j < 2 )
+                            targetApi = DirectX;
+                        else
+                            targetApi = OpenGL;
 
-						return true;
-					}
-					first = strtok_s( NULL, " ", &nextToken );
-				}
-			}
-		}
-	}
+                        return true;
+                    }
+                    first = strtok_s( NULL, " ", &nextToken );
+                }
+            }
+        }
+    }
 
-	return false;
+    return false;
 }
 
 static HMODULE createShim( LPCSTR lpLibFileName, OVRTargetAPI targetAPI )
 {
-	//Sleep(10000);
-	if( IN_COMPATIBILITY_MODE() )
-	{
-		return (*oldProcA)( lpLibFileName );
-	}
+    //Sleep(10000);
+    if( IN_COMPATIBILITY_MODE() )
+    {
+        return (*oldProcA)( lpLibFileName );
+    }
 
-	UNREFERENCED_PARAMETER( targetAPI );
+    UNREFERENCED_PARAMETER( targetAPI );
 
-	HMODULE result = NULL;
+    HMODULE result = NULL;
 
-	result = (*oldProcA)( UMFilter );
+    result = (*oldProcA)( UMFilter );
 
-	if( result )
-	{
-		PreloadLibraryFn loadFunc = (PreloadLibraryFn)GetProcAddress( result, "PreloadLibrary" );
-		if( loadFunc )
-		{
-			HRESULT localRes = (*loadFunc)( oldProcA, lpLibFileName, &appDriver );
-			if( localRes != S_OK )
-				result = NULL;
-		}
-	}
+    if( result )
+    {
+        PreloadLibraryFn loadFunc = (PreloadLibraryFn)GetProcAddress( result, "PreloadLibrary" );
+        if( loadFunc )
+        {
+            HRESULT localRes = (*loadFunc)( oldProcA, lpLibFileName, &appDriver );
+            if( localRes != S_OK )
+                result = NULL;
+        }
+    }
 
-	if( !result )
-	{
-		OutputDebugString( L"createShim:  unable to load usermode filter\n" );
-		result = (*oldProcA)( lpLibFileName );
-	}
-	return result;
+    if( !result )
+    {
+        OutputDebugString( L"createShim:  unable to load usermode filter\n" );
+        result = (*oldProcA)( lpLibFileName );
+    }
+    return result;
 }
 
 static HMODULE
-	WINAPI
-	OVRLoadLibraryA(
-	__in LPCSTR lpLibFileName
-	)
+    WINAPI
+    OVRLoadLibraryA(
+    __in LPCSTR lpLibFileName
+    )
 {
-	OVRTargetAPI targetAPI = DirectX;
-	bool needShim = checkForOverride( lpLibFileName, targetAPI );
-	if( !needShim )
-		return (*oldProcA)( lpLibFileName );
+    OVRTargetAPI targetAPI = DirectX;
+    bool needShim = checkForOverride( lpLibFileName, targetAPI );
+    if( !needShim )
+        return (*oldProcA)( lpLibFileName );
 
-	return createShim( lpLibFileName, targetAPI );
+    return createShim( lpLibFileName, targetAPI );
 }
 
 static HMODULE
-	WINAPI
-	OVRLoadLibraryW(
-	__in LPCWSTR lpLibFileName
-	)
+    WINAPI
+    OVRLoadLibraryW(
+    __in LPCWSTR lpLibFileName
+    )
 {
-	USES_CONVERSION;
+    USES_CONVERSION;
 
-	OVRTargetAPI targetAPI = DirectX;
+    OVRTargetAPI targetAPI = DirectX;
 
-	bool needShim = checkForOverride( W2A( lpLibFileName ), targetAPI );
-	if( !needShim )	
-		return (*oldProcW)( lpLibFileName );
+    bool needShim = checkForOverride( W2A( lpLibFileName ), targetAPI );
+    if( !needShim )    
+        return (*oldProcW)( lpLibFileName );
 
-	return createShim( W2A( lpLibFileName ), targetAPI );
+    return createShim( W2A( lpLibFileName ), targetAPI );
 }
 
 static HMODULE
-	WINAPI
-	OVRLoadLibraryExA(
-	__in       LPCSTR lpLibFileName,
-	__reserved HANDLE hFile,
-	__in       DWORD dwFlags
+    WINAPI
+    OVRLoadLibraryExA(
+    __in       LPCSTR lpLibFileName,
+    __reserved HANDLE hFile,
+    __in       DWORD dwFlags
 
-	)
+    )
 {
-	OVRTargetAPI targetAPI = DirectX;
+    OVRTargetAPI targetAPI = DirectX;
 
-	bool needShim = checkForOverride( lpLibFileName, targetAPI );
-	if( !needShim )
-		return (*oldProcExA)( lpLibFileName, hFile, dwFlags );
+    bool needShim = checkForOverride( lpLibFileName, targetAPI );
+    if( !needShim )
+        return (*oldProcExA)( lpLibFileName, hFile, dwFlags );
 
-	// FIXME: Don't throw away the flags parameter
-	return createShim( lpLibFileName, targetAPI );
+    // FIXME: Don't throw away the flags parameter
+    return createShim( lpLibFileName, targetAPI );
 }
 
 static HMODULE
-	WINAPI
-	OVRLoadLibraryExW(
-	__in       LPCWSTR lpLibFileName,
-	__reserved HANDLE hFile,
-	__in       DWORD dwFlags
-	)
+    WINAPI
+    OVRLoadLibraryExW(
+    __in       LPCWSTR lpLibFileName,
+    __reserved HANDLE hFile,
+    __in       DWORD dwFlags
+    )
 {
-	USES_CONVERSION;
+    USES_CONVERSION;
 
-	OVRTargetAPI targetAPI = DirectX;
+    OVRTargetAPI targetAPI = DirectX;
 
-	bool needShim = checkForOverride( W2A( lpLibFileName ), targetAPI );
-	if( !needShim )
-		return (*oldProcExW)( lpLibFileName, hFile, dwFlags );
+    bool needShim = checkForOverride( W2A( lpLibFileName ), targetAPI );
+    if( !needShim )
+        return (*oldProcExW)( lpLibFileName, hFile, dwFlags );
 
-	// FIXME: Don't throw away the flags parameter
-	return createShim( W2A( lpLibFileName ), targetAPI );
+    // FIXME: Don't throw away the flags parameter
+    return createShim( W2A( lpLibFileName ), targetAPI );
 }
 
 static BOOL WINAPI OVRGetModuleHandleExA(
-	__in      DWORD dwFlags,
-	__in_opt  LPCSTR lpModuleName,
-	__out    HMODULE *phModule
-	)
+    __in      DWORD dwFlags,
+    __in_opt  LPCSTR lpModuleName,
+    __out    HMODULE *phModule
+    )
 {
-	OVRTargetAPI targetAPI = DirectX;
+    OVRTargetAPI targetAPI = DirectX;
 
-	bool needShim = checkForOverride( lpModuleName, targetAPI );
-	if( !needShim )
-	{
-		return (*oldProcModExA)( dwFlags, lpModuleName, phModule );
-	}
-	
-	*phModule = createShim( lpModuleName, targetAPI );
+    bool needShim = checkForOverride( lpModuleName, targetAPI );
+    if( !needShim )
+    {
+        return (*oldProcModExA)( dwFlags, lpModuleName, phModule );
+    }
+    
+    *phModule = createShim( lpModuleName, targetAPI );
 
-	return TRUE;
+    return TRUE;
 }
 
 static BOOL WINAPI OVRGetModuleHandleExW(
-	__in      DWORD dwFlags,
-	__in_opt  LPCWSTR lpModuleName,
-	__out    HMODULE *phModule
-	)
+    __in      DWORD dwFlags,
+    __in_opt  LPCWSTR lpModuleName,
+    __out    HMODULE *phModule
+    )
 {
-	USES_CONVERSION;
+    USES_CONVERSION;
 
-	OVRTargetAPI targetAPI = DirectX;
+    OVRTargetAPI targetAPI = DirectX;
 
-	bool needShim = checkForOverride( W2A( lpModuleName ), targetAPI );
-	if( !needShim )
-	{
-		return (*oldProcModExW)( dwFlags, lpModuleName, phModule );
-	}
+    bool needShim = checkForOverride( W2A( lpModuleName ), targetAPI );
+    if( !needShim )
+    {
+        return (*oldProcModExW)( dwFlags, lpModuleName, phModule );
+    }
 
-	*phModule = createShim( W2A( lpModuleName ), targetAPI );
+    *phModule = createShim( W2A( lpModuleName ), targetAPI );
 
-	return TRUE;
+    return TRUE;
 }
 
 #ifdef _AMD64_
 static void restoreFunction( PROC pfnHookAPIAddr, PBYTE oldData )
 {
-	static const LONGLONG addressSize = sizeof(PROC);
-	static const LONGLONG jmpSize = addressSize + 6;
+    static const LONGLONG addressSize = sizeof(PROC);
+    static const LONGLONG jmpSize = addressSize + 6;
 
-	DWORD oldProtect;
-	VirtualProtect((LPVOID)pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE,                       
-		PAGE_EXECUTE_READWRITE, &oldProtect);
+    DWORD oldProtect;
+    VirtualProtect((LPVOID)pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE,                       
+        PAGE_EXECUTE_READWRITE, &oldProtect);
 
-	memcpy(pfnHookAPIAddr, oldData, OLD_DATA_BACKUP_SIZE);  
+    memcpy(pfnHookAPIAddr, oldData, OLD_DATA_BACKUP_SIZE);  
 
-	VirtualProtect((LPVOID)pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE, oldProtect, NULL);  
+    VirtualProtect((LPVOID)pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE, oldProtect, NULL);  
 }
 
 static void setFunction( PROC pfnHookAPIAddr, PROC replacementFunction, PBYTE oldData )
 {
-	static const LONGLONG addressSize = sizeof(PROC);
-	static const LONGLONG jmpSize = addressSize + 6;
+    static const LONGLONG addressSize = sizeof(PROC);
+    static const LONGLONG jmpSize = addressSize + 6;
 
-	INT_PTR jumpOffset = (INT_PTR)replacementFunction;
+    INT_PTR jumpOffset = (INT_PTR)replacementFunction;
 
-	DWORD oldProtect;
-	VirtualProtect((LPVOID)pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE,                       
-		PAGE_EXECUTE_READWRITE, &oldProtect);
+    DWORD oldProtect;
+    VirtualProtect((LPVOID)pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE,                       
+        PAGE_EXECUTE_READWRITE, &oldProtect);
 
-	memcpy(oldData, pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE);
+    memcpy(oldData, pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE);
 
-	PBYTE functionData = (PBYTE)pfnHookAPIAddr;
-	functionData[0] = 0xff; // JMP [RIP+0]
-	functionData[1] = 0x25; //
-	functionData[2] = 0x00; //
-	functionData[3] = 0x00; //
-	functionData[4] = 0x00; //
-	functionData[5] = 0x00; //
-	memcpy( functionData + 6, &jumpOffset, sizeof( INT_PTR ) );
+    PBYTE functionData = (PBYTE)pfnHookAPIAddr;
+    functionData[0] = 0xff; // JMP [RIP+0]
+    functionData[1] = 0x25; //
+    functionData[2] = 0x00; //
+    functionData[3] = 0x00; //
+    functionData[4] = 0x00; //
+    functionData[5] = 0x00; //
+    memcpy( functionData + 6, &jumpOffset, sizeof( INT_PTR ) );
 
-	VirtualProtect((LPVOID)pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE, oldProtect, NULL);  
+    VirtualProtect((LPVOID)pfnHookAPIAddr, OLD_DATA_BACKUP_SIZE, oldProtect, NULL);  
 }
 #else
 static void restoreFunction( PROC pfnHookAPIAddr, PBYTE oldData )
 {
-	static const LONGLONG addressSize = sizeof(PROC);
-	static const LONGLONG jmpSize = addressSize + 1;
+    static const LONGLONG addressSize = sizeof(PROC);
+    static const LONGLONG jmpSize = addressSize + 1;
 
-	DWORD oldProtect;
-	VirtualProtect((LPVOID)pfnHookAPIAddr, jmpSize,                       
-		PAGE_EXECUTE_READWRITE, &oldProtect);
+    DWORD oldProtect;
+    VirtualProtect((LPVOID)pfnHookAPIAddr, jmpSize,                       
+        PAGE_EXECUTE_READWRITE, &oldProtect);
 
-	memcpy(pfnHookAPIAddr, oldData, jmpSize);  
+    memcpy(pfnHookAPIAddr, oldData, jmpSize);  
 
-	VirtualProtect((LPVOID)pfnHookAPIAddr, jmpSize, oldProtect, NULL);  
+    VirtualProtect((LPVOID)pfnHookAPIAddr, jmpSize, oldProtect, NULL);  
 }
 
 static void setFunction( PROC pfnHookAPIAddr, PROC replacementFunction, PBYTE oldData )
 {
-	static const LONGLONG addressSize = sizeof(PROC);
-	static const LONGLONG jmpSize = addressSize + 1;
+    static const LONGLONG addressSize = sizeof(PROC);
+    static const LONGLONG jmpSize = addressSize + 1;
 
-	INT_PTR jumpOffset = (INT_PTR)replacementFunction - (INT_PTR)pfnHookAPIAddr - jmpSize;
+    INT_PTR jumpOffset = (INT_PTR)replacementFunction - (INT_PTR)pfnHookAPIAddr - jmpSize;
 
-	DWORD oldProtect;
-	VirtualProtect((LPVOID)pfnHookAPIAddr, jmpSize,                       
-		PAGE_EXECUTE_READWRITE, &oldProtect);
+    DWORD oldProtect;
+    VirtualProtect((LPVOID)pfnHookAPIAddr, jmpSize,                       
+        PAGE_EXECUTE_READWRITE, &oldProtect);
 
-	memcpy(oldData, pfnHookAPIAddr, jmpSize);
+    memcpy(oldData, pfnHookAPIAddr, jmpSize);
 
-	PBYTE functionData = (PBYTE)pfnHookAPIAddr;
-	memcpy( oldData, functionData, jmpSize );
-	functionData[0] = 0xe9;
-	memcpy( functionData + 1, &jumpOffset, sizeof( INT_PTR ) );
+    PBYTE functionData = (PBYTE)pfnHookAPIAddr;
+    memcpy( oldData, functionData, jmpSize );
+    functionData[0] = 0xe9;
+    memcpy( functionData + 1, &jumpOffset, sizeof( INT_PTR ) );
 
-	VirtualProtect((LPVOID)pfnHookAPIAddr, jmpSize, oldProtect, NULL);  
+    VirtualProtect((LPVOID)pfnHookAPIAddr, jmpSize, oldProtect, NULL);  
 }
 #endif
 
 static BOOL WINAPI OVRLocalIsInitializingDisplay( PVOID context, UINT width, UINT height )
 {
-	UINT expectedWidth, expectedHeight, rotation;
+    UINT expectedWidth, expectedHeight, rotation;
 
-	OVRExpectedResolution( context, &expectedWidth, &expectedHeight, &rotation );
+    OVRExpectedResolution( context, &expectedWidth, &expectedHeight, &rotation );
 
-	if( appDriver.pfnActiveAPIVersion )
-		apiVersion = (*appDriver.pfnActiveAPIVersion)( context );
+    if( appDriver.pfnActiveAPIVersion )
+        apiVersion = (*appDriver.pfnActiveAPIVersion)( context );
 
-	switch( apiVersion )
-	{
-		case 1:  // OpenGL
-		case 10: // DirectX 1X
-			if( width == expectedWidth && height == expectedHeight )
-				return TRUE;
-			break;
-		case 9: // DirectX 9
-			if( rotation == 90 || rotation == 270 )
-			{
-				if( width == expectedHeight && height == expectedWidth )
-					return TRUE;
-			}
-			else
-			{
-				if( width == expectedWidth && height == expectedHeight )
-					return TRUE;
-			}
-			break;
-		default:
-			break;
-	}
+    switch( apiVersion )
+    {
+        case 1:  // OpenGL
+        case 10: // DirectX 1X
+            if( width == expectedWidth && height == expectedHeight )
+                return TRUE;
+            break;
+        case 9: // DirectX 9
+            if( rotation == 90 || rotation == 270 )
+            {
+                if( width == expectedHeight && height == expectedWidth )
+                    return TRUE;
+            }
+            else
+            {
+                if( width == expectedWidth && height == expectedHeight )
+                    return TRUE;
+            }
+            break;
+        default:
+            break;
+    }
 
-	return FALSE;
+    return FALSE;
 }
 
 
 HRESULT APIENTRY OVRDirect3DCreate9Ex(UINT SDKVersion, void** aDevice)
 {
-	apiVersion = 9;
+    apiVersion = 9;
 
-	HRESULT result = S_OK;
+    HRESULT result = S_OK;
 
-	restoreFunction( (PROC)oldDirectX9ExCreate, oldDirectX9ExCreateData );
+    restoreFunction( (PROC)oldDirectX9ExCreate, oldDirectX9ExCreateData );
 
     if (IN_COMPATIBILITY_MODE())
     {
@@ -470,30 +470,30 @@ HRESULT APIENTRY OVRDirect3DCreate9Ex(UINT SDKVersion, void** aDevice)
         result = (*createFunction)(SDKVersion, aDevice);
     }
 
-	setFunction( (PROC)oldDirectX9ExCreate, (PROC)OVRDirect3DCreate9Ex, oldDirectX9ExCreateData );
+    setFunction( (PROC)oldDirectX9ExCreate, (PROC)OVRDirect3DCreate9Ex, oldDirectX9ExCreateData );
 
-	printf("%s result 0x%x\n", __FUNCTION__, result);
+    printf("%s result 0x%x\n", __FUNCTION__, result);
 
-	return result;
+    return result;
 }
 
 void* APIENTRY OVRDirect3DCreate9(UINT SDKVersion)
 {
-	void* result = NULL;
+    void* result = NULL;
 
-	OVRDirect3DCreate9Ex( SDKVersion, &result );
+    OVRDirect3DCreate9Ex( SDKVersion, &result );
 
-	return result;
+    return result;
 }
 
 HRESULT APIENTRY OVRCreateDXGIFactory(
-	__in   REFIID riid,
-	__out  void **ppFactory
-	)
+    __in   REFIID riid,
+    __out  void **ppFactory
+    )
 {
-	HRESULT result = E_FAIL;
+    HRESULT result = E_FAIL;
 
-	restoreFunction( (PROC)oldCreateDXGIFactory, oldCreateDXGIFactoryData );
+    restoreFunction( (PROC)oldCreateDXGIFactory, oldCreateDXGIFactoryData );
 
     if (IN_COMPATIBILITY_MODE())
     {
@@ -506,21 +506,21 @@ HRESULT APIENTRY OVRCreateDXGIFactory(
         result = (*createFunction)(riid, ppFactory);
     }
 
-	setFunction( (PROC)oldCreateDXGIFactory, (PROC)OVRCreateDXGIFactory, oldCreateDXGIFactoryData );
+    setFunction( (PROC)oldCreateDXGIFactory, (PROC)OVRCreateDXGIFactory, oldCreateDXGIFactoryData );
 
-	printf("%s result 0x%x\n", __FUNCTION__, result);
+    printf("%s result 0x%x\n", __FUNCTION__, result);
 
-	return result;
+    return result;
 }
 
 HRESULT APIENTRY OVRCreateDXGIFactory1(
-	__in   REFIID riid,
-	__out  void **ppFactory
-	)
+    __in   REFIID riid,
+    __out  void **ppFactory
+    )
 {
-	HRESULT result = E_FAIL;
+    HRESULT result = E_FAIL;
 
-	restoreFunction( (PROC)oldCreateDXGIFactory1, oldCreateDXGIFactory1Data );
+    restoreFunction( (PROC)oldCreateDXGIFactory1, oldCreateDXGIFactory1Data );
 
     if (IN_COMPATIBILITY_MODE())
     {
@@ -533,22 +533,22 @@ HRESULT APIENTRY OVRCreateDXGIFactory1(
         result = (*createFunction)(riid, ppFactory);
     }
 
-	setFunction( (PROC)oldCreateDXGIFactory1, (PROC)OVRCreateDXGIFactory1, oldCreateDXGIFactory1Data );
+    setFunction( (PROC)oldCreateDXGIFactory1, (PROC)OVRCreateDXGIFactory1, oldCreateDXGIFactory1Data );
 
-	printf("%s result 0x%x\n", __FUNCTION__, result);
+    printf("%s result 0x%x\n", __FUNCTION__, result);
 
-	return result;
+    return result;
 }
 
 HRESULT APIENTRY OVRCreateDXGIFactory2(
-	__in   UINT flags,
-	__in   const IID &riid,
-	__out  void **ppFactory
-	)
+    __in   UINT flags,
+    __in   const IID &riid,
+    __out  void **ppFactory
+    )
 {
-	HRESULT result = E_FAIL;
+    HRESULT result = E_FAIL;
 
-	restoreFunction( (PROC)oldCreateDXGIFactory2, oldCreateDXGIFactory2Data );
+    restoreFunction( (PROC)oldCreateDXGIFactory2, oldCreateDXGIFactory2Data );
 
     if (IN_COMPATIBILITY_MODE())
     {
@@ -561,228 +561,228 @@ HRESULT APIENTRY OVRCreateDXGIFactory2(
         result = (*createFunction)(flags, riid, ppFactory);
     }
 
-	setFunction( (PROC)oldCreateDXGIFactory2, (PROC)OVRCreateDXGIFactory2, oldCreateDXGIFactory2Data );
+    setFunction( (PROC)oldCreateDXGIFactory2, (PROC)OVRCreateDXGIFactory2, oldCreateDXGIFactory2Data );
 
-	printf("%s result 0x%x\n", __FUNCTION__, result);
+    printf("%s result 0x%x\n", __FUNCTION__, result);
 
-	return result;
+    return result;
 }
 
 static PROC SetProcAddressDirect(
-	__in HINSTANCE hInstance,
-	__in LPCSTR lpProcName,
-	__in PROC  newFunction,
-	__inout  BYTE* oldData
-	)
+    __in HINSTANCE hInstance,
+    __in LPCSTR lpProcName,
+    __in PROC  newFunction,
+    __inout  BYTE* oldData
+    )
 {
-	static const LONGLONG addressSize = sizeof(PROC);
-	static const LONGLONG jmpSize = addressSize + 1;
+    static const LONGLONG addressSize = sizeof(PROC);
+    static const LONGLONG jmpSize = addressSize + 1;
 
-	PROC result = NULL;
+    PROC result = NULL;
 
-	PROC pfnHookAPIAddr = GetProcAddress( hInstance, lpProcName );
+    PROC pfnHookAPIAddr = GetProcAddress( hInstance, lpProcName );
 
-	if( pfnHookAPIAddr )
-	{
-		result = pfnHookAPIAddr;
+    if( pfnHookAPIAddr )
+    {
+        result = pfnHookAPIAddr;
 
-		setFunction( pfnHookAPIAddr, newFunction, oldData );
-	}
+        setFunction( pfnHookAPIAddr, newFunction, oldData );
+    }
 
-	return result;
+    return result;
 }
 
 static PROC SetProcAddressA(
-	__in  HINSTANCE targetModule,
-	__in  LPCSTR lpLibFileName,
-	__in  LPCSTR lpProcName,
-	__in  PROC  newFunction
-	)
+    __in  HINSTANCE targetModule,
+    __in  LPCSTR lpLibFileName,
+    __in  LPCSTR lpProcName,
+    __in  PROC  newFunction
+    )
 {
-	PROC pfnHookAPIAddr = GetProcAddress( LoadLibraryA( lpLibFileName ), lpProcName );
+    PROC pfnHookAPIAddr = GetProcAddress( LoadLibraryA( lpLibFileName ), lpProcName );
 
-	HINSTANCE hInstance = targetModule; 
+    HINSTANCE hInstance = targetModule; 
 
-	ULONG ulSize;
-	PIMAGE_IMPORT_DESCRIPTOR pImportDesc = 
-		(PIMAGE_IMPORT_DESCRIPTOR)ImageDirectoryEntryToData(
-		hInstance,
-		TRUE,
-		IMAGE_DIRECTORY_ENTRY_IMPORT,
-		&ulSize
-		);
+    ULONG ulSize;
+    PIMAGE_IMPORT_DESCRIPTOR pImportDesc = 
+        (PIMAGE_IMPORT_DESCRIPTOR)ImageDirectoryEntryToData(
+        hInstance,
+        TRUE,
+        IMAGE_DIRECTORY_ENTRY_IMPORT,
+        &ulSize
+        );
 
-	while (pImportDesc->Name)
-	{
-		PSTR pszModName = (PSTR)((PBYTE) hInstance + pImportDesc->Name);
-		if (_stricmp(pszModName, lpLibFileName) == 0) 
-			break;   
-		pImportDesc++;
-	}
+    while (pImportDesc->Name)
+    {
+        PSTR pszModName = (PSTR)((PBYTE) hInstance + pImportDesc->Name);
+        if (_stricmp(pszModName, lpLibFileName) == 0) 
+            break;   
+        pImportDesc++;
+    }
 
-	PIMAGE_THUNK_DATA pThunk = 
-		(PIMAGE_THUNK_DATA)((PBYTE) hInstance + pImportDesc->FirstThunk);
+    PIMAGE_THUNK_DATA pThunk = 
+        (PIMAGE_THUNK_DATA)((PBYTE) hInstance + pImportDesc->FirstThunk);
 
-	while (pThunk->u1.Function)
-	{
-		PROC* ppfn = (PROC*) &pThunk->u1.Function;
-		BOOL bFound = (*ppfn == pfnHookAPIAddr);
+    while (pThunk->u1.Function)
+    {
+        PROC* ppfn = (PROC*) &pThunk->u1.Function;
+        BOOL bFound = (*ppfn == pfnHookAPIAddr);
 
-		if (bFound) 
-		{
-			MEMORY_BASIC_INFORMATION mbi;
-			VirtualQuery(
-				ppfn,
-				&mbi,
-				sizeof(MEMORY_BASIC_INFORMATION)
-				);
-			VirtualProtect(
-				mbi.BaseAddress,
-				mbi.RegionSize,
-				PAGE_READWRITE,
-				&mbi.Protect);
+        if (bFound) 
+        {
+            MEMORY_BASIC_INFORMATION mbi;
+            VirtualQuery(
+                ppfn,
+                &mbi,
+                sizeof(MEMORY_BASIC_INFORMATION)
+                );
+            VirtualProtect(
+                mbi.BaseAddress,
+                mbi.RegionSize,
+                PAGE_READWRITE,
+                &mbi.Protect);
 
-			*ppfn = *newFunction;
+            *ppfn = *newFunction;
 
-			DWORD dwOldProtect;
-			VirtualProtect(
-				mbi.BaseAddress,
-				mbi.RegionSize,
-				mbi.Protect,
-				&dwOldProtect
-				);
-			break;
-		}
-		pThunk++;
-	}
+            DWORD dwOldProtect;
+            VirtualProtect(
+                mbi.BaseAddress,
+                mbi.RegionSize,
+                mbi.Protect,
+                &dwOldProtect
+                );
+            break;
+        }
+        pThunk++;
+    }
 
-	return pfnHookAPIAddr;
+    return pfnHookAPIAddr;
 }
 
 enum ShimedLibraries
 {
-	ShimLibDXGI =		 0,
-	ShimLibD3D9 =		 1,
-	ShimLibD3D11 =		 2,
-	ShimLibDXGIDebug =	 3,
-	ShimLibD3D10Core =	 4,
-	ShimLibD3D10 =		 5,
-	ShimLibGL =			 6,
-	ShimCountMax =		 7
+    ShimLibDXGI =         0,
+    ShimLibD3D9 =         1,
+    ShimLibD3D11 =         2,
+    ShimLibDXGIDebug =     3,
+    ShimLibD3D10Core =     4,
+    ShimLibD3D10 =         5,
+    ShimLibGL =             6,
+    ShimCountMax =         7
 };
 
 void checkUMDriverOverrides( void* context )
 {
-	lastContext = context;
-	if( oldProcA == NULL )
-	{
-		char* dllList[ShimCountMax] = { "dxgi.dll", "d3d9.dll", "d3d11.dll", "dxgidebug.dll", "d3d10core.dll", "d3d10.dll", "opengl32.dll" };
+    lastContext = context;
+    if( oldProcA == NULL )
+    {
+        char* dllList[ShimCountMax] = { "dxgi.dll", "d3d9.dll", "d3d11.dll", "dxgidebug.dll", "d3d10core.dll", "d3d10.dll", "opengl32.dll" };
 
-		PreloadLibraryRTFn loadFunc = NULL;
+        PreloadLibraryRTFn loadFunc = NULL;
 
-		for( int i = 0; i < ShimCountMax; ++i )
-		{
-			HINSTANCE hInst = GetModuleHandleA( dllList[i] );
-			if( hInst == NULL )
-			{
-				try
-				{
-					hInst = LoadLibraryA(dllList[i]);
-				}
-				catch(...)
-				{
+        for( int i = 0; i < ShimCountMax; ++i )
+        {
+            HINSTANCE hInst = GetModuleHandleA( dllList[i] );
+            if( hInst == NULL )
+            {
+                try
+                {
+                    hInst = LoadLibraryA(dllList[i]);
+                }
+                catch(...)
+                {
 
-				}
-				
-			}
+                }
+                
+            }
 
-			if( hInst )
-			{
-				ShimedLibraries libCount = (ShimedLibraries)i;
-				switch( libCount )
-				{
-					case ShimLibDXGI:
-						oldCreateDXGIFactory = (WinCreateDXGIFactory)SetProcAddressDirect( hInst, "CreateDXGIFactory", (PROC)OVRCreateDXGIFactory, oldCreateDXGIFactoryData );
-						oldCreateDXGIFactory1 = (WinCreateDXGIFactory1)SetProcAddressDirect( hInst, "CreateDXGIFactory1", (PROC)OVRCreateDXGIFactory1, oldCreateDXGIFactory1Data );
-						oldCreateDXGIFactory2 = (WinCreateDXGIFactory2)SetProcAddressDirect( hInst, "CreateDXGIFactory2", (PROC)OVRCreateDXGIFactory2, oldCreateDXGIFactory2Data );
-						break;
-					case ShimLibD3D9:
-						oldDirectX9Create = (WinDirect3DCreate9)SetProcAddressDirect( hInst, "Direct3DCreate9", (PROC)OVRDirect3DCreate9, oldDirectX9CreateData );
-						oldDirectX9ExCreate = (WinDirect3DCreate9Ex)SetProcAddressDirect( hInst, "Direct3DCreate9Ex", (PROC)OVRDirect3DCreate9Ex, oldDirectX9ExCreateData );
-						break;
-					default:
-						break;
-				}
+            if( hInst )
+            {
+                ShimedLibraries libCount = (ShimedLibraries)i;
+                switch( libCount )
+                {
+                    case ShimLibDXGI:
+                        oldCreateDXGIFactory = (WinCreateDXGIFactory)SetProcAddressDirect( hInst, "CreateDXGIFactory", (PROC)OVRCreateDXGIFactory, oldCreateDXGIFactoryData );
+                        oldCreateDXGIFactory1 = (WinCreateDXGIFactory1)SetProcAddressDirect( hInst, "CreateDXGIFactory1", (PROC)OVRCreateDXGIFactory1, oldCreateDXGIFactory1Data );
+                        oldCreateDXGIFactory2 = (WinCreateDXGIFactory2)SetProcAddressDirect( hInst, "CreateDXGIFactory2", (PROC)OVRCreateDXGIFactory2, oldCreateDXGIFactory2Data );
+                        break;
+                    case ShimLibD3D9:
+                        oldDirectX9Create = (WinDirect3DCreate9)SetProcAddressDirect( hInst, "Direct3DCreate9", (PROC)OVRDirect3DCreate9, oldDirectX9CreateData );
+                        oldDirectX9ExCreate = (WinDirect3DCreate9Ex)SetProcAddressDirect( hInst, "Direct3DCreate9Ex", (PROC)OVRDirect3DCreate9Ex, oldDirectX9ExCreateData );
+                        break;
+                    default:
+                        break;
+                }
 
-				char* loaderLibraryList[4] = {"kernel32.dll", "api-ms-win-core-libraryloader-l1-2-0.dll", "api-ms-win-core-libraryloader-l1-1-0.dll", "api-ms-win-core-libraryloader-l1-1-1.dll"};
+                char* loaderLibraryList[4] = {"kernel32.dll", "api-ms-win-core-libraryloader-l1-2-0.dll", "api-ms-win-core-libraryloader-l1-1-0.dll", "api-ms-win-core-libraryloader-l1-1-1.dll"};
 
-				for( int j = 0; j < 4; ++j )
-				{
-					char* loaderLibrary = loaderLibraryList[j];
+                for( int j = 0; j < 4; ++j )
+                {
+                    char* loaderLibrary = loaderLibraryList[j];
 
-					PROC temp = NULL;
-					temp = SetProcAddressA( hInst, loaderLibrary, "LoadLibraryA", (PROC)OVRLoadLibraryA  );
-					if( !oldProcA )
-						oldProcA = (WinLoadLibraryA)temp;
+                    PROC temp = NULL;
+                    temp = SetProcAddressA( hInst, loaderLibrary, "LoadLibraryA", (PROC)OVRLoadLibraryA  );
+                    if( !oldProcA )
+                        oldProcA = (WinLoadLibraryA)temp;
 
-					temp = SetProcAddressA( hInst, loaderLibrary, "LoadLibraryW", (PROC)OVRLoadLibraryW  );
-					if( !oldProcW )
-						oldProcW = (WinLoadLibraryW)temp;
+                    temp = SetProcAddressA( hInst, loaderLibrary, "LoadLibraryW", (PROC)OVRLoadLibraryW  );
+                    if( !oldProcW )
+                        oldProcW = (WinLoadLibraryW)temp;
 
-					temp = SetProcAddressA( hInst, loaderLibrary, "LoadLibraryExA", (PROC)OVRLoadLibraryExA  );
-					if( !oldProcExA )
-						oldProcExA = (WinLoadLibraryExA)temp;
+                    temp = SetProcAddressA( hInst, loaderLibrary, "LoadLibraryExA", (PROC)OVRLoadLibraryExA  );
+                    if( !oldProcExA )
+                        oldProcExA = (WinLoadLibraryExA)temp;
 
-					temp = SetProcAddressA( hInst, loaderLibrary, "LoadLibraryExW", (PROC)OVRLoadLibraryExW  );
-					if( !oldProcExW )
-						oldProcExW = (WinLoadLibraryExW)temp;
+                    temp = SetProcAddressA( hInst, loaderLibrary, "LoadLibraryExW", (PROC)OVRLoadLibraryExW  );
+                    if( !oldProcExW )
+                        oldProcExW = (WinLoadLibraryExW)temp;
 
-					temp = SetProcAddressA( hInst, loaderLibrary, "GetModuleHandleExA", (PROC)OVRGetModuleHandleExA );
-					if( !oldProcModExA )
-						oldProcModExA = (WinGetModuleHandleExA)temp;
+                    temp = SetProcAddressA( hInst, loaderLibrary, "GetModuleHandleExA", (PROC)OVRGetModuleHandleExA );
+                    if( !oldProcModExA )
+                        oldProcModExA = (WinGetModuleHandleExA)temp;
 
-					temp = SetProcAddressA( hInst, loaderLibrary, "GetModuleHandleExW", (PROC)OVRGetModuleHandleExW );
-					if( !oldProcModExW )
-						oldProcModExW = (WinGetModuleHandleExW)temp;
-				}
+                    temp = SetProcAddressA( hInst, loaderLibrary, "GetModuleHandleExW", (PROC)OVRGetModuleHandleExW );
+                    if( !oldProcModExW )
+                        oldProcModExW = (WinGetModuleHandleExW)temp;
+                }
 
-				if( loadFunc == NULL )
-					loadFunc = (PreloadLibraryRTFn)GetProcAddress( hInst, "PreloadLibraryRT" );
-			}
-		}
+                if( loadFunc == NULL )
+                    loadFunc = (PreloadLibraryRTFn)GetProcAddress( hInst, "PreloadLibraryRT" );
+            }
+        }
 
-		HMODULE rtFilterModule = (*oldProcA)( RTFilter );
+        HMODULE rtFilterModule = (*oldProcA)( RTFilter );
 
-		if( loadFunc == NULL )
-			loadFunc = (PreloadLibraryRTFn)GetProcAddress( rtFilterModule, "PreloadLibraryRT" );
-		IsCreatingBackBuffer backBufferFunc = (IsCreatingBackBuffer)GetProcAddress( rtFilterModule, "OVRIsCreatingBackBuffer" );
-		ShouldVSync	shouldVSyncFunc = (ShouldVSync)GetProcAddress( rtFilterModule, "OVRShouldVSync" );
+        if( loadFunc == NULL )
+            loadFunc = (PreloadLibraryRTFn)GetProcAddress( rtFilterModule, "PreloadLibraryRT" );
+        IsCreatingBackBuffer backBufferFunc = (IsCreatingBackBuffer)GetProcAddress( rtFilterModule, "OVRIsCreatingBackBuffer" );
+        ShouldVSync    shouldVSyncFunc = (ShouldVSync)GetProcAddress( rtFilterModule, "OVRShouldVSync" );
 
-		if( loadFunc )
-		{
-			appDriver.version = 1;
-			appDriver.context = lastContext;
+        if( loadFunc )
+        {
+            appDriver.version = 1;
+            appDriver.context = lastContext;
 
-//			appDriver.pfnInitializingDisplay        = OVRIsInitializingDisplay;
-			appDriver.pfnInitializingDisplay        = OVRLocalIsInitializingDisplay;
-			appDriver.pfnRiftForContext             = OVRRiftForContext;
-			appDriver.pfnCloseRiftForContext        = OVRCloseRiftForContext;
-			appDriver.pfnWindowDisplayResolution    = OVRWindowDisplayResolution;
-			appDriver.pfnShouldEnableDebug          = OVRShouldEnableDebug;
-			appDriver.pfnIsCreatingBackBuffer       = (backBufferFunc == NULL) ? OVRIsCreatingBackBuffer : backBufferFunc;
-			appDriver.pfnShouldVSync                = (shouldVSyncFunc == NULL) ? OVRShouldVSync : shouldVSyncFunc;
-			appDriver.pfnExpectedResolution			= OVRExpectedResolution;
-			appDriver.pfnMirroringEnabled			= OVRMirroringEnabled;
-			appDriver.pfnGetWindowForContext		= OVRGetWindowForContext;
-			appDriver.pfnPresentRiftOnContext		= OVRShouldPresentOnContext;
+//            appDriver.pfnInitializingDisplay        = OVRIsInitializingDisplay;
+            appDriver.pfnInitializingDisplay        = OVRLocalIsInitializingDisplay;
+            appDriver.pfnRiftForContext             = OVRRiftForContext;
+            appDriver.pfnCloseRiftForContext        = OVRCloseRiftForContext;
+            appDriver.pfnWindowDisplayResolution    = OVRWindowDisplayResolution;
+            appDriver.pfnShouldEnableDebug          = OVRShouldEnableDebug;
+            appDriver.pfnIsCreatingBackBuffer       = (backBufferFunc == NULL) ? OVRIsCreatingBackBuffer : backBufferFunc;
+            appDriver.pfnShouldVSync                = (shouldVSyncFunc == NULL) ? OVRShouldVSync : shouldVSyncFunc;
+            appDriver.pfnExpectedResolution            = OVRExpectedResolution;
+            appDriver.pfnMirroringEnabled            = OVRMirroringEnabled;
+            appDriver.pfnGetWindowForContext        = OVRGetWindowForContext;
+            appDriver.pfnPresentRiftOnContext        = OVRShouldPresentOnContext;
 
-			appDriver.pfnDirect3DCreate9    = oldDirectX9Create;
-			appDriver.pfnDirect3DCreate9Ex  = oldDirectX9ExCreate;
-			appDriver.pfnCreateDXGIFactory  = oldCreateDXGIFactory;
-			appDriver.pfnCreateDXGIFactory1 = oldCreateDXGIFactory1;
-			appDriver.pfnCreateDXGIFactory2 = oldCreateDXGIFactory2;
+            appDriver.pfnDirect3DCreate9    = oldDirectX9Create;
+            appDriver.pfnDirect3DCreate9Ex  = oldDirectX9ExCreate;
+            appDriver.pfnCreateDXGIFactory  = oldCreateDXGIFactory;
+            appDriver.pfnCreateDXGIFactory1 = oldCreateDXGIFactory1;
+            appDriver.pfnCreateDXGIFactory2 = oldCreateDXGIFactory2;
 
-			(*loadFunc)( &appDriver );
-		}
-	}
+            (*loadFunc)( &appDriver );
+        }
+    }
 }

@@ -92,11 +92,11 @@ enum BuiltinShaders
     FShader_Gouraud                                 ,
     FShader_Texture                                 ,
     FShader_AlphaTexture                            ,
-	FShader_AlphaBlendedTexture                     ,
+    FShader_AlphaBlendedTexture                     ,
     FShader_PostProcessWithChromAb                  ,
     FShader_LitGouraud                              ,
     FShader_LitTexture                              ,
-	FShader_MultiTexture                            ,
+    FShader_MultiTexture                            ,
     FShader_PostProcessMeshWithChromAb              ,
     FShader_PostProcessMeshWithChromAbTimewarp      ,
     FShader_PostProcessMeshWithChromAbPositionalTimewarp ,
@@ -127,8 +127,8 @@ enum TextureFormat
 {
     Texture_RGBA            = 0x100,
     Texture_R               = 0x200,
-	Texture_A				= 0x400,
-	Texture_BGRA            = 0x800,
+    Texture_A                = 0x400,
+    Texture_BGRA            = 0x800,
     Texture_DXT1            = 0x1100,
     Texture_DXT3            = 0x1200,
     Texture_DXT5            = 0x1300,
@@ -136,10 +136,10 @@ enum TextureFormat
     Texture_TypeMask        = 0xff00,
     Texture_Compressed      = 0x1000,
     Texture_SamplesMask     = 0x00ff,
-	Texture_RenderTarget    = 0x10000,
-	Texture_SampleDepth		= 0x20000,
+    Texture_RenderTarget    = 0x10000,
+    Texture_SampleDepth        = 0x20000,
     Texture_GenMipmaps      = 0x40000,
-    Texture_SRGB			= 0x80000,
+    Texture_SRGB            = 0x80000,
 };
 
 enum SampleMode
@@ -360,10 +360,10 @@ public:
 
     virtual void SetSampleMode(int sm) = 0;
     virtual void Set(int slot, ShaderStage stage = Shader_Fragment) const = 0;
-	
-	virtual ovrTexture Get_ovrTexture() = 0;
+    
+    virtual ovrTexture Get_ovrTexture() = 0;
 
-	virtual void* GetInternalImplementation() { return NULL; };
+    virtual void* GetInternalImplementation() { return NULL; };
 };
 
 struct RenderTarget
@@ -378,18 +378,18 @@ struct RenderTarget
 class CollisionModel : public RefCountBase<CollisionModel>
 {
 public:
-	Array<Planef > Planes;
+    Array<Planef > Planes;
 
-	void Add(const Planef& p)
-	{
-		Planes.PushBack(p);
-	}
+    void Add(const Planef& p)
+    {
+        Planes.PushBack(p);
+    }
 
-	// Return whether p is inside this
-	bool TestPoint(const Vector3f& p) const;
+    // Return whether p is inside this
+    bool TestPoint(const Vector3f& p) const;
 
-	// Assumes that the origin of the ray is outside this.
-	bool TestRay(const Vector3f& origin, const Vector3f& norm, float& len, Planef* ph = NULL) const;
+    // Assumes that the origin of the ray is outside this.
+    bool TestRay(const Vector3f& origin, const Vector3f& norm, float& len, Planef* ph = NULL) const;
 };
 
 class Node : public RefCountBase<Node>
@@ -398,7 +398,7 @@ class Node : public RefCountBase<Node>
     Quatf        Rot;
 
     mutable Matrix4f  Mat;
-	mutable bool      MatCurrent;
+    mutable bool      MatCurrent;
 
 public:
     Node() : Pos(Vector3f(0)), MatCurrent(1) { }
@@ -442,7 +442,7 @@ public:
         return Mat;
     }
 
-	virtual void     Render(const Matrix4f& ltw, RenderDevice* ren) { OVR_UNUSED2(ltw, ren); }
+    virtual void     Render(const Matrix4f& ltw, RenderDevice* ren) { OVR_UNUSED2(ltw, ren); }
 };
 
 struct Vertex
@@ -450,7 +450,7 @@ struct Vertex
     Vector3f  Pos;
     Color     C;
     float     U, V;
-	float     U2, V2;
+    float     U2, V2;
     Vector3f  Norm;
 
     Vertex (const Vector3f& p, const Color& c = Color(64,0,0,255), 
@@ -459,8 +459,8 @@ struct Vertex
     Vertex(float x, float y, float z, const Color& c = Color(64,0,0,255),
            float u = 0, float v = 0) : Pos(x,y,z), C(c), U(u), V(v), U2(u), V2(v) { }
 
-	// for multiple UV coords
-	Vertex(const Vector3f& p, const Color& c,
+    // for multiple UV coords
+    Vertex(const Vector3f& p, const Color& c,
            float u, float v, float u2, float v2, Vector3f n) : Pos(p), C(c), U(u), V(v), U2(u2), V2(v2), Norm(n) { }
 
     bool operator==(const Vertex& b) const
@@ -510,7 +510,7 @@ public:
     PrimitiveType     Type;
     Ptr<class Fill>   Fill;
     bool              Visible;
-	bool			  IsCollisionModel;
+    bool              IsCollisionModel;
 
     // Some renderers will create these if they didn't exist before rendering.
     // Currently they are not updated, so vertex data should not be changed after rendering.
@@ -543,12 +543,12 @@ public:
 
     uint16_t AddVertex(const Vertex& v)
     {
-		OVR_ASSERT(!VertexBuffer && !IndexBuffer);
-		size_t size = Vertices.GetSize();
-		OVR_ASSERT(size <= USHRT_MAX);      // We only use a short to store vert indices.
-		uint16_t index = (uint16_t) size;
-		Vertices.PushBack(v);
-		return index;
+        OVR_ASSERT(!VertexBuffer && !IndexBuffer);
+        size_t size = Vertices.GetSize();
+        OVR_ASSERT(size <= USHRT_MAX);      // We only use a short to store vert indices.
+        uint16_t index = (uint16_t) size;
+        Vertices.PushBack(v);
+        return index;
     }
     uint16_t AddVertex(const Vector3f& v, const Color& c, float u_ = 0, float v_ = 0)
     {
@@ -571,7 +571,7 @@ public:
         return AddVertex(Vertex(Vector3f(x,y,z),c, u,v, Vector3f(nx,ny,nz)));
     }
 
-	uint16_t AddVertex(float x, float y, float z, const Color& c,
+    uint16_t AddVertex(float x, float y, float z, const Color& c,
                      float u1, float v1, float u2, float v2, float nx, float ny, float nz)
     {
         return AddVertex(Vertex(Vector3f(x,y,z), c, u1, v1, u2, v2, Vector3f(nx,ny,nz)));
@@ -614,7 +614,7 @@ public:
     // Grid having halfx,halfy lines in each direction from the origin
     static Model* CreateGrid(Vector3f origin, Vector3f stepx, Vector3f stepy,
                              int halfx, int halfy, int nmajor = 5,
-							 Color minor = Color(64,64,64,192), Color major = Color(128,128,128,192));
+                             Color minor = Color(64,64,64,192), Color major = Color(128,128,128,192));
 };
 
 class Container : public Node
@@ -638,22 +638,22 @@ public:
     virtual void Render(const Matrix4f& ltw, RenderDevice* ren);
 
     void Add(Node *n) { Nodes.PushBack(n); }
-	void Add(Model *n, class Fill *f) { n->Fill = f; Nodes.PushBack(n); }
+    void Add(Model *n, class Fill *f) { n->Fill = f; Nodes.PushBack(n); }
     void RemoveLast() { Nodes.PopBack(); }
-	void Clear() { Nodes.Clear(); }
+    void Clear() { Nodes.Clear(); }
 
-	bool               CollideChildren;
+    bool               CollideChildren;
 
-	Container() : CollideChildren(1) {}
+    Container() : CollideChildren(1) {}
 };
 
 class Scene
 {
 public:
-    Container			World;
-    Vector3f			LightPos[8];
-    LightingParams		Lighting;
-	Array<Ptr<Model> >	Models;
+    Container            World;
+    Vector3f            LightPos[8];
+    LightingParams        Lighting;
+    Array<Ptr<Model> >    Models;
 
 public:
     void Render(RenderDevice* ren, const Matrix4f& view);
@@ -671,13 +671,13 @@ public:
         Lighting.LightCount++;
     }
 
-	void Clear()
-	{
-		World.Clear();
-		Models.Clear();
-		Lighting.Ambient = Color4f(0.0f, 0.0f, 0.0f, 0.0f);
-		Lighting.LightCount = 0;
-	}
+    void Clear()
+    {
+        World.Clear();
+        Models.Clear();
+        Lighting.Ambient = Color4f(0.0f, 0.0f, 0.0f, 0.0f);
+        Lighting.LightCount = 0;
+    }
 
     void ClearRenderer()
     {
@@ -790,7 +790,7 @@ protected:
     Ptr<ShaderSet>      pPostProcessHeightmapShader;
     Ptr<Buffer>         pFullScreenVertexBuffer;
     Color               DistortionClearColor;
-    size_t		        TotalTextureMemoryUsage;
+    size_t                TotalTextureMemoryUsage;
     float               FadeOutBorderFraction;
     
     int                 DistortionMeshNumTris[2];
@@ -832,8 +832,8 @@ public:
 
     const RendererParams& GetParams() const { return Params; }
 
-	// Returns details needed by CAPI distortion rendering.
-	virtual ovrRenderAPIConfig Get_ovrRenderAPIConfig() const = 0;
+    // Returns details needed by CAPI distortion rendering.
+    virtual ovrRenderAPIConfig Get_ovrRenderAPIConfig() const = 0;
 
     // StereoParams apply Viewport, Projection and Distortion simultaneously,
     // doing full configuration for one eye.
@@ -971,11 +971,11 @@ public:
         return true;
     }
     virtual void SetWindowSize(int w, int h)
-	{
-		WindowWidth = w;
-		WindowHeight = h;	
-		VP = Recti( 0, 0, WindowWidth, WindowHeight );
-	}
+    {
+        WindowWidth = w;
+        WindowHeight = h;    
+        VP = Recti( 0, 0, WindowWidth, WindowHeight );
+    }
 
     size_t GetTotalTextureMemoryUsage() const
     {

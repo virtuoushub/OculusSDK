@@ -57,7 +57,7 @@ enum DeviceType
 enum DistortionEqnType
 {
     Distortion_No_Override  = -1,    
-	// These two are leagcy and deprecated.
+    // These two are leagcy and deprecated.
     Distortion_Poly4        = 0,    // scale = (K0 + K1*r^2 + K2*r^4 + K3*r^6)
     Distortion_RecipPoly4   = 1,    // scale = 1/(K0 + K1*r^2 + K2*r^4 + K3*r^6)
 

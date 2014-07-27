@@ -130,10 +130,10 @@ class HMDState : public ListNode<HMDState>,
     void operator=(const HMDState&) { } // Quiet warning.
 
 protected:   
-	HMDState(const OVR::Service::HMDNetworkInfo& netInfo,
-			 const OVR::HMDInfo& hmdInfo,
-			 Profile* profile,
-			 Service::NetClient* client);
+    HMDState(const OVR::Service::HMDNetworkInfo& netInfo,
+             const OVR::HMDInfo& hmdInfo,
+             Profile* profile,
+             Service::NetClient* client);
     HMDState(const HMDInfo& src, Profile* profile);
 
 public:   
@@ -146,7 +146,7 @@ public:
 
     bool            ConfigureTracking(unsigned supportedCaps, unsigned requiredCaps);    
     void            ResetTracking();
-	void			RecenterPose();
+    void            RecenterPose();
     ovrTrackingState PredictedTrackingState(double absTime);
 
     // Changes HMD Caps.
@@ -201,31 +201,31 @@ public:
                        ("%s called outside ovrHmd_BeginFrameTiming.", functionName));
     }
 
-	// Get properties by name.
+    // Get properties by name.
     bool     getBoolValue(const char* propertyName, bool defaultVal);
     bool     setBoolValue(const char* propertyName, bool value);
     int      getIntValue(const char* propertyName, int defaultVal);
     bool     setIntValue(const char* propertyName, int value);
     float    getFloatValue(const char* propertyName, float defaultVal);
     bool     setFloatValue(const char* propertyName, float value);
-	unsigned getFloatArray(const char* propertyName, float values[], unsigned arraySize);
+    unsigned getFloatArray(const char* propertyName, float values[], unsigned arraySize);
     bool     setFloatArray(const char* propertyName, float values[], unsigned arraySize);
     const char* getString(const char* propertyName, const char* defaultVal);
     bool        setString(const char* propertyName, const char* value);
 
-	VirtualHmdId GetNetId() { return NetId; }
+    VirtualHmdId GetNetId() { return NetId; }
 
 public:
-	Ptr<Profile>            pProfile;
+    Ptr<Profile>            pProfile;
     // Descriptor that gets allocated and returned to the user as ovrHmd.
     ovrHmdDesc*             pHmdDesc;
     // Window handle passed in AttachWindow.
     void*                   pWindow;
 
-	// Network
-	Service::NetClient*     pClient;
-	VirtualHmdId            NetId;
-	HMDNetworkInfo          NetInfo;
+    // Network
+    Service::NetClient*     pClient;
+    VirtualHmdId            NetId;
+    HMDNetworkInfo          NetInfo;
 
     // HMDInfo shouldn't change, as its string pointers are passed out.    
     HMDInfo                 OurHMDInfo;
@@ -291,7 +291,7 @@ ovrBool ovrHmd_CreateDistortionMeshInternal( ovrHmdStruct *  hmd,
                                              ovrEyeType eyeType, ovrFovPort fov,
                                              unsigned int distortionCaps,
                                              ovrDistortionMesh *meshData,
-											 float overrideEyeReliefIfNonZero=0 );
+                                             float overrideEyeReliefIfNonZero=0 );
 
 
 

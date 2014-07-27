@@ -241,7 +241,7 @@ Buffer::~Buffer()
 
 bool Buffer::Data(int use, const void* buffer, size_t size)
 {
-	Size = size;
+    Size = size;
 
     switch (use & Buffer_TypeMask)
     {
@@ -290,26 +290,26 @@ ShaderSet::~ShaderSet()
 
 GLint ShaderSet::GetGLShader(Shader* s)
 {
-	switch (s->Stage)
-	{
-	case Shader_Vertex: {
-		ShaderImpl<Shader_Vertex, GL_VERTEX_SHADER>* gls = (ShaderImpl<Shader_Vertex, GL_VERTEX_SHADER>*)s;
-		return gls->GLShader;
-	} break;
-	case Shader_Fragment: {
-		ShaderImpl<Shader_Fragment, GL_FRAGMENT_SHADER>* gls = (ShaderImpl<Shader_Fragment, GL_FRAGMENT_SHADER>*)s;
-		return gls->GLShader;
-	} break;
+    switch (s->Stage)
+    {
+    case Shader_Vertex: {
+        ShaderImpl<Shader_Vertex, GL_VERTEX_SHADER>* gls = (ShaderImpl<Shader_Vertex, GL_VERTEX_SHADER>*)s;
+        return gls->GLShader;
+    } break;
+    case Shader_Fragment: {
+        ShaderImpl<Shader_Fragment, GL_FRAGMENT_SHADER>* gls = (ShaderImpl<Shader_Fragment, GL_FRAGMENT_SHADER>*)s;
+        return gls->GLShader;
+    } break;
     default: break;
-	}
+    }
 
-	return -1;
+    return -1;
 }
 
 void ShaderSet::SetShader(Shader *s)
 {
     Shaders[s->Stage] = s;
-	GLint GLShader = GetGLShader(s);
+    GLint GLShader = GetGLShader(s);
     glAttachShader(Prog, GLShader);
     if (Shaders[Shader_Vertex] && Shaders[Shader_Fragment])
         Link();
@@ -318,9 +318,9 @@ void ShaderSet::SetShader(Shader *s)
 void ShaderSet::UnsetShader(int stage)
 {
     if (Shaders[stage] == NULL)
-		return;
+        return;
 
-	GLint GLShader = GetGLShader(Shaders[stage]);
+    GLint GLShader = GetGLShader(Shaders[stage]);
     glDetachShader(Prog, GLShader);
 
     Shaders[stage] = NULL;
@@ -369,9 +369,9 @@ bool ShaderSet::Link()
     LightingVer = 0;
     UsesLighting = 0;
 
-	GLint uniformCount = 0;
-	glGetProgramiv(Prog, GL_ACTIVE_UNIFORMS, &uniformCount);
-	OVR_ASSERT(uniformCount >= 0);
+    GLint uniformCount = 0;
+    glGetProgramiv(Prog, GL_ACTIVE_UNIFORMS, &uniformCount);
+    OVR_ASSERT(uniformCount >= 0);
 
     for(GLuint i = 0; i < (GLuint)uniformCount; i++)
     {
@@ -483,8 +483,8 @@ void ShaderBase::InitUniforms(const Uniform* refl, size_t reflSize)
 
 Texture::Texture(RenderParams* rp, int w, int h) : IsUserAllocated(true), pParams(rp), TexId(0), Width(w), Height(h)
 {
-	if (w && h)
-		glGenTextures(1, &TexId);
+    if (w && h)
+        glGenTextures(1, &TexId);
 }
 
 Texture::~Texture()
@@ -495,8 +495,8 @@ Texture::~Texture()
 
 void Texture::Set(int slot, ShaderStage) const
 {
-	glActiveTexture(GL_TEXTURE0 + slot);
-	glBindTexture(GL_TEXTURE_2D, TexId);
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, TexId);
 }
 
 void Texture::SetSampleMode(int sm)
@@ -544,14 +544,14 @@ void Texture::SetSampleMode(int sm)
 
 void Texture::UpdatePlaceholderTexture(GLuint texId, const Sizei& textureSize)
 {
-	if (!IsUserAllocated && TexId && texId != TexId)
-		glDeleteTextures(1, &TexId);
+    if (!IsUserAllocated && TexId && texId != TexId)
+        glDeleteTextures(1, &TexId);
 
     TexId = texId;
-	Width = textureSize.w;
-	Height = textureSize.h;
+    Width = textureSize.w;
+    Height = textureSize.h;
 
-	IsUserAllocated = true;
+    IsUserAllocated = true;
 }
 
 

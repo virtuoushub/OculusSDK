@@ -51,13 +51,13 @@ namespace OVR { namespace Tracking {
 enum StatusBits
 {
     // Tracked bits: Toggled by SensorFusion
-	Status_OrientationTracked = 0x0001, // Orientation is currently tracked (connected and in use)
-	Status_PositionTracked    = 0x0002, // Position is currently tracked (false if out of range)
+    Status_OrientationTracked = 0x0001, // Orientation is currently tracked (connected and in use)
+    Status_PositionTracked    = 0x0002, // Position is currently tracked (false if out of range)
     Status_CameraPoseTracked  = 0x0004, // Camera pose is currently tracked
 
     // Connected bits: Toggled by TrackingManager
     Status_PositionConnected  = 0x0020, // Position tracking HW is connected
-	Status_HMDConnected       = 0x0080, // HMD is available & connected
+    Status_HMDConnected       = 0x0080, // HMD is available & connected
 
     // Masks
     Status_AllMask = 0xffff,
@@ -70,14 +70,14 @@ enum StatusBits
 class TrackingState
 {
 public:
-	TrackingState() : StatusFlags(0) { }
+    TrackingState() : StatusFlags(0) { }
 
-	// C-interop support
-	TrackingState(const ovrTrackingState& s);
-	operator ovrTrackingState () const;
+    // C-interop support
+    TrackingState(const ovrTrackingState& s);
+    operator ovrTrackingState () const;
 
-	// HMD pose information for the requested time.
-	PoseStatef   HeadPose;
+    // HMD pose information for the requested time.
+    PoseStatef   HeadPose;
 
     // Orientation and position of the external camera, if present.
     Posef        CameraPose;
@@ -88,7 +88,7 @@ public:
     SensorDataType RawSensorData;
 
     // Sensor status described by ovrStatusBits.
-	uint32_t     StatusFlags;
+    uint32_t     StatusFlags;
 };
 
 
@@ -102,19 +102,19 @@ struct LocklessSensorStatePadding;
 // prediction by GetPoseAtTime/GetSensorStateAtTime
 struct LocklessSensorState
 {
-	PoseState<double> WorldFromImu;
+    PoseState<double> WorldFromImu;
     SensorDataType    RawSensorData;
     Pose<double>      WorldFromCamera;
-	uint32_t          StatusFlags;
+    uint32_t          StatusFlags;
 
-	// ImuFromCpf for HMD pose tracking
-	Posed             ImuFromCpf;
+    // ImuFromCpf for HMD pose tracking
+    Posed             ImuFromCpf;
 
-	// Initialized to invalid state
-	LocklessSensorState() :
-		StatusFlags(0)
-	{
-	}
+    // Initialized to invalid state
+    LocklessSensorState() :
+        StatusFlags(0)
+    {
+    }
 
     LocklessSensorState& operator = (const LocklessSensorStatePadding& rhs);
 };

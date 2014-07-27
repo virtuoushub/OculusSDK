@@ -59,8 +59,8 @@ class NetClient : public NetSessionCommon,
     virtual int  Run();
 
 public:
-	bool         Connect();
-	bool         IsConnected(bool attemptReconnect = false);
+    bool         Connect();
+    bool         IsConnected(bool attemptReconnect = false);
     void         Disconnect();
 
     void         GetLocalProtocolVersion(int& major, int& minor, int& patch);
@@ -80,34 +80,34 @@ public:
     void         SetNumberValue(VirtualHmdId hmd, const char* key, double val);
     void         SetNumberValues(VirtualHmdId hmd, const char* key, const double* vals, int num_vals);
 
-	int          Hmd_Detect();
-	bool         Hmd_Create(int index, HMDNetworkInfo* netInfo);
-	void         Hmd_Release(VirtualHmdId hmd);
+    int          Hmd_Detect();
+    bool         Hmd_Create(int index, HMDNetworkInfo* netInfo);
+    void         Hmd_Release(VirtualHmdId hmd);
 
-	// Last string is cached locally.
-	const char*  Hmd_GetLastError(VirtualHmdId hmd);
+    // Last string is cached locally.
+    const char*  Hmd_GetLastError(VirtualHmdId hmd);
 
-	// TBD: Replace with a function to return internal, original HMDInfo?
+    // TBD: Replace with a function to return internal, original HMDInfo?
 
-	// Fills in description about HMD; this is the same as filled in by ovrHmd_Create.
-	// The actual descriptor is a par
-	bool         Hmd_GetHmdInfo(VirtualHmdId hmd, HMDInfo* hmdInfo);
+    // Fills in description about HMD; this is the same as filled in by ovrHmd_Create.
+    // The actual descriptor is a par
+    bool         Hmd_GetHmdInfo(VirtualHmdId hmd, HMDInfo* hmdInfo);
 
-	//-------------------------------------------------------------------------------------
-	unsigned int Hmd_GetEnabledCaps(VirtualHmdId hmd);
-	// Returns new caps after modification
-	unsigned int Hmd_SetEnabledCaps(VirtualHmdId hmd, unsigned int hmdCaps);
+    //-------------------------------------------------------------------------------------
+    unsigned int Hmd_GetEnabledCaps(VirtualHmdId hmd);
+    // Returns new caps after modification
+    unsigned int Hmd_SetEnabledCaps(VirtualHmdId hmd, unsigned int hmdCaps);
 
     // Updates driver render target
     void         Hmd_AttachToWindow(VirtualHmdId hmd, void* hWindow);
 
-	//-------------------------------------------------------------------------------------
-	// *** Tracking Setup
+    //-------------------------------------------------------------------------------------
+    // *** Tracking Setup
 
-	bool         Hmd_ConfigureTracking(VirtualHmdId hmd, unsigned supportedCaps, unsigned requiredCaps);	
-	void         Hmd_ResetTracking(VirtualHmdId hmd);
+    bool         Hmd_ConfigureTracking(VirtualHmdId hmd, unsigned supportedCaps, unsigned requiredCaps);    
+    void         Hmd_ResetTracking(VirtualHmdId hmd);
 
-	// TBD: Camera frames
+    // TBD: Camera frames
     bool         LatencyUtil_ProcessInputs(double startTestSeconds, unsigned char rgbColorOut[3]);
     const char*  LatencyUtil_GetResultsString();
 

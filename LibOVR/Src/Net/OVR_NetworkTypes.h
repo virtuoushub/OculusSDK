@@ -30,7 +30,7 @@ limitations under the License.
 
 #include "../Kernel/OVR_Types.h"
 
-namespace OVR {	namespace Net {
+namespace OVR {    namespace Net {
 
 
 typedef uint64_t NetworkID;

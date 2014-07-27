@@ -42,15 +42,15 @@ namespace OVR { namespace Net { namespace Plugins {
 class NetworkPlugin : public SessionListener
 {
 public:
-	NetworkPlugin();
-	virtual ~NetworkPlugin();
+    NetworkPlugin();
+    virtual ~NetworkPlugin();
 
 protected:
-	virtual void OnAddedToSession(Session* _pSession);
-	virtual void OnRemovedFromSession(Session* _pSession);
+    virtual void OnAddedToSession(Session* _pSession);
+    virtual void OnRemovedFromSession(Session* _pSession);
 
-	Session *pSession;
-	//uint8_t PluginId;
+    Session *pSession;
+    //uint8_t PluginId;
 };
 
 

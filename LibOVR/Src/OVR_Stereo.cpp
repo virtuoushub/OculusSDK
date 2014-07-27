@@ -98,25 +98,25 @@ float EvalCatmullRom10Spline ( float const *K, float scaledVal )
 {
     int const NumSegments = LensConfig::NumCoefficients;
 
-	#if TPH_SPLINE_STATISTICS
-	//Value should be in range of 0 to (NumSegments-1) (typically 10) if spline is valid. Right?
-	if (scaledVal > (NumSegments-1))
-	{
-		num_out_of_range++;
-		average_total_out_of_range+=scaledVal;
-		average_out_of_range = average_total_out_of_range / ((float) num_out_of_range); 
-		percent_out_of_range = 100.0f*(num_out_of_range)/num_total;
-	}
-	if (scaledVal > (NumSegments-1+1)) num_out_of_range_over_1++;
-	if (scaledVal > (NumSegments-1+2)) num_out_of_range_over_2++;
-	if (scaledVal > (NumSegments-1+3)) num_out_of_range_over_3++;
-	num_total++;
-	if (scaledVal > max_scaledVal)
-	{
-		max_scaledVal = scaledVal;
-		max_scaledVal = scaledVal;
-	}
-	#endif
+    #if TPH_SPLINE_STATISTICS
+    //Value should be in range of 0 to (NumSegments-1) (typically 10) if spline is valid. Right?
+    if (scaledVal > (NumSegments-1))
+    {
+        num_out_of_range++;
+        average_total_out_of_range+=scaledVal;
+        average_out_of_range = average_total_out_of_range / ((float) num_out_of_range); 
+        percent_out_of_range = 100.0f*(num_out_of_range)/num_total;
+    }
+    if (scaledVal > (NumSegments-1+1)) num_out_of_range_over_1++;
+    if (scaledVal > (NumSegments-1+2)) num_out_of_range_over_2++;
+    if (scaledVal > (NumSegments-1+3)) num_out_of_range_over_3++;
+    num_total++;
+    if (scaledVal > max_scaledVal)
+    {
+        max_scaledVal = scaledVal;
+        max_scaledVal = scaledVal;
+    }
+    #endif
 
     float scaledValFloor = floorf ( scaledVal );
     scaledValFloor = Alg::Max ( 0.0f, Alg::Min ( (float)(NumSegments-1), scaledValFloor ) );
@@ -216,11 +216,11 @@ float LensConfig::DistortionFnScaleRadiusSquared (float rsq) const
         scale = EvalCatmullRom10Spline ( K, scaledRsq );
 
 
-		//Intercept, and overrule if needed
-		if (CustomDistortion)
-		{
-			scale = CustomDistortion(rsq);
-		}
+        //Intercept, and overrule if needed
+        if (CustomDistortion)
+        {
+            scale = CustomDistortion(rsq);
+        }
 
         }break;
     default:
@@ -304,11 +304,11 @@ float LensConfig::DistortionFnInverseApprox(float r) const
         float scaledRsq = (float)(NumSegments-1) * rsq / ( MaxInvR * MaxInvR );
         scale = EvalCatmullRom10Spline ( InvK, scaledRsq );
 
-		//Intercept, and overrule if needed
-		if (CustomDistortionInv)
-		{
-			scale = CustomDistortionInv(rsq);
-		}
+        //Intercept, and overrule if needed
+        if (CustomDistortionInv)
+        {
+            scale = CustomDistortionInv(rsq);
+        }
 
         }break;
     default:
@@ -865,7 +865,7 @@ HmdRenderInfo GenerateHmdRenderInfoFromHmdInfo ( HMDInfo const &hmdInfo,
         OVR_ASSERT(false);
 
         // Set the eye relief with the user configured dial setting
-		//int dial = profile->GetIntValue(OVR_KEY_EYE_RELIEF_DIAL, OVR_DEFAULT_EYE_RELIEF_DIAL);
+        //int dial = profile->GetIntValue(OVR_KEY_EYE_RELIEF_DIAL, OVR_DEFAULT_EYE_RELIEF_DIAL);
 
         // Assume a default of 7 to 17 mm eye relief based on the dial.  This corresponds
         // to the sampled and tuned distortion range on the DK1.
@@ -909,9 +909,9 @@ LensConfig GenerateLensConfigFromEyeRelief ( float eyeReliefInMeters, HmdRenderI
         LensConfig Config;
     };
 
-	static const int MaxDistortions = 10;
-	DistortionDescriptor distortions[MaxDistortions];
-	for (int i = 0; i < MaxDistortions; i++)
+    static const int MaxDistortions = 10;
+    DistortionDescriptor distortions[MaxDistortions];
+    for (int i = 0; i < MaxDistortions; i++)
     {
         distortions[i].Config.SetToIdentity(); // Note: This line causes a false static analysis error -cat
         distortions[i].EyeRelief = 0.0f;
@@ -1119,7 +1119,7 @@ LensConfig GenerateLensConfigFromEyeRelief ( float eyeReliefInMeters, HmdRenderI
         }
     }
 
-	OVR_ASSERT(numDistortions < MaxDistortions);
+    OVR_ASSERT(numDistortions < MaxDistortions);
 
     DistortionDescriptor *pUpper = NULL;
     DistortionDescriptor *pLower = NULL;
@@ -1570,7 +1570,7 @@ ScaleAndOffset2D CreateUVScaleAndOffsetfromNDCScaleandOffset ( ScaleAndOffset2D 
     Vector2f offset( (float)renderedViewport.x / (float)renderTargetSize.w,
                      (float)renderedViewport.y / (float)renderTargetSize.h );
 
-	result.Scale  = result.Scale.EntrywiseMultiply(scale);
+    result.Scale  = result.Scale.EntrywiseMultiply(scale);
     result.Offset  = result.Offset.EntrywiseMultiply(scale) + offset;
     return result;
 }
@@ -1836,7 +1836,7 @@ Vector2f TransformRendertargetNDCToTanFovSpace( const ScaleAndOffset2D &eyeToSou
 //Just want to make a copy disentangled from all these namespaces!
 float ExtEvalCatmullRom10Spline ( float const *K, float scaledVal )
 {
-	return(OVR::EvalCatmullRom10Spline ( K, scaledVal ));
+    return(OVR::EvalCatmullRom10Spline ( K, scaledVal ));
 }
 
 

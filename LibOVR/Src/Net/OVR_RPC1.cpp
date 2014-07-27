@@ -36,10 +36,10 @@ namespace OVR { namespace Net { namespace Plugins {
 // Types
 
 enum {
-	ID_RPC4_SIGNAL,
-	CALL_BLOCKING,
-	RPC_ERROR_FUNCTION_NOT_REGISTERED,
-	ID_RPC4_RETURN,
+    ID_RPC4_SIGNAL,
+    CALL_BLOCKING,
+    RPC_ERROR_FUNCTION_NOT_REGISTERED,
+    ID_RPC4_RETURN,
 };
 
 
@@ -48,33 +48,33 @@ enum {
 
 RPC1::RPC1()
 {
-	blockingOnThisConnection = 0;
-	blockingReturnValue = new BitStream();
+    blockingOnThisConnection = 0;
+    blockingReturnValue = new BitStream();
 }
 
 RPC1::~RPC1()
 {
-	slotHash.Clear();
-	delete blockingReturnValue;
+    slotHash.Clear();
+    delete blockingReturnValue;
 }
 
 void RPC1::RegisterSlot(OVR::String sharedIdentifier,  OVR::Observer<RPCSlot> *rpcSlotObserver )
 {
-	slotHash.AddObserverToSubject(sharedIdentifier, rpcSlotObserver);
+    slotHash.AddObserverToSubject(sharedIdentifier, rpcSlotObserver);
 }
 
 bool RPC1::RegisterBlockingFunction(OVR::String uniqueID, RPCDelegate blockingFunction)
 {
-	if (registeredBlockingFunctions.Get(uniqueID))
-		return false;
+    if (registeredBlockingFunctions.Get(uniqueID))
+        return false;
 
-	registeredBlockingFunctions.Set(uniqueID, blockingFunction);
-	return true;
+    registeredBlockingFunctions.Set(uniqueID, blockingFunction);
+    return true;
 }
 
 void RPC1::UnregisterBlockingFunction(OVR::String uniqueID)
 {
-	registeredBlockingFunctions.Remove(uniqueID);
+    registeredBlockingFunctions.Remove(uniqueID);
 }
 
 bool RPC1::CallBlocking( OVR::String uniqueID, OVR::Net::BitStream * bitStream, Ptr<Connection> pConnection, OVR::Net::BitStream *returnData )
@@ -86,18 +86,18 @@ bool RPC1::CallBlocking( OVR::String uniqueID, OVR::Net::BitStream * bitStream, 
         return false;
     }
 
-	OVR::Net::BitStream out;
-	out.Write((MessageID) OVRID_RPC1);
-	out.Write((MessageID) CALL_BLOCKING);
-	out.Write(uniqueID);
-	if (bitStream)
-	{
-		bitStream->ResetReadPointer();
-		out.AlignWriteToByteBoundary();
-		out.Write(bitStream);
-	}
+    OVR::Net::BitStream out;
+    out.Write((MessageID) OVRID_RPC1);
+    out.Write((MessageID) CALL_BLOCKING);
+    out.Write(uniqueID);
+    if (bitStream)
+    {
+        bitStream->ResetReadPointer();
+        out.AlignWriteToByteBoundary();
+        out.Write(bitStream);
+    }
 
-	SendParameters sp(pConnection, out.GetData(), out.GetNumberOfBytesUsed());
+    SendParameters sp(pConnection, out.GetData(), out.GetNumberOfBytesUsed());
 
     if (returnData)
     {
@@ -130,25 +130,25 @@ bool RPC1::CallBlocking( OVR::String uniqueID, OVR::Net::BitStream * bitStream, 
         returnData->ResetReadPointer();
     }
 
-	return true;
+    return true;
 }
 
 bool RPC1::Signal(OVR::String sharedIdentifier, OVR::Net::BitStream * bitStream, Ptr<Connection> pConnection)
 {
-	OVR::Net::BitStream out;
-	out.Write((MessageID) OVRID_RPC1);
-	out.Write((MessageID) ID_RPC4_SIGNAL);
-	//out.Write(PluginId);
-	out.Write(sharedIdentifier);
-	if (bitStream)
-	{
-		bitStream->ResetReadPointer();
-		out.AlignWriteToByteBoundary();
-		out.Write(bitStream);
-	}
-	SendParameters sp(pConnection, out.GetData(), out.GetNumberOfBytesUsed());
-	int32_t bytesSent = pSession->Send(&sp);
-	return bytesSent == sp.Bytes;
+    OVR::Net::BitStream out;
+    out.Write((MessageID) OVRID_RPC1);
+    out.Write((MessageID) ID_RPC4_SIGNAL);
+    //out.Write(PluginId);
+    out.Write(sharedIdentifier);
+    if (bitStream)
+    {
+        bitStream->ResetReadPointer();
+        out.AlignWriteToByteBoundary();
+        out.Write(bitStream);
+    }
+    SendParameters sp(pConnection, out.GetData(), out.GetNumberOfBytesUsed());
+    int32_t bytesSent = pSession->Send(&sp);
+    return bytesSent == sp.Bytes;
 }
 void RPC1::BroadcastSignal(OVR::String sharedIdentifier, OVR::Net::BitStream * bitStream)
 {
@@ -168,14 +168,14 @@ void RPC1::BroadcastSignal(OVR::String sharedIdentifier, OVR::Net::BitStream * b
 }
 void RPC1::OnReceive(ReceivePayload *pPayload, ListenerReceiveResult *lrrOut)
 {
-	OVR_UNUSED(lrrOut);
+    OVR_UNUSED(lrrOut);
 
     if (pPayload->pData[0] == OVRID_RPC1)
     {
-		OVR_ASSERT(pPayload->Bytes >= 2);
+        OVR_ASSERT(pPayload->Bytes >= 2);
 
-		OVR::Net::BitStream bsIn((char*)pPayload->pData, pPayload->Bytes, false);
-		bsIn.IgnoreBytes(2);
+        OVR::Net::BitStream bsIn((char*)pPayload->pData, pPayload->Bytes, false);
+        bsIn.IgnoreBytes(2);
 
         if (pPayload->pData[1] == RPC_ERROR_FUNCTION_NOT_REGISTERED)
         {
@@ -190,62 +190,62 @@ void RPC1::OnReceive(ReceivePayload *pPayload, ListenerReceiveResult *lrrOut)
             Mutex::Locker locker(&callBlockingMutex);
 
             blockingReturnValue->Reset();
-			blockingReturnValue->Write(bsIn);
+            blockingReturnValue->Write(bsIn);
             blockingOnThisConnection = 0;
             callBlockingWait.NotifyAll();
-		}
+        }
         else if (pPayload->pData[1] == CALL_BLOCKING)
         {
-			OVR::String uniqueId;
-			bsIn.Read(uniqueId);
+            OVR::String uniqueId;
+            bsIn.Read(uniqueId);
 
-			RPCDelegate *bf = registeredBlockingFunctions.Get(uniqueId);
-			if (bf==0)
-			{
-				OVR::Net::BitStream bsOut;
-				bsOut.Write((unsigned char) OVRID_RPC1);
-				bsOut.Write((unsigned char) RPC_ERROR_FUNCTION_NOT_REGISTERED);
+            RPCDelegate *bf = registeredBlockingFunctions.Get(uniqueId);
+            if (bf==0)
+            {
+                OVR::Net::BitStream bsOut;
+                bsOut.Write((unsigned char) OVRID_RPC1);
+                bsOut.Write((unsigned char) RPC_ERROR_FUNCTION_NOT_REGISTERED);
 
-				SendParameters sp(pPayload->pConnection, bsOut.GetData(), bsOut.GetNumberOfBytesUsed());
-				pSession->Send(&sp);
+                SendParameters sp(pPayload->pConnection, bsOut.GetData(), bsOut.GetNumberOfBytesUsed());
+                pSession->Send(&sp);
 
-				return;
-			}
+                return;
+            }
 
-			OVR::Net::BitStream returnData;
-			bsIn.AlignReadToByteBoundary();
-			(*bf)(&bsIn, &returnData, pPayload);
+            OVR::Net::BitStream returnData;
+            bsIn.AlignReadToByteBoundary();
+            (*bf)(&bsIn, &returnData, pPayload);
 
-			OVR::Net::BitStream out;
-			out.Write((MessageID) OVRID_RPC1);
-			out.Write((MessageID) ID_RPC4_RETURN);
-			returnData.ResetReadPointer();
-			out.AlignWriteToByteBoundary();
-			out.Write(returnData);
+            OVR::Net::BitStream out;
+            out.Write((MessageID) OVRID_RPC1);
+            out.Write((MessageID) ID_RPC4_RETURN);
+            returnData.ResetReadPointer();
+            out.AlignWriteToByteBoundary();
+            out.Write(returnData);
 
-			SendParameters sp(pPayload->pConnection, out.GetData(), out.GetNumberOfBytesUsed());
-			pSession->Send(&sp);
-		}
-		else if (pPayload->pData[1]==ID_RPC4_SIGNAL)
-		{
-			OVR::String sharedIdentifier;
-			bsIn.Read(sharedIdentifier);
+            SendParameters sp(pPayload->pConnection, out.GetData(), out.GetNumberOfBytesUsed());
+            pSession->Send(&sp);
+        }
+        else if (pPayload->pData[1]==ID_RPC4_SIGNAL)
+        {
+            OVR::String sharedIdentifier;
+            bsIn.Read(sharedIdentifier);
 
-			Observer<RPCSlot> *o = slotHash.GetSubject(sharedIdentifier);
+            Observer<RPCSlot> *o = slotHash.GetSubject(sharedIdentifier);
 
-			if (o)
-			{
-				bsIn.AlignReadToByteBoundary();
+            if (o)
+            {
+                bsIn.AlignReadToByteBoundary();
 
-				if (o)
-				{
-					OVR::Net::BitStream serializedParameters(bsIn.GetData() + bsIn.GetReadOffset()/8, bsIn.GetNumberOfUnreadBits()/8, false);
+                if (o)
+                {
+                    OVR::Net::BitStream serializedParameters(bsIn.GetData() + bsIn.GetReadOffset()/8, bsIn.GetNumberOfUnreadBits()/8, false);
 
-					o->Call(&serializedParameters, pPayload);
-				}
-			}
-		}
-	}
+                    o->Call(&serializedParameters, pPayload);
+                }
+            }
+        }
+    }
 }
 
 void RPC1::OnDisconnected(Connection* conn)

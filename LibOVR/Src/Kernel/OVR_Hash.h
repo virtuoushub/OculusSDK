@@ -413,7 +413,7 @@ public:
     {
         return pTable == NULL ? 0 : (size_t)pTable->EntryCount;
     }
-	int GetSizeI() const { return (int)GetSize(); }
+    int GetSizeI() const { return (int)GetSize(); }
 
 
     // Resize the HashSet table to fit one more Entry.  Often this
@@ -1229,8 +1229,8 @@ public:
 
     // Sizing methods - delegate to Hash.
     inline size_t  GetSize() const              { return mHash.GetSize(); }    
-	inline int     GetSizeI() const             { return (int)GetSize(); }
-	inline void    Resize(size_t n)              { mHash.Resize(n); }
+    inline int     GetSizeI() const             { return (int)GetSize(); }
+    inline void    Resize(size_t n)              { mHash.Resize(n); }
     inline void    SetCapacity(size_t newSize)   { mHash.SetCapacity(newSize); }
 
     // Iterator API, like STL.

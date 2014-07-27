@@ -40,8 +40,8 @@ namespace OVR { namespace Net { namespace Plugins {
 
 NetworkPlugin::NetworkPlugin()
 {
-	pSession = 0;
-	//PluginId = pluginIdNext++;
+    pSession = 0;
+    //PluginId = pluginIdNext++;
 }
 
 NetworkPlugin::~NetworkPlugin()
@@ -50,20 +50,20 @@ NetworkPlugin::~NetworkPlugin()
 
 void NetworkPlugin::OnAddedToSession(Session* _pSession)
 {
-	if (pSession != 0)
-	{
-		pSession->RemoveSessionListener(this);
-	}
+    if (pSession != 0)
+    {
+        pSession->RemoveSessionListener(this);
+    }
 
-	pSession = _pSession;
+    pSession = _pSession;
 }
 
 void NetworkPlugin::OnRemovedFromSession(Session* _pSession)
 {
-	OVR_UNUSED(_pSession);
-	OVR_ASSERT(_pSession == pSession);
+    OVR_UNUSED(_pSession);
+    OVR_ASSERT(_pSession == pSession);
 
-	pSession = 0;
+    pSession = 0;
 }
 
 

@@ -204,23 +204,23 @@ from Oculus VR.
 this License for any of the following reasons upon notice to you, subject 
 to the appeal process set forth in Section 14 for a wrongful termination: 
 
-	a) Intellectual property infringement by you with Developer Content 
-	or RIFT SDK Derivatives created by you that is used with or by the 
-	RIFT SDK or any part thereof, or any of the RIFT SDK Derivatives;
-	
-	b) Developer Content that violates or infringes upon applicable law;
-	
-	c) Health and safety issues associated with your Developer Content;
-	
-	d) Failure to comply with or use properly the Oculus Warnings, 
-	Oculus H&S Protocols, or Oculus EULA; 
-	
-	e) Use of the RIFT SDK, RIFT SDK Derivatives or LibOVR with a 
-	commercial product other than an Oculus Approved Product; and
-	
-	f) Failure to provide required notices or deliver source code 
-	and/or binary of RIFT SDK Derivatives as set forth above.
-	
+    a) Intellectual property infringement by you with Developer Content 
+    or RIFT SDK Derivatives created by you that is used with or by the 
+    RIFT SDK or any part thereof, or any of the RIFT SDK Derivatives;
+    
+    b) Developer Content that violates or infringes upon applicable law;
+    
+    c) Health and safety issues associated with your Developer Content;
+    
+    d) Failure to comply with or use properly the Oculus Warnings, 
+    Oculus H&S Protocols, or Oculus EULA; 
+    
+    e) Use of the RIFT SDK, RIFT SDK Derivatives or LibOVR with a 
+    commercial product other than an Oculus Approved Product; and
+    
+    f) Failure to provide required notices or deliver source code 
+    and/or binary of RIFT SDK Derivatives as set forth above.
+    
 If you believe that you have been wrongfully terminated under this Section 8 
 with respect to material breach or with respect to these above conditions, 
 you have the right to appeal the termination of this License under Section 14. 

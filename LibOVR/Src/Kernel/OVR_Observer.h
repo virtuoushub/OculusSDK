@@ -149,174 +149,174 @@ template<class DelegateT> class ObserverHash;
 template<class DelegateT>
 class Observer : public RefCountBase< Observer<DelegateT> >
 {
-	friend class ObserverScope<DelegateT>;
-	friend class ObserverHash<DelegateT>;
+    friend class ObserverScope<DelegateT>;
+    friend class ObserverHash<DelegateT>;
 
 public:
     typedef Observer<DelegateT> ThisType;
     typedef DelegateT Handler;
 
 protected:
-	bool                     IsShutdown; // Flag to indicate that the object went out of scope
-	mutable Lock             TheLock;    // Lock to synchronize calls and shutdown
-	Array< Ptr< ThisType > > References; // List of observed or observing objects
-	Handler                  TheHandler; // Observer-only: Handler for callbacks
+    bool                     IsShutdown; // Flag to indicate that the object went out of scope
+    mutable Lock             TheLock;    // Lock to synchronize calls and shutdown
+    Array< Ptr< ThisType > > References; // List of observed or observing objects
+    Handler                  TheHandler; // Observer-only: Handler for callbacks
 
-	Observer() :
-		IsShutdown(false)
-	{
-		TheHandler.Invalidate();
-	}
-	Observer(Handler handler) :
-		IsShutdown(false),
-		TheHandler(handler)
-	{
-	}
-	~Observer()
-	{
-		OVR_ASSERT(References.GetSizeI() == 0);
-	}
+    Observer() :
+        IsShutdown(false)
+    {
+        TheHandler.Invalidate();
+    }
+    Observer(Handler handler) :
+        IsShutdown(false),
+        TheHandler(handler)
+    {
+    }
+    ~Observer()
+    {
+        OVR_ASSERT(References.GetSizeI() == 0);
+    }
 
 public:
-	void SetHandler(Handler handler)
-	{
-		OVR_ASSERT(References.GetSizeI() == 0);
-		TheHandler = handler;
-	}
+    void SetHandler(Handler handler)
+    {
+        OVR_ASSERT(References.GetSizeI() == 0);
+        TheHandler = handler;
+    }
 
-	// Release references and prevent further actions
-	void Shutdown()
-	{
-		Lock::Locker locker(&TheLock);
-		IsShutdown = true;
-		References.ClearAndRelease();
-	}
+    // Release references and prevent further actions
+    void Shutdown()
+    {
+        Lock::Locker locker(&TheLock);
+        IsShutdown = true;
+        References.ClearAndRelease();
+    }
 
-	// Get count of references held
-	int GetSizeI() const
-	{
-		Lock::Locker locker(&TheLock);
-		return References.GetSizeI();
-	}
+    // Get count of references held
+    int GetSizeI() const
+    {
+        Lock::Locker locker(&TheLock);
+        return References.GetSizeI();
+    }
 
-	// Observe a subject
-	bool Observe(ThisType *subject)
-	{
-		OVR_ASSERT(TheHandler.IsValid());
+    // Observe a subject
+    bool Observe(ThisType *subject)
+    {
+        OVR_ASSERT(TheHandler.IsValid());
 
-		if (!subject)
-		{
-			return false;
-		}
+        if (!subject)
+        {
+            return false;
+        }
 
-		Lock::Locker locker(&TheLock);
+        Lock::Locker locker(&TheLock);
 
-		if (IsShutdown)
-		{
-			return false;
-		}
+        if (IsShutdown)
+        {
+            return false;
+        }
 
-		if (!subject->SubjectAddObserver(this))
-		{
-			return false;
-		}
+        if (!subject->SubjectAddObserver(this))
+        {
+            return false;
+        }
 
-		References.PushBack(subject);
-		return true;
-	}
+        References.PushBack(subject);
+        return true;
+    }
 
 protected:
-	// Subject function: AddObserver()
-	// Returns true if the observer was added
-	bool SubjectAddObserver(ThisType* observer)
-	{
-		OVR_ASSERT(!TheHandler.IsValid());
+    // Subject function: AddObserver()
+    // Returns true if the observer was added
+    bool SubjectAddObserver(ThisType* observer)
+    {
+        OVR_ASSERT(!TheHandler.IsValid());
 
-		if (!observer)
-		{
-			return true;
-		}
+        if (!observer)
+        {
+            return true;
+        }
 
-		Lock::Locker locker(&TheLock);
+        Lock::Locker locker(&TheLock);
 
-		if (IsShutdown)
-		{
-			return false;
-		}
+        if (IsShutdown)
+        {
+            return false;
+        }
 
-		const int count = References.GetSizeI();
-		for (int i = 0; i < count; ++i)
-		{
-			if (References[i] == observer)
-			{
-				// Already watched
-				return true;
-			}
-		}
+        const int count = References.GetSizeI();
+        for (int i = 0; i < count; ++i)
+        {
+            if (References[i] == observer)
+            {
+                // Already watched
+                return true;
+            }
+        }
 
-		References.PushBack(observer);
+        References.PushBack(observer);
 
-		return true;
-	}
+        return true;
+    }
 
 public:
     // Subject function: Call()
 #define OVR_OBSERVER_CALL_BODY(params) \
     bool callSuccess = false; \
-	Lock::Locker locker(&TheLock); \
-	int count = References.GetSizeI(); \
-	for (int i = 0; i < count; ++i) \
-	{ \
-		if (!References[i]->IsShutdown) \
-		{ \
-			OVR_ASSERT(References[i]->TheHandler.IsValid()); \
-			References[i]->TheHandler params; \
+    Lock::Locker locker(&TheLock); \
+    int count = References.GetSizeI(); \
+    for (int i = 0; i < count; ++i) \
+    { \
+        if (!References[i]->IsShutdown) \
+        { \
+            OVR_ASSERT(References[i]->TheHandler.IsValid()); \
+            References[i]->TheHandler params; \
             callSuccess = true; \
-		} \
-		if (References[i]->IsShutdown) \
-		{ \
-			References.RemoveAt(i); \
-			--i; --count; \
-		} \
-	} \
+        } \
+        if (References[i]->IsShutdown) \
+        { \
+            References.RemoveAt(i); \
+            --i; --count; \
+        } \
+    } \
     return callSuccess;
 
-	// Call: Various parameter counts
+    // Call: Various parameter counts
     // Returns true if a call was made
-	bool Call()
-	{
-		OVR_OBSERVER_CALL_BODY(());
-	}
-	template<class Param1>
+    bool Call()
+    {
+        OVR_OBSERVER_CALL_BODY(());
+    }
+    template<class Param1>
     bool Call(Param1& p1)
-	{
-		OVR_OBSERVER_CALL_BODY((p1));
-	}
-	template<class Param1>
+    {
+        OVR_OBSERVER_CALL_BODY((p1));
+    }
+    template<class Param1>
     bool Call(Param1* p1)
-	{
-		OVR_OBSERVER_CALL_BODY((p1));
-	}
-	template<class Param1, class Param2>
+    {
+        OVR_OBSERVER_CALL_BODY((p1));
+    }
+    template<class Param1, class Param2>
     bool Call(Param1& p1, Param2& p2)
-	{
-		OVR_OBSERVER_CALL_BODY((p1, p2));
-	}
-	template<class Param1, class Param2>
+    {
+        OVR_OBSERVER_CALL_BODY((p1, p2));
+    }
+    template<class Param1, class Param2>
     bool Call(Param1* p1, Param2* p2)
-	{
-		OVR_OBSERVER_CALL_BODY((p1, p2));
-	}
-	template<class Param1, class Param2, class Param3>
+    {
+        OVR_OBSERVER_CALL_BODY((p1, p2));
+    }
+    template<class Param1, class Param2, class Param3>
     bool Call(Param1& p1, Param2& p2, Param3& p3)
-	{
-		OVR_OBSERVER_CALL_BODY((p1, p2, p3));
-	}
-	template<class Param1, class Param2, class Param3>
+    {
+        OVR_OBSERVER_CALL_BODY((p1, p2, p3));
+    }
+    template<class Param1, class Param2, class Param3>
     bool Call(Param1* p1, Param2* p2, Param3* p3)
-	{
-		OVR_OBSERVER_CALL_BODY((p1, p2, p3));
-	}
+    {
+        OVR_OBSERVER_CALL_BODY((p1, p2, p3));
+    }
 
 #undef OVR_OBSERVER_CALL_BODY
 };
@@ -329,61 +329,61 @@ public:
 template<class DelegateT>
 class ObserverScope : public NewOverrideBase
 {
-	Ptr< Observer<DelegateT> > TheObserver;
-	DelegateT TheHandler;
+    Ptr< Observer<DelegateT> > TheObserver;
+    DelegateT TheHandler;
 
-	void Shutdown()
-	{
-		if (TheObserver)
-		{
-			TheObserver->Shutdown();
-			TheObserver.Clear();
-		}
-	}
+    void Shutdown()
+    {
+        if (TheObserver)
+        {
+            TheObserver->Shutdown();
+            TheObserver.Clear();
+        }
+    }
 
 public:
-	ObserverScope()
-	{
-		TheObserver = *new Observer<DelegateT>;
-	}
-	~ObserverScope()
-	{
-		Shutdown();
-	}
+    ObserverScope()
+    {
+        TheObserver = *new Observer<DelegateT>;
+    }
+    ~ObserverScope()
+    {
+        Shutdown();
+    }
 
-	// Release all references and recreate it
-	void ReleaseAll()
-	{
-		Shutdown();
-		TheObserver = *new Observer<DelegateT>;
-		if (TheHandler.IsValid())
-		{
-			TheObserver->SetHandler(TheHandler);
-		}
-	}
+    // Release all references and recreate it
+    void ReleaseAll()
+    {
+        Shutdown();
+        TheObserver = *new Observer<DelegateT>;
+        if (TheHandler.IsValid())
+        {
+            TheObserver->SetHandler(TheHandler);
+        }
+    }
 
-	void SetHandler(DelegateT handler)
-	{
-		TheHandler = handler;
-		TheObserver->SetHandler(handler);
-	}
+    void SetHandler(DelegateT handler)
+    {
+        TheHandler = handler;
+        TheObserver->SetHandler(handler);
+    }
 
-	Observer<DelegateT>* GetPtr()
-	{
-		return TheObserver.GetPtr();
-	}
-	Observer<DelegateT>* operator->()
-	{
-		return TheObserver.GetPtr();
-	}
-	const Observer<DelegateT>* operator->() const
-	{
-		return TheObserver.GetPtr();
-	}
-	operator Observer<DelegateT>*()
-	{
-		return TheObserver.GetPtr();
-	}
+    Observer<DelegateT>* GetPtr()
+    {
+        return TheObserver.GetPtr();
+    }
+    Observer<DelegateT>* operator->()
+    {
+        return TheObserver.GetPtr();
+    }
+    const Observer<DelegateT>* operator->() const
+    {
+        return TheObserver.GetPtr();
+    }
+    operator Observer<DelegateT>*()
+    {
+        return TheObserver.GetPtr();
+    }
 };
 
 
@@ -395,60 +395,60 @@ template<class DelegateT>
 class ObserverHash : public NewOverrideBase
 {
 public:
-	ObserverHash() {}
-	~ObserverHash() {Clear();}
-	void Clear()
-	{
-		Lock::Locker locker(&TheLock);
-		typename OVR::Hash< String, Ptr<Observer<DelegateT> >, OVR::String::HashFunctor >::Iterator it = _Hash.Begin();
-		for( it = _Hash.Begin(); it != _Hash.End(); ++it )
-		{
-			Ptr<Observer<DelegateT> > o = it->Second;
-			o->Shutdown();
-		}
-	}
+    ObserverHash() {}
+    ~ObserverHash() {Clear();}
+    void Clear()
+    {
+        Lock::Locker locker(&TheLock);
+        typename OVR::Hash< String, Ptr<Observer<DelegateT> >, OVR::String::HashFunctor >::Iterator it = _Hash.Begin();
+        for( it = _Hash.Begin(); it != _Hash.End(); ++it )
+        {
+            Ptr<Observer<DelegateT> > o = it->Second;
+            o->Shutdown();
+        }
+    }
 
-	Ptr<Observer<DelegateT> > GetSubject(OVR::String key)
-	{
-		Lock::Locker locker(&TheLock);
-		Ptr<Observer<DelegateT> > *o = _Hash.Get(key);
-		if (o)
-			return (*o);
-		return NULL;
-	}
+    Ptr<Observer<DelegateT> > GetSubject(OVR::String key)
+    {
+        Lock::Locker locker(&TheLock);
+        Ptr<Observer<DelegateT> > *o = _Hash.Get(key);
+        if (o)
+            return (*o);
+        return NULL;
+    }
 
-	// Add handler to new observer with implicit creation of subject.
-	void AddObserverToSubject(OVR::String key, Observer<DelegateT> *observer)
-	{
-		Lock::Locker locker(&TheLock);
-		Ptr<Observer<DelegateT> > *subjectPtr = _Hash.Get(key);
+    // Add handler to new observer with implicit creation of subject.
+    void AddObserverToSubject(OVR::String key, Observer<DelegateT> *observer)
+    {
+        Lock::Locker locker(&TheLock);
+        Ptr<Observer<DelegateT> > *subjectPtr = _Hash.Get(key);
 
-		if (subjectPtr==NULL)
-		{
-			Ptr<Observer<DelegateT> > subject = *new Observer<DelegateT>();
-			_Hash.Add(key, subject);
-			observer->Observe(subject);
-		}
-		else
-		{
-			observer->Observe(*subjectPtr);
-		}
-	}
+        if (subjectPtr==NULL)
+        {
+            Ptr<Observer<DelegateT> > subject = *new Observer<DelegateT>();
+            _Hash.Add(key, subject);
+            observer->Observe(subject);
+        }
+        else
+        {
+            observer->Observe(*subjectPtr);
+        }
+    }
 
-	void RemoveSubject(OVR::String key)
-	{
-		Lock::Locker locker(&TheLock);
-		Ptr<Observer<DelegateT> > *subjectPtr = _Hash.Get(key);
-		if (subjectPtr!=NULL)
-		{
-			(*subjectPtr)->Shutdown();
-			_Hash.Remove(key);
-		}
-	}
+    void RemoveSubject(OVR::String key)
+    {
+        Lock::Locker locker(&TheLock);
+        Ptr<Observer<DelegateT> > *subjectPtr = _Hash.Get(key);
+        if (subjectPtr!=NULL)
+        {
+            (*subjectPtr)->Shutdown();
+            _Hash.Remove(key);
+        }
+    }
 
 protected:
-	OVR::Hash< OVR::String, Ptr<Observer<DelegateT> >, OVR::String::HashFunctor > _Hash;
-	Lock                     TheLock;      // Lock to synchronize calls and shutdown
+    OVR::Hash< OVR::String, Ptr<Observer<DelegateT> >, OVR::String::HashFunctor > _Hash;
+    Lock                     TheLock;      // Lock to synchronize calls and shutdown
 };
 
 

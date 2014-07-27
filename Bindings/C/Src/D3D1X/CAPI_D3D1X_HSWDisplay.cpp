@@ -150,12 +150,12 @@ Texture* LoadTextureTga(RenderParams& rParams, ID3D1xSamplerState* pSamplerState
 
         // Create the D3D texture
         D3D1X_(TEXTURE2D_DESC) dsDesc;
-		dsDesc.Width              = width;
-		dsDesc.Height             = height;
+        dsDesc.Width              = width;
+        dsDesc.Height             = height;
         dsDesc.MipLevels          = 1;
         dsDesc.ArraySize          = 1;
         dsDesc.Format             = DXGI_FORMAT_R8G8B8A8_UNORM;
-		dsDesc.SampleDesc.Count   = 1;
+        dsDesc.SampleDesc.Count   = 1;
         dsDesc.SampleDesc.Quality = 0;
         dsDesc.Usage              = D3D1X_(USAGE_DEFAULT);
         dsDesc.BindFlags          = D3D1X_(BIND_SHADER_RESOURCE);
@@ -211,7 +211,7 @@ struct HASWVertex
 {
     Vector3f  Pos;
     Color     C;
-    float     U, V;	
+    float     U, V;    
 
     HASWVertex(const Vector3f& p, const Color& c = Color(64,0,0,255), float u = 0, float v = 0)
         : Pos(p), C(c), U(u), V(v)
@@ -249,7 +249,7 @@ bool HSWDisplay::Initialize(const ovrRenderAPIConfig* apiConfig)
 
     if(config)
     {
-        RenderParams.pDevice	   = config->D3D_NS.pDevice;
+        RenderParams.pDevice       = config->D3D_NS.pDevice;
         #if (OVR_D3D_VERSION == 10)    
         RenderParams.pContext      = config->D3D10.pDevice;
         #else
@@ -546,8 +546,8 @@ void HSWDisplay::RenderInternal(ovrEyeType eye, const ovrTexture* eyeTexture)
 
             if (vertexData)
             {
-		        UniformBufferArray[OVR::CAPI::D3D_NS::Shader_Vertex]->Data(OVR::CAPI::D3D_NS::Buffer_Uniform, vertexData, vShaderBase->UniformsSize);
-		        vShaderBase->SetUniformBuffer(UniformBufferArray[OVR::CAPI::D3D_NS::Shader_Vertex]);
+                UniformBufferArray[OVR::CAPI::D3D_NS::Shader_Vertex]->Data(OVR::CAPI::D3D_NS::Buffer_Uniform, vertexData, vShaderBase->UniformsSize);
+                vShaderBase->SetUniformBuffer(UniformBufferArray[OVR::CAPI::D3D_NS::Shader_Vertex]);
             }
 
             for (int i = (OVR::CAPI::D3D_NS::Shader_Vertex + 1); i < OVR::CAPI::D3D_NS::Shader_Count; i++)

@@ -469,7 +469,7 @@ limitations under the License.
         !(defined(__clang__) && defined(__cplusplus) && OVR_CC_HAS_FEATURE(cxx_static_assert)) &&                              \
         !(defined(_MSC_VER) && (_MSC_VER >= 1600) && defined(__cplusplus)) &&                 /* VS2010+  */                   \
         !(defined(__EDG_VERSION__) && (__EDG_VERSION__ >= 401) && defined(OVR_CPP11_ENABLED)) /* EDG 4.1+ */
-	    #define OVR_CPP_NO_STATIC_ASSERT 1
+        #define OVR_CPP_NO_STATIC_ASSERT 1
     #endif
 #endif
 

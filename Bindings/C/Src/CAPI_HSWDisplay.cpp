@@ -75,8 +75,8 @@ extern "C"
     {
         OVR::CAPI::HMDState* pHMDState = (OVR::CAPI::HMDState*)hmd->Handle;
 
-	    if (pHMDState)
-	    {
+        if (pHMDState)
+        {
             OVR::CAPI::HSWDisplay* pHSWDisplay = pHMDState->pHSWDisplay;
 
             if(pHSWDisplay)
@@ -239,7 +239,7 @@ bool HSWDisplay::TickState(ovrHSWDisplayState *hswDisplayState)
 
             if (ts.StatusFlags & ovrStatus_OrientationTracked) // If the Accelerometer data is valid...
             {
-				const OVR::Vector3f v(ts.HeadPose.LinearAcceleration.x, ts.HeadPose.LinearAcceleration.y, ts.HeadPose.LinearAcceleration.z);
+                const OVR::Vector3f v(ts.HeadPose.LinearAcceleration.x, ts.HeadPose.LinearAcceleration.y, ts.HeadPose.LinearAcceleration.z);
 
                 const float minTapMagnitude = 350.0f; // Empirically determined by some testing.
 

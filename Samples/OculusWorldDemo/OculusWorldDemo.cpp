@@ -4,7 +4,7 @@ Filename    :   OculusWorldDemo.cpp
 Content     :   First-person view test application for Oculus Rift - Implementation
 Created     :   October 4, 2012
 Authors     :   Michael Antonov, Andrew Reisse, Steve LaValle, Dov Katz
-				Peter Hoff, Dan Goodman, Bryan Croteau                
+                Peter Hoff, Dan Goodman, Bryan Croteau                
 
 Copyright   :   Copyright 2012 Oculus VR, Inc. All Rights reserved.
 
@@ -52,7 +52,7 @@ OculusWorldDemoApp::OculusWorldDemoApp()
       // Modifiable options.
       RendertargetIsSharedByBothEyes(false),
       DynamicRezScalingEnabled(false),
-	  EnableSensor(true),
+      EnableSensor(true),
       ForceZeroIpd(false),
       DesiredPixelDensity(1.0f),
       FovSideTanMax(1.0f), // Updated based on Hmd.
@@ -69,7 +69,7 @@ OculusWorldDemoApp::OculusWorldDemoApp()
       DynamicPrediction(true),
       DisplaySleep(false),
       PositionTrackingEnabled(true),
-	  PixelLuminanceOverdrive(true),
+      PixelLuminanceOverdrive(true),
       MirrorToWindow(true),
 
       // Scene state
@@ -80,11 +80,11 @@ OculusWorldDemoApp::OculusWorldDemoApp()
       BlocksShowType(0),
       BlocksCenter(0.0f, 0.0f, 0.0f)     
 {
-    FPS					= 0.0f;
-    SecondsPerFrame		= 0.0f;
-    FrameCounter		= 0;
-	TotalFrameCounter	= 0;
-    LastFpsUpdate		= 0;
+    FPS                    = 0.0f;
+    SecondsPerFrame        = 0.0f;
+    FrameCounter        = 0;
+    TotalFrameCounter    = 0;
+    LastFpsUpdate        = 0;
 
     EyeRenderSize[0] = EyeRenderSize[1] = Sizei(0);
 
@@ -100,9 +100,9 @@ OculusWorldDemoApp::~OculusWorldDemoApp()
         ovrHmd_Destroy(Hmd);
         Hmd = 0;
     }
-	    
-	CollisionModels.ClearAndRelease();
-	GroundCollisionModels.ClearAndRelease();
+        
+    CollisionModels.ClearAndRelease();
+    GroundCollisionModels.ClearAndRelease();
 
     ovr_Shutdown();
 }
@@ -117,18 +117,18 @@ int OculusWorldDemoApp::OnStartup(int argc, const char** argv)
 
     ovr_Initialize();
 
-	Hmd = ovrHmd_Create(0);
+    Hmd = ovrHmd_Create(0);
 
-	if (!Hmd)
-	{
-		// If we didn't detect an Hmd, create a simulated one for debugging.
-		Hmd = ovrHmd_CreateDebug(ovrHmd_DK1);
-		UsingDebugHmd = true;
-		if (!Hmd)
-		{   // Failed Hmd creation.
-			return 1;
-		}
-	}
+    if (!Hmd)
+    {
+        // If we didn't detect an Hmd, create a simulated one for debugging.
+        Hmd = ovrHmd_CreateDebug(ovrHmd_DK1);
+        UsingDebugHmd = true;
+        if (!Hmd)
+        {   // Failed Hmd creation.
+            return 1;
+        }
+    }
     
     if (Hmd->HmdCaps & ovrHmdCap_ExtendDesktop)
     {
@@ -156,7 +156,7 @@ int OculusWorldDemoApp::OnStartup(int argc, const char** argv)
 
     PositionTrackingEnabled = (Hmd->TrackingCaps & ovrTrackingCap_Position) ? true : false;
 
-	PixelLuminanceOverdrive = (Hmd->DistortionCaps & ovrDistortionCap_Overdrive) ? true : false;
+    PixelLuminanceOverdrive = (Hmd->DistortionCaps & ovrDistortionCap_Overdrive) ? true : false;
 
 
     // *** Configure HMD Stereo settings.
@@ -178,8 +178,8 @@ int OculusWorldDemoApp::OnStartup(int argc, const char** argv)
         Menu.SetPopupMessage("NO SENSOR DETECTED");
     else if (Hmd->HmdCaps & ovrHmdCap_ExtendDesktop)
         Menu.SetPopupMessage("Press F9 for Full-Screen on Rift");
-	else
-		Menu.SetPopupMessage("Please put on Rift");
+    else
+        Menu.SetPopupMessage("Please put on Rift");
 
     // Give first message 10 sec timeout, add border lines.
     Menu.SetPopupTimeout(10.0f, true);
@@ -192,7 +192,7 @@ int OculusWorldDemoApp::OnStartup(int argc, const char** argv)
     PopulatePreloadScene();
     
     LastUpdate = ovr_GetTimeInSeconds();
-	
+    
     return 0;
 }
 
@@ -201,12 +201,12 @@ bool OculusWorldDemoApp::SetupWindowAndRendering(int argc, const char** argv)
 {
     // *** Window creation
 
-	void* windowHandle = pPlatform->SetupWindow(WindowSize.w, WindowSize.h);
+    void* windowHandle = pPlatform->SetupWindow(WindowSize.w, WindowSize.h);
 
-	if(!windowHandle)
+    if(!windowHandle)
         return false;
     
-	ovrHmd_AttachToWindow( Hmd, windowHandle, NULL, NULL );
+    ovrHmd_AttachToWindow( Hmd, windowHandle, NULL, NULL );
 
     // Report relative mouse motion in OnMouseMove
     pPlatform->SetMouseMode(Mouse_Relative);
@@ -337,7 +337,7 @@ void OculusWorldDemoApp::PopulateOptionMenu()
 
     // Timewarp
     Menu.AddBool( "Timewarp.TimewarpEnabled 'O'",   &TimewarpEnabled).AddShortcutKey(Key_O).
-    																SetNotify(this, &OWD::HmdSettingChange);
+                                                                    SetNotify(this, &OWD::HmdSettingChange);
     Menu.AddBool( "Timewarp.Timewarp No-JIT",       &TimewarpNoJitEnabled).SetNotify(this, &OWD::HmdSettingChange);
     Menu.AddBool( "Timewarp.FreezeEyeUpdate 'C'",   &FreezeEyeUpdate).AddShortcutKey(Key_C);
     Menu.AddFloat("Timewarp.RenderIntervalSeconds", &TimewarpRenderIntervalInSeconds,   
@@ -367,7 +367,7 @@ void OculusWorldDemoApp::PopulateOptionMenu()
                                                   AddShortcutKey(Key_Z).SetNotify(this, &OWD::HmdSettingChange);
         Menu.AddBool("Positional Tracking 'X'", &PositionTrackingEnabled).
                                                   AddShortcutKey(Key_X).SetNotify(this, &OWD::HmdSettingChange);
-		Menu.AddBool("Pixel Luminance Overdrive", &PixelLuminanceOverdrive).SetNotify(this, &OWD::HmdSettingChange);        
+        Menu.AddBool("Pixel Luminance Overdrive", &PixelLuminanceOverdrive).SetNotify(this, &OWD::HmdSettingChange);        
     }
 
     if (!(Hmd->HmdCaps & ovrHmdCap_ExtendDesktop))
@@ -494,12 +494,12 @@ void OculusWorldDemoApp::CalculateHmdValues()
     ovrHmd_SetEnabledCaps(Hmd, hmdCaps);
 
 
-	ovrRenderAPIConfig config         = pRender->Get_ovrRenderAPIConfig();
+    ovrRenderAPIConfig config         = pRender->Get_ovrRenderAPIConfig();
     unsigned           distortionCaps = ovrDistortionCap_Chromatic |
-										ovrDistortionCap_Vignette |
-										ovrDistortionCap_SRGB;
-	if(PixelLuminanceOverdrive)
-		distortionCaps |= ovrDistortionCap_Overdrive;
+                                        ovrDistortionCap_Vignette |
+                                        ovrDistortionCap_SRGB;
+    if(PixelLuminanceOverdrive)
+        distortionCaps |= ovrDistortionCap_Overdrive;
     if (TimewarpEnabled)
         distortionCaps |= ovrDistortionCap_TimeWarp;
     if(TimewarpNoJitEnabled)
@@ -664,7 +664,7 @@ void OculusWorldDemoApp::OnKey(OVR::KeyCode key, int chr, bool down, int modifie
         if (!down) ChangeDisplay ( false, false, true );
         break;
         
-	case Key_Space:
+    case Key_Space:
         if (!down)
         {
             TextScreen = (enum TextScreen)((TextScreen + 1) % Text_Count);
@@ -792,12 +792,12 @@ void OculusWorldDemoApp::OnIdle()
     HmdStatus = ss.StatusFlags;
 
     // Report vision tracking
-	bool hadVisionTracking = HaveVisionTracking;
-	HaveVisionTracking = (ss.StatusFlags & ovrStatus_PositionTracked) != 0;
-	if (HaveVisionTracking && !hadVisionTracking)
-		Menu.SetPopupMessage("Vision Tracking Acquired");
+    bool hadVisionTracking = HaveVisionTracking;
+    HaveVisionTracking = (ss.StatusFlags & ovrStatus_PositionTracked) != 0;
+    if (HaveVisionTracking && !hadVisionTracking)
+        Menu.SetPopupMessage("Vision Tracking Acquired");
     if (!HaveVisionTracking && hadVisionTracking)
-		Menu.SetPopupMessage("Lost Vision Tracking");
+        Menu.SetPopupMessage("Lost Vision Tracking");
 
     // Report position tracker
     bool hadPositionTracker = HavePositionTracker;
@@ -1012,7 +1012,7 @@ void OculusWorldDemoApp::ApplyDynamicResolutionScaling()
 void OculusWorldDemoApp::UpdateFrameRateCounter(double curtime)
 {
     FrameCounter++;
-	TotalFrameCounter++;
+    TotalFrameCounter++;
     float secondsSinceLastMeasurement = (float)( curtime - LastFpsUpdate );
 
     if (secondsSinceLastMeasurement >= SecondsOfFpsMeasurement)
@@ -1047,17 +1047,17 @@ void OculusWorldDemoApp::RenderEyeView(ovrEyeType eye)
             MainScene.Render(pRender, viewAdjust * View);        
             RenderAnimatedBlocks(eye, ovr_GetTimeInSeconds());
         }
-	    
+        
         if (SceneMode == Scene_Cubes)
-	    {
+        {
             // Draw scene cubes overlay. Red if position tracked, blue otherwise.
             Scene sceneCubes = (HmdStatus & ovrStatus_PositionTracked) ?
                                RedCubesScene : BlueCubesScene;        
             sceneCubes.Render(pRender, viewAdjust * View * baseTranslate * baseYaw);
         }
 
-	    else if (SceneMode == Scene_OculusCubes)
-	    {
+        else if (SceneMode == Scene_OculusCubes)
+        {
             OculusCubesScene.Render(pRender, viewAdjust * View * baseTranslate * baseYaw);
         }
     }   
@@ -1100,23 +1100,23 @@ void OculusWorldDemoApp::RenderEyeView(ovrEyeType eye)
 
 // NOTE - try to keep these in sync with the PDF docs!
 static const char* HelpText1 =
-    "Spacebar 	            \t500 Toggle debug info overlay\n"
-    "W, S            	    \t500 Move forward, back\n"
-    "A, D 		    	    \t500 Strafe left, right\n"
-    "Mouse move 	        \t500 Look left, right\n"
+    "Spacebar                 \t500 Toggle debug info overlay\n"
+    "W, S                    \t500 Move forward, back\n"
+    "A, D                     \t500 Strafe left, right\n"
+    "Mouse move             \t500 Look left, right\n"
     "Left gamepad stick     \t500 Move\n"
     "Right gamepad stick    \t500 Turn\n"
-    "T			            \t500 Reset player position";
+    "T                        \t500 Reset player position";
     
 static const char* HelpText2 =        
     "R              \t250 Reset sensor orientation\n"
-    "G 			    \t250 Cycle grid overlay mode\n"
+    "G                 \t250 Cycle grid overlay mode\n"
     "-, +           \t250 Adjust eye height\n"
     "Esc            \t250 Cancel full-screen\n"
-    "F4			    \t250 Multisampling toggle\n"    
+    "F4                \t250 Multisampling toggle\n"    
     "F9             \t250 Hardware full-screen (low latency)\n"
     "F11            \t250 Faked full-screen (easier debugging)\n"
-    "Ctrl+Q		    \t250 Quit";
+    "Ctrl+Q            \t250 Quit";
 
 
 void FormatLatencyReading(char* buff, size_t size, float val)
@@ -1238,19 +1238,19 @@ void OculusWorldDemoApp::RenderTextInfoHud(float textHeight)
 
 void OculusWorldDemoApp::HmdSensorToggle(OptionVar*)
 {
-	if (EnableSensor)
-	{
-		EnableSensor = false;
-		ovrHmd_ConfigureTracking(Hmd, 0, 0);
-	}
-	else
-	{
-		EnableSensor = true;
-		if (!ovrHmd_ConfigureTracking(Hmd, StartTrackingCaps, 0))
-		{
-			OVR_ASSERT(false);
-		}
-	}
+    if (EnableSensor)
+    {
+        EnableSensor = false;
+        ovrHmd_ConfigureTracking(Hmd, 0, 0);
+    }
+    else
+    {
+        EnableSensor = true;
+        if (!ovrHmd_ConfigureTracking(Hmd, StartTrackingCaps, 0))
+        {
+            OVR_ASSERT(false);
+        }
+    }
 }
 
 void OculusWorldDemoApp::HmdSettingChangeFreeRTs(OptionVar*)

@@ -104,29 +104,29 @@ void Session::Shutdown()
 
 SessionResult Session::Listen(ListenerDescription* pListenerDescription)
 {
-	if (pListenerDescription->Transport == TransportType_PacketizedTCP)
-	{
-		BerkleyListenerDescription* bld = (BerkleyListenerDescription*)pListenerDescription;
-		TCPSocket* tcpSocket = (TCPSocket*)bld->BoundSocketToListenWith.GetPtr();
+    if (pListenerDescription->Transport == TransportType_PacketizedTCP)
+    {
+        BerkleyListenerDescription* bld = (BerkleyListenerDescription*)pListenerDescription;
+        TCPSocket* tcpSocket = (TCPSocket*)bld->BoundSocketToListenWith.GetPtr();
 
         if (tcpSocket->Listen() < 0)
         {
             return SessionResult_ListenFailure;
         }
 
-		Lock::Locker locker(&SocketListenersLock);
+        Lock::Locker locker(&SocketListenersLock);
         SocketListeners.PushBack(tcpSocket);
-	}
+    }
     else if (pListenerDescription->Transport == TransportType_Loopback)
-	{
-		HasLoopbackListener = true;
-	}
+    {
+        HasLoopbackListener = true;
+    }
     else
     {
         OVR_ASSERT(false);
     }
 
-	return SessionResult_OK;
+    return SessionResult_OK;
 }
 
 SessionResult Session::Connect(ConnectParameters *cp)
@@ -179,11 +179,11 @@ SessionResult Session::Connect(ConnectParameters *cp)
             else
                 return SessionResult_ConnectFailure;
         }
-	}
+    }
     else if (cp->Transport == TransportType_Loopback)
-	{
-		if (HasLoopbackListener)
-		{
+    {
+        if (HasLoopbackListener)
+        {
             Ptr<Connection> c = AllocConnection(cp->Transport);
             if (!c)
             {
@@ -198,31 +198,31 @@ SessionResult Session::Connect(ConnectParameters *cp)
                 AllConnections.PushBack(c);
             }
 
-			invokeSessionEvent(&SessionListener::OnConnectionRequestAccepted, c);
-		}
-		else
-		{
+            invokeSessionEvent(&SessionListener::OnConnectionRequestAccepted, c);
+        }
+        else
+        {
             OVR_ASSERT(false);
-		}
-	}
+        }
+    }
     else
     {
         OVR_ASSERT(false);
     }
 
-	return SessionResult_OK;
+    return SessionResult_OK;
 }
 
 SessionResult Session::ListenPTCP(OVR::Net::BerkleyBindParameters *bbp)
 {
-	Ptr<PacketizedTCPSocket> listenSocket = *new OVR::Net::PacketizedTCPSocket();
+    Ptr<PacketizedTCPSocket> listenSocket = *new OVR::Net::PacketizedTCPSocket();
     if (listenSocket->Bind(bbp) == INVALID_SOCKET)
     {
         return SessionResult_BindFailure;
     }
 
-	BerkleyListenerDescription bld;
-	bld.BoundSocketToListenWith = listenSocket.GetPtr();
+    BerkleyListenerDescription bld;
+    bld.BoundSocketToListenWith = listenSocket.GetPtr();
     bld.Transport = TransportType_PacketizedTCP;
 
     return Listen(&bld);
@@ -230,19 +230,19 @@ SessionResult Session::ListenPTCP(OVR::Net::BerkleyBindParameters *bbp)
 
 SessionResult Session::ConnectPTCP(OVR::Net::BerkleyBindParameters* bbp, SockAddr* RemoteAddress, bool blocking)
 {
-	ConnectParametersBerkleySocket cp;
+    ConnectParametersBerkleySocket cp;
     cp.RemoteAddress = RemoteAddress;
     cp.Transport = TransportType_PacketizedTCP;
     cp.Blocking = blocking;
     Ptr<PacketizedTCPSocket> connectSocket = *new PacketizedTCPSocket();
 
-	cp.BoundSocketToConnectWith = connectSocket.GetPtr();
+    cp.BoundSocketToConnectWith = connectSocket.GetPtr();
     if (connectSocket->Bind(bbp) == INVALID_SOCKET)
     {
         return SessionResult_BindFailure;
     }
 
-	return Connect(&cp);
+    return Connect(&cp);
 }
 
 Ptr<PacketizedTCPConnection> Session::findConnectionBySockAddr(SockAddr* address)
@@ -268,38 +268,38 @@ Ptr<PacketizedTCPConnection> Session::findConnectionBySockAddr(SockAddr* address
 
 int Session::Send(SendParameters *payload)
 {
-	if (payload->pConnection->Transport == TransportType_Loopback)
-	{
-		Lock::Locker locker(&SessionListenersLock);
+    if (payload->pConnection->Transport == TransportType_Loopback)
+    {
+        Lock::Locker locker(&SessionListenersLock);
 
         const int count = SessionListeners.GetSizeI();
         for (int i = 0; i < count; ++i)
-		{
-			SessionListener* sl = SessionListeners[i];
+        {
+            SessionListener* sl = SessionListeners[i];
 
             // FIXME: This looks like it needs to be reviewed at some point..
-			ReceivePayload rp;
-			rp.Bytes = payload->Bytes;
-			rp.pConnection = payload->pConnection;
-			rp.pData = (uint8_t*)payload->pData; // FIXME
-			ListenerReceiveResult lrr = LRR_CONTINUE;
-			sl->OnReceive(&rp, &lrr);
-			if (lrr==LRR_RETURN)
-				return payload->Bytes;
-			else if (lrr == LRR_BREAK)
-			{
-				break;
-			}	
-		}
+            ReceivePayload rp;
+            rp.Bytes = payload->Bytes;
+            rp.pConnection = payload->pConnection;
+            rp.pData = (uint8_t*)payload->pData; // FIXME
+            ListenerReceiveResult lrr = LRR_CONTINUE;
+            sl->OnReceive(&rp, &lrr);
+            if (lrr==LRR_RETURN)
+                return payload->Bytes;
+            else if (lrr == LRR_BREAK)
+            {
+                break;
+            }    
+        }
 
-		return payload->Bytes;
-	}
+        return payload->Bytes;
+    }
     else if (payload->pConnection->Transport == TransportType_PacketizedTCP)
-	{
-		PacketizedTCPConnection* conn = (PacketizedTCPConnection*)payload->pConnection.GetPtr();
+    {
+        PacketizedTCPConnection* conn = (PacketizedTCPConnection*)payload->pConnection.GetPtr();
 
         return conn->pSocket->Send(payload->pData, payload->Bytes);
-	}
+    }
     else
     {
         OVR_ASSERT(false);
@@ -326,18 +326,18 @@ void Session::Broadcast(BroadcastParameters *payload)
 }
 void Session::Poll(bool listeners)
 {
-	Array< Ptr< Net::TCPSocket > > allBlockingTcpSockets;
+    Array< Ptr< Net::TCPSocket > > allBlockingTcpSockets;
 
-	if (listeners)
-	{
-		Lock::Locker locker(&SocketListenersLock);
+    if (listeners)
+    {
+        Lock::Locker locker(&SocketListenersLock);
 
         const int listenerCount = SocketListeners.GetSizeI();
         for (int i = 0; i < listenerCount; ++i)
-		{
+        {
             allBlockingTcpSockets.PushBack(SocketListeners[i]);
-		}
-	}
+        }
+    }
 
     {
         Lock::Locker locker(&ConnectionsLock);
@@ -361,8 +361,8 @@ void Session::Poll(bool listeners)
     }
 
     const int count = allBlockingTcpSockets.GetSizeI();
-	if (count > 0)
-	{
+    if (count > 0)
+    {
         TCPSocketPollState state;
 
         // Add all the sockets for polling,
@@ -392,12 +392,12 @@ void Session::Poll(bool listeners)
                 state.HandleEvent(allBlockingTcpSockets[i], this);
             }
         }
-	}
+    }
 }
 
 void Session::AddSessionListener(SessionListener* se)
 {
-	Lock::Locker locker(&SessionListenersLock);
+    Lock::Locker locker(&SessionListenersLock);
 
     const int count = SessionListeners.GetSizeI();
     for (int i = 0; i < count; ++i)
@@ -410,24 +410,24 @@ void Session::AddSessionListener(SessionListener* se)
     }
 
     SessionListeners.PushBack(se);
-	se->OnAddedToSession(this);
+    se->OnAddedToSession(this);
 }
 
 void Session::RemoveSessionListener(SessionListener* se)
 {
-	Lock::Locker locker(&SessionListenersLock);
+    Lock::Locker locker(&SessionListenersLock);
 
     const int count = SessionListeners.GetSizeI();
-	for (int i = 0; i < count; ++i)
-	{
+    for (int i = 0; i < count; ++i)
+    {
         if (SessionListeners[i] == se)
-		{
+        {
             se->OnRemovedFromSession(this);
 
             SessionListeners.RemoveAtUnordered(i);
             break;
-		}
-	}
+        }
+    }
 }
 SInt32 Session::GetActiveSocketsCount()
 {
@@ -496,7 +496,7 @@ int Session::invokeSessionListeners(ReceivePayload* rp)
 
 void Session::TCP_OnRecv(Socket* pSocket, uint8_t* pData, int bytesRead)
 {
-	Lock::Locker locker(&ConnectionsLock);
+    Lock::Locker locker(&ConnectionsLock);
 
     // Look for the connection in the full connection list first
     int connIndex;
@@ -586,7 +586,7 @@ void Session::TCP_OnRecv(Socket* pSocket, uint8_t* pData, int bytesRead)
 
 void Session::TCP_OnClosed(TCPSocket* s)
 {
-	Lock::Locker locker(&ConnectionsLock);
+    Lock::Locker locker(&ConnectionsLock);
 
     // If found in the full connection list,
     int connIndex;
@@ -626,10 +626,10 @@ void Session::TCP_OnClosed(TCPSocket* s)
 void Session::TCP_OnAccept(TCPSocket* pListener, SockAddr* pSockAddr, SocketHandle newSock)
 {
     OVR_UNUSED(pListener);
-	OVR_ASSERT(pListener->Transport == TransportType_PacketizedTCP);
+    OVR_ASSERT(pListener->Transport == TransportType_PacketizedTCP);
 
 
-	Ptr<PacketizedTCPSocket> newSocket = *new PacketizedTCPSocket(newSock, false);
+    Ptr<PacketizedTCPSocket> newSocket = *new PacketizedTCPSocket(newSock, false);
     // If pSockAddr is not localhost, then close newSock
     if (pSockAddr->IsLocalhost()==false)
     {
@@ -637,12 +637,12 @@ void Session::TCP_OnAccept(TCPSocket* pListener, SockAddr* pSockAddr, SocketHand
         return;
     }
 
-	if (newSocket)
-	{
-		Ptr<Connection> b = AllocConnection(TransportType_PacketizedTCP);
-		Ptr<PacketizedTCPConnection> c = (PacketizedTCPConnection*)b.GetPtr();
-		c->pSocket = newSocket;
-		c->Address = *pSockAddr;
+    if (newSocket)
+    {
+        Ptr<Connection> b = AllocConnection(TransportType_PacketizedTCP);
+        Ptr<PacketizedTCPConnection> c = (PacketizedTCPConnection*)b.GetPtr();
+        c->pSocket = newSocket;
+        c->Address = *pSockAddr;
         c->State = Server_ConnectedWait;
 
         {
@@ -651,7 +651,7 @@ void Session::TCP_OnAccept(TCPSocket* pListener, SockAddr* pSockAddr, SocketHand
         }
 
         // Server does not send the first packet.  It waits for the client to send its version
-	}
+    }
 }
 
 void Session::TCP_OnConnected(TCPSocket *s)

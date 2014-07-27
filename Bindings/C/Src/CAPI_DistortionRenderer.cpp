@@ -137,7 +137,7 @@ double DistortionRenderer::WaitTillTime(double absTime)
         {
             for (int j = 0; j < 50; j++)
                 i = 0;
-        }			
+        }            
 
         newTime = ovr_GetTimeInSeconds();
     }

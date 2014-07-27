@@ -84,4 +84,4 @@ typedef union ovrGLTexture_s
     ovrGLTextureData OGL;
 } ovrGLTexture;
 
-#endif	// OVR_CAPI_GL_h
+#endif    // OVR_CAPI_GL_h

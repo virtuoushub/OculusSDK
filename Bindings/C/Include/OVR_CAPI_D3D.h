@@ -49,7 +49,7 @@ struct ovrD3D11ConfigData
     /// General device settings.
     ovrRenderAPIConfigHeader Header;
     /// The D3D device to use for rendering.
-	ID3D11Device*            pDevice;
+    ID3D11Device*            pDevice;
     /// The D3D device context to use for rendering.
     ID3D11DeviceContext*     pDeviceContext;
     /// A render target view for the backbuffer.
@@ -142,7 +142,7 @@ struct ovrD3D9ConfigData
     // General device settings.
     ovrRenderAPIConfigHeader Header;
     
-	IDirect3DDevice9*           pDevice;
+    IDirect3DDevice9*           pDevice;
     IDirect3DSwapChain9*        pSwapChain;
 };
 
@@ -168,6 +168,6 @@ union ovrD3D9Texture
 
 #endif
 
-#endif	// OVR_CAPI_h
+#endif    // OVR_CAPI_h
 
 #endif

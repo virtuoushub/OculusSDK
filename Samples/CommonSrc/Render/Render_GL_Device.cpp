@@ -307,21 +307,21 @@ static const char* AlphaTextureFragShaderSrc =
     "}\n";
 
 static const char* AlphaBlendedTextureFragShaderSrc =
-	"#version 110\n"
+    "#version 110\n"
 
-	"uniform sampler2D Texture0;\n"
+    "uniform sampler2D Texture0;\n"
 
-	"varying vec4 oColor;\n"
-	"varying vec2 oTexCoord;\n"
+    "varying vec4 oColor;\n"
+    "varying vec2 oTexCoord;\n"
 
-	"void main()\n"
-	"{\n"
+    "void main()\n"
+    "{\n"
     "   vec4 finalColor = oColor;\n"
     "   finalColor *= texture2D(Texture0, oTexCoord);\n"
     // Blend state expects premultiplied alpha
     "   finalColor.rgb *= finalColor.a;\n"
-	"   gl_FragColor = finalColor;\n"
-	"}\n";
+    "   gl_FragColor = finalColor;\n"
+    "}\n";
 
 static const char* MultiTextureFragShaderSrc =
     "#version 110\n"
@@ -335,15 +335,15 @@ static const char* MultiTextureFragShaderSrc =
     
     "void main()\n"
     "{\n"
-	"	vec4 color = texture2D(Texture0, oTexCoord);\n"
+    "    vec4 color = texture2D(Texture0, oTexCoord);\n"
     
-	"	gl_FragColor = texture2D(Texture1, oTexCoord1);\n"
-	"	gl_FragColor.rgb = gl_FragColor.rgb * mix(1.9, 1.2, clamp(length(gl_FragColor.rgb),0.0,1.0));\n"
+    "    gl_FragColor = texture2D(Texture1, oTexCoord1);\n"
+    "    gl_FragColor.rgb = gl_FragColor.rgb * mix(1.9, 1.2, clamp(length(gl_FragColor.rgb),0.0,1.0));\n"
     
-	"	gl_FragColor = color * gl_FragColor;\n"
+    "    gl_FragColor = color * gl_FragColor;\n"
     
-	"   if (gl_FragColor.a <= 0.6)\n"
-	"		discard;\n"
+    "   if (gl_FragColor.a <= 0.6)\n"
+    "        discard;\n"
     "}\n";
 
 static const char* PostProcessMeshFragShaderSrc =
@@ -454,12 +454,12 @@ static const char* PostProcessMeshTimewarpVertexShaderSrc =
     // Accurate time warp lerp vs. faster
 #if 0
     // Apply the two 3x3 timewarp rotations to these vectors.
-	"   vec3 TransformedRStart = (EyeRotationStart * vec4(TanEyeAngleR, 0)).xyz;\n"
-	"   vec3 TransformedGStart = (EyeRotationStart * vec4(TanEyeAngleG, 0)).xyz;\n"
-	"   vec3 TransformedBStart = (EyeRotationStart * vec4(TanEyeAngleB, 0)).xyz;\n"
-	"   vec3 TransformedREnd   = (EyeRotationEnd * vec4(TanEyeAngleR, 0)).xyz;\n"
-	"   vec3 TransformedGEnd   = (EyeRotationEnd * vec4(TanEyeAngleG, 0)).xyz;\n"
-	"   vec3 TransformedBEnd   = (EyeRotationEnd * vec4(TanEyeAngleB, 0)).xyz;\n"
+    "   vec3 TransformedRStart = (EyeRotationStart * vec4(TanEyeAngleR, 0)).xyz;\n"
+    "   vec3 TransformedGStart = (EyeRotationStart * vec4(TanEyeAngleG, 0)).xyz;\n"
+    "   vec3 TransformedBStart = (EyeRotationStart * vec4(TanEyeAngleB, 0)).xyz;\n"
+    "   vec3 TransformedREnd   = (EyeRotationEnd * vec4(TanEyeAngleR, 0)).xyz;\n"
+    "   vec3 TransformedGEnd   = (EyeRotationEnd * vec4(TanEyeAngleG, 0)).xyz;\n"
+    "   vec3 TransformedBEnd   = (EyeRotationEnd * vec4(TanEyeAngleB, 0)).xyz;\n"
     // And blend between them.
     "   vec3 TransformedR = mix ( TransformedRStart, TransformedREnd, Color.a );\n"
     "   vec3 TransformedG = mix ( TransformedGStart, TransformedGEnd, Color.a );\n"
@@ -525,7 +525,7 @@ PostProcessMeshTimewarpVertexShaderSrc;
     "{\n"
     "   vec2 eyeToSourceTexCoord = inTexCoord * EyeToSourceUVScale + EyeToSourceUVOffset;\n"
     "   eyeToSourceTexCoord.y = 1.0 - eyeToSourceTexCoord.y;\n"
-	"   float depth = texelFetch(Texture0, ivec2(eyeToSourceTexCoord * DepthDimSize), 0).x;\n" //FIXME: Use Texture2DLod for #version 110 support.
+    "   float depth = texelFetch(Texture0, ivec2(eyeToSourceTexCoord * DepthDimSize), 0).x;\n" //FIXME: Use Texture2DLod for #version 110 support.
     "   float linearDepth = DepthProjector.y / (depth - DepthProjector.x);\n"
     "   vec4 retVal = vec4(inTexCoord, 1, 1);\n"
     "   retVal.xyz *= linearDepth;\n"
@@ -615,7 +615,7 @@ PostProcessMeshTimewarpVertexShaderSrc;
     "   lerpedEyeRot[1] = mix(EyeXformStart[1], EyeXformEnd[1], timewarpLerpFactor);\n"
     "   lerpedEyeRot[2] = mix(EyeXformStart[2], EyeXformEnd[2], timewarpLerpFactor);\n"
     "   lerpedEyeRot[3] = mix(EyeXformStart[3], EyeXformEnd[3], timewarpLerpFactor);\n"
-    //"	float4x4 lerpedEyeRot = EyeXformStart;\n"
+    //"    float4x4 lerpedEyeRot = EyeXformStart;\n"
 
     // warped positions are a bit more involved, hence a separate function
     "   gl_Position = TimewarpPos(Position.xy, oTexCoord0, lerpedEyeRot);\n"
@@ -641,7 +641,7 @@ static const char* PostProcessFragShaderWithChromAbSrc =
     "varying vec4 oPosition;\n"
     "varying vec2 oTexCoord;\n"
 
-	"void main()\n"
+    "void main()\n"
     "{\n"
     // Input oTexCoord is [-1,1] across the half of the screen used for a single eye.
     "   vec2 TanEyeAngleDistorted = oTexCoord * TanEyeAngleScale + TanEyeAngleOffset;\n" // Scales to tan(thetaX),tan(thetaY), but still distorted (i.e. only the center is correct)
@@ -660,15 +660,15 @@ static const char* PostProcessFragShaderWithChromAbSrc =
 
     // Scale them into ([0,0.5],[0,1]) or ([0.5,0],[0,1]) UV lookup space (depending on eye)
     "   vec2 SourceCoordR = TanEyeAngleR * EyeToSourceUVScale + EyeToSourceUVOffset;\n"
-	"	SourceCoordR.y = 1.0 - SourceCoordR.y;\n"
+    "    SourceCoordR.y = 1.0 - SourceCoordR.y;\n"
     "   vec2 SourceCoordG = TanEyeAngleG * EyeToSourceUVScale + EyeToSourceUVOffset;\n"
-	"	SourceCoordG.y = 1.0 - SourceCoordG.y;\n"
+    "    SourceCoordG.y = 1.0 - SourceCoordG.y;\n"
     "   vec2 SourceCoordB = TanEyeAngleB * EyeToSourceUVScale + EyeToSourceUVOffset;\n"
-	"	SourceCoordB.y = 1.0 - SourceCoordB.y;\n"
+    "    SourceCoordB.y = 1.0 - SourceCoordB.y;\n"
 
     // Find the distance to the nearest edge.
     "   vec2 NDCCoord = TanEyeAngleG * EyeToSourceNDCScale + EyeToSourceNDCOffset;\n"
-	"   float EdgeFadeIn = clamp ( EdgeFadeScale, 0.0, 1e5 ) * ( 1.0 - max ( abs ( NDCCoord.x ), abs ( NDCCoord.y ) ) );\n"
+    "   float EdgeFadeIn = clamp ( EdgeFadeScale, 0.0, 1e5 ) * ( 1.0 - max ( abs ( NDCCoord.x ), abs ( NDCCoord.y ) ) );\n"
     "   if ( EdgeFadeIn < 0.0 )\n"
     "   {\n"
     "       gl_FragColor = vec4(DistortionClearColor.r, DistortionClearColor.g, DistortionClearColor.b, 1.0);\n"
@@ -691,7 +691,7 @@ static const char* VShaderSrcs[VShader_Count] =
     DirectVertexShaderSrc,
     StdVertexShaderSrc,
     PostProcessVertexShaderSrc,
-	PostProcessMeshVertexShaderSrc,
+    PostProcessMeshVertexShaderSrc,
     PostProcessMeshTimewarpVertexShaderSrc,
     PostProcessMeshPositionalTimewarpVertexShaderSrc,
     PostProcessHeightmapTimewarpVertexShaderSrc,
@@ -702,7 +702,7 @@ static const char* FShaderSrcs[FShader_Count] =
     GouraudFragShaderSrc,
     TextureFragShaderSrc,
     AlphaTextureFragShaderSrc,
-	AlphaBlendedTextureFragShaderSrc,
+    AlphaBlendedTextureFragShaderSrc,
     PostProcessFragShaderWithChromAbSrc,
     LitSolidFragShaderSrc,
     LitTextureFragShaderSrc,
@@ -752,7 +752,7 @@ RenderDevice::RenderDevice(const RendererParams&)
 #undef _OVR_SSCANF
 
     OVR_ASSERT( isES == false );
-	OVR_ASSERT(GlMajorVersion >= 2);
+    OVR_ASSERT(GlMajorVersion >= 2);
 
     const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
     SupportsVao         = (GlMajorVersion >= 3) || (strstr("GL_ARB_vertex_array_object", extensions) != NULL);
@@ -792,7 +792,7 @@ void RenderDevice::Shutdown()
     
     // This runs before the subclass's Shutdown(), where the context, etc, may be deleted.
 
-	glDeleteFramebuffers(1, &CurrentFbo);
+    glDeleteFramebuffers(1, &CurrentFbo);
     
     if (SupportsVao)
         glDeleteVertexArrays(1, &Vao);
@@ -810,7 +810,7 @@ void RenderDevice::Shutdown()
 
 void RenderDevice::FillTexturedRect(float left, float top, float right, float bottom, float ul, float vt, float ur, float vb, Color c, Ptr<OVR::Render::Texture> tex)
 {
-	Render::RenderDevice::FillTexturedRect(left, top, right, bottom, ul, vb, ur, vt, c, tex);
+    Render::RenderDevice::FillTexturedRect(left, top, right, bottom, ul, vb, ur, vt, c, tex);
 }
 
 
@@ -857,24 +857,24 @@ void RenderDevice::SetDepthMode(bool enable, bool write, CompareFunc func)
 
 void RenderDevice::SetViewport(const Recti& vp)
 {
-	int wh;
-	if (CurRenderTarget)
-		wh = CurRenderTarget->Height;
-	else
-		wh = WindowHeight;
-	glViewport(vp.x, wh - vp.y - vp.h, vp.w, vp.h);
+    int wh;
+    if (CurRenderTarget)
+        wh = CurRenderTarget->Height;
+    else
+        wh = WindowHeight;
+    glViewport(vp.x, wh - vp.y - vp.h, vp.w, vp.h);
 }
 
 void RenderDevice::WaitUntilGpuIdle()
 {
-	glFlush();
-	glFinish();
+    glFlush();
+    glFinish();
 }
 
 void RenderDevice::Clear(float r, float g, float b, float a, float depth, bool clearColor /*= true*/, bool clearDepth /*= true*/)
 {
-	glClearColor(r,g,b,a);
-	glClearDepth(depth);
+    glClearColor(r,g,b,a);
+    glClearDepth(depth);
     glClear(
         ( clearColor ? ( GL_COLOR_BUFFER_BIT ) : 0 ) |
         ( clearDepth ? ( GL_DEPTH_BUFFER_BIT ) : 0 )
@@ -902,9 +902,9 @@ void RenderDevice::SetRenderTarget(Render::Texture* color, Render::Texture* dept
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         return;
     }
-	
-	if (depth == NULL)
-		depth = GetDepthBuffer(color->GetWidth(), color->GetHeight(), CurRenderTarget->GetSamples());
+    
+    if (depth == NULL)
+        depth = GetDepthBuffer(color->GetWidth(), color->GetHeight(), CurRenderTarget->GetSamples());
 
     glBindFramebuffer(GL_FRAMEBUFFER, CurrentFbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ((Texture*)color)->TexId, 0);
@@ -999,11 +999,11 @@ void RenderDevice::Render(const Fill* fill, Render::Buffer* vertices, Render::Bu
         Lighting->Set(shaders);
     }
 
-	glBindBuffer(GL_ARRAY_BUFFER, ((Buffer*)vertices)->GLBuffer);
-	for (int i = 0; i < 5; i++)
-		glEnableVertexAttribArray(i);
+    glBindBuffer(GL_ARRAY_BUFFER, ((Buffer*)vertices)->GLBuffer);
+    for (int i = 0; i < 5; i++)
+        glEnableVertexAttribArray(i);
 
-	switch (meshType)
+    switch (meshType)
     {
     case Mesh_Distortion:
         glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(DistortionVertex), reinterpret_cast<char*>(offset) + offsetof(DistortionVertex, Pos));
@@ -1036,8 +1036,8 @@ void RenderDevice::Render(const Fill* fill, Render::Buffer* vertices, Render::Bu
         glDrawArrays(prim, 0, count);
     }
 
-	for (int i = 0; i < 5; i++)
-		glDisableVertexAttribArray(i);
+    for (int i = 0; i < 5; i++)
+        glDisableVertexAttribArray(i);
 }
 
 void RenderDevice::RenderWithAlpha(const Fill* fill, Render::Buffer* vertices, Render::Buffer* indices,
@@ -1175,9 +1175,9 @@ bool ShaderSet::Link()
     LightingVer = 0;
     UsesLighting = 0;
 
-	GLint uniformCount = 0;
-	glGetProgramiv(Prog, GL_ACTIVE_UNIFORMS, &uniformCount);
-	OVR_ASSERT(uniformCount >= 0);
+    GLint uniformCount = 0;
+    glGetProgramiv(Prog, GL_ACTIVE_UNIFORMS, &uniformCount);
+    OVR_ASSERT(uniformCount >= 0);
 
     for(GLuint i = 0; i < (GLuint)uniformCount; i++)
     {
@@ -1341,8 +1341,8 @@ void Texture::SetSampleMode(int sm)
 
 ovrTexture Texture::Get_ovrTexture()
 {
-	ovrTexture tex;
-	OVR::Sizei newRTSize(Width, Height);
+    ovrTexture tex;
+    OVR::Sizei newRTSize(Width, Height);
 
     ovrGLTextureData* texData = (ovrGLTextureData*)&tex;
     texData->Header.API            = ovrRenderAPI_OpenGL;
@@ -1350,7 +1350,7 @@ ovrTexture Texture::Get_ovrTexture()
     texData->Header.RenderViewport = Recti(newRTSize);
     texData->TexId                 = TexId;
 
-	return tex;
+    return tex;
 }
 
 Texture* RenderDevice::CreateTexture(int format, int width, int height, const void* data, int mipcount)
@@ -1360,7 +1360,7 @@ Texture* RenderDevice::CreateTexture(int format, int width, int height, const vo
     {
     case Texture_RGBA:  glformat = GL_RGBA; break;
     case Texture_R:     glformat = GL_RED; break;
-	case Texture_Depth: glformat = GL_DEPTH_COMPONENT; gltype = GL_FLOAT; break;
+    case Texture_Depth: glformat = GL_DEPTH_COMPONENT; gltype = GL_FLOAT; break;
     case Texture_DXT1:  glformat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; break;
     case Texture_DXT3:  glformat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; break;
     case Texture_DXT5:  glformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
@@ -1369,14 +1369,14 @@ Texture* RenderDevice::CreateTexture(int format, int width, int height, const vo
     }
     Texture* NewTex = new Texture(this, width, height);
     glBindTexture(GL_TEXTURE_2D, NewTex->TexId);
-	GLint err = glGetError();
+    GLint err = glGetError();
 
     OVR_ASSERT(!err);
 
-	if( err )
-	{
-		printf("%d\n", err);
-	}
+    if( err )
+    {
+        printf("%d\n", err);
+    }
     
     if (format & Texture_Compressed)
     {
@@ -1394,14 +1394,14 @@ Texture* RenderDevice::CreateTexture(int format, int width, int height, const vo
             if (h < 1) h = 1;
         }
     }
-	else
-	{
-		bool isSRGB = ((format & Texture_TypeMask) == Texture_RGBA && (format & Texture_SRGB) != 0);
-		bool isDepth = ((format & Texture_Depth) != 0);
-		GLenum internalFormat = (isSRGB) ? GL_SRGB_ALPHA : (isDepth) ? GL_DEPTH_COMPONENT32F : glformat;
+    else
+    {
+        bool isSRGB = ((format & Texture_TypeMask) == Texture_RGBA && (format & Texture_SRGB) != 0);
+        bool isDepth = ((format & Texture_Depth) != 0);
+        GLenum internalFormat = (isSRGB) ? GL_SRGB_ALPHA : (isDepth) ? GL_DEPTH_COMPONENT32F : glformat;
 
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, glformat, gltype, data);
-	}
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, glformat, gltype, data);
+    }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

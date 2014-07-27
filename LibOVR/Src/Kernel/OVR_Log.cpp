@@ -137,7 +137,7 @@ void Log::DefaultLogOutput(const char* formattedText, LogMessageType messageType
         ::OutputDebugStringA(formattedText);
     }
 
-	fputs(formattedText, stdout);
+    fputs(formattedText, stdout);
 
 #elif defined(OVR_OS_ANDROID)
     __android_log_write(ANDROID_LOG_INFO, "OVR", formattedText);

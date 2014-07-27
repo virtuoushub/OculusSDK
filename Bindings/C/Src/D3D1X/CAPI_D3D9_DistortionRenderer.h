@@ -57,9 +57,9 @@ public:
 
     // Creation function for the device.    
     static CAPI::DistortionRenderer* Create(ovrHmd hmd,
-		                                    FrameTimeManager& timeManager,
+                                            FrameTimeManager& timeManager,
                                             const HMDRenderState& renderState);
-	
+    
     // ***** Public DistortionRenderer interface
     virtual bool Initialize(const ovrRenderAPIConfig* apiConfig,
                             unsigned distortionCaps);
@@ -71,72 +71,72 @@ public:
     // TBD: Make public?
     void         WaitUntilGpuIdle();
 
-	// Similar to ovr_WaitTillTime but it also flushes GPU.
-	// Note, it exits when time expires, even if GPU is not in idle state yet.
-	double       FlushGpuAndWaitTillTime(double absTime);
+    // Similar to ovr_WaitTillTime but it also flushes GPU.
+    // Note, it exits when time expires, even if GPU is not in idle state yet.
+    double       FlushGpuAndWaitTillTime(double absTime);
 
 protected:
-	
-	class GraphicsState : public CAPI::DistortionRenderer::GraphicsState
-	{
-	public:
-		GraphicsState(IDirect3DDevice9* d, unsigned arg_distortionCaps);
-		virtual void Save();
-		virtual void Restore();
+    
+    class GraphicsState : public CAPI::DistortionRenderer::GraphicsState
+    {
+    public:
+        GraphicsState(IDirect3DDevice9* d, unsigned arg_distortionCaps);
+        virtual void Save();
+        virtual void Restore();
 
-	protected:
-		void RecordAndSetState(int which, int type, DWORD newValue);
+    protected:
+        void RecordAndSetState(int which, int type, DWORD newValue);
 
-		//Structure to store our state changes
-		static const int MAX_SAVED_STATES=100;
-		struct SavedStateType
-		{
-			int which;  //0 for samplerstate, 1 for renderstate
-			int type;
-			DWORD valueToRevertTo;
-		} savedState[MAX_SAVED_STATES];
+        //Structure to store our state changes
+        static const int MAX_SAVED_STATES=100;
+        struct SavedStateType
+        {
+            int which;  //0 for samplerstate, 1 for renderstate
+            int type;
+            DWORD valueToRevertTo;
+        } savedState[MAX_SAVED_STATES];
 
-		//Keep track of how many we've done, for reverting
-		int numSavedStates;
-		IDirect3DDevice9* device;
+        //Keep track of how many we've done, for reverting
+        int numSavedStates;
+        IDirect3DDevice9* device;
         unsigned distortionCaps;
-	};
+    };
 
 private:
 
-	//Functions
-	void         CreateDistortionShaders(void);
-	void         Create_Distortion_Models(void);
-	void         CreateVertexDeclaration(void);
-	void         RenderBothDistortionMeshes();
-	void         RecordAndSetState(int which, int type, DWORD newValue);
-	void         RevertAllStates(void);
+    //Functions
+    void         CreateDistortionShaders(void);
+    void         Create_Distortion_Models(void);
+    void         CreateVertexDeclaration(void);
+    void         RenderBothDistortionMeshes();
+    void         RecordAndSetState(int which, int type, DWORD newValue);
+    void         RevertAllStates(void);
 
     void         renderEndFrame();
-	
-	//Data, structures and pointers
-	IDirect3DDevice9            * device;
-	IDirect3DSwapChain9         * swapChain;
-	IDirect3DVertexDeclaration9 * vertexDecl;
-	IDirect3DPixelShader9       * pixelShader;
-	IDirect3DVertexShader9      * vertexShader;
-	IDirect3DVertexShader9      * vertexShaderTimewarp;
-	ovrSizei                      screenSize; 
-	unsigned                      distortionCaps;
+    
+    //Data, structures and pointers
+    IDirect3DDevice9            * device;
+    IDirect3DSwapChain9         * swapChain;
+    IDirect3DVertexDeclaration9 * vertexDecl;
+    IDirect3DPixelShader9       * pixelShader;
+    IDirect3DVertexShader9      * vertexShader;
+    IDirect3DVertexShader9      * vertexShaderTimewarp;
+    ovrSizei                      screenSize; 
+    unsigned                      distortionCaps;
 
-	struct FOR_EACH_EYE
-	{
+    struct FOR_EACH_EYE
+    {
         FOR_EACH_EYE() : TextureSize(0), RenderViewport(Sizei(0)) { }
 
-		IDirect3DVertexBuffer9  * dxVerts;
-		IDirect3DIndexBuffer9   * dxIndices;
-		int                       numVerts;
-		int                       numIndices;
-		IDirect3DTexture9       * texture;
-		ovrVector2f			 	  UVScaleOffset[2]; 
+        IDirect3DVertexBuffer9  * dxVerts;
+        IDirect3DIndexBuffer9   * dxIndices;
+        int                       numVerts;
+        int                       numIndices;
+        IDirect3DTexture9       * texture;
+        ovrVector2f                   UVScaleOffset[2]; 
         Sizei                     TextureSize;
         Recti                     RenderViewport;
-	} eachEye[2];
+    } eachEye[2];
 };
 
 }}} // OVR::CAPI::D3D9

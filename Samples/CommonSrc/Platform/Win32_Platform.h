@@ -93,16 +93,16 @@ public:
     PlatformCore(Application* app, HINSTANCE hinst);
     ~PlatformCore();
 
-    void*	  SetupWindow(int w, int h);
+    void*      SetupWindow(int w, int h);
     void      DestroyWindow();
     void      ShowWindow(bool visible);
     void      Exit(int exitcode)
-	{
+    {
         // On some AMD cards, additional events may cause crashing after exit.
-		//for (MSG msg; PeekMessage(&msg, NULL, 0, 0, PM_REMOVE); )
-		//	;
-		Quit = 1; ExitCode = exitcode;
-	}
+        //for (MSG msg; PeekMessage(&msg, NULL, 0, 0, PM_REMOVE); )
+        //    ;
+        Quit = 1; ExitCode = exitcode;
+    }
 
     RenderDevice* SetupGraphics(const SetupGraphicsDeviceSet& setupGraphicsDesc,
                                 const char* type,
@@ -112,7 +112,7 @@ public:
     void      GetWindowSize(int* w, int* h) const;
 
     void      SetWindowTitle(const char*title);
-	void	  PlayMusicFile(const char *fileName);
+    void      PlayMusicFile(const char *fileName);
     int       GetDisplayCount();
     Render::DisplayId    GetDisplay(int screen);
 
@@ -144,12 +144,12 @@ KeyCode MapVKToKeyCode(unsigned vk);
 #define OVR_PLATFORM_APP(AppClass) OVR_PLATFORM_APP_ARGS(AppClass, ())
 
 #define OVR_PLATFORM_APP_ARGS_WITH_LOG(AppClass, LogClass, args)                         \
-	OVR::OvrPlatform::Application* OVR::OvrPlatform::Application::CreateApplication()          \
-	{ static LogClass log; OVR::System::Init(&log);                                      \
-	   return new AppClass args; }                                                       \
-	void OVR::OvrPlatform::Application::DestroyApplication(OVR::OvrPlatform::Application* app) \
-	{ OVR::OvrPlatform::PlatformCore* platform = app->pPlatform;                            \
-	    delete app; delete platform; OVR::System::Destroy(); };
+    OVR::OvrPlatform::Application* OVR::OvrPlatform::Application::CreateApplication()          \
+    { static LogClass log; OVR::System::Init(&log);                                      \
+       return new AppClass args; }                                                       \
+    void OVR::OvrPlatform::Application::DestroyApplication(OVR::OvrPlatform::Application* app) \
+    { OVR::OvrPlatform::PlatformCore* platform = app->pPlatform;                            \
+        delete app; delete platform; OVR::System::Destroy(); };
 
 #define OVR_PLATFORM_APP_WITH_LOG(AppClass,LogClass) OVR_PLATFORM_APP_ARGS_WITH_LOG(AppClass,LogClass, ())
 

@@ -118,7 +118,7 @@ String OptionVar::FormatBool(OptionVar* var)
 
 String OptionVar::FormatTrigger(OptionVar* var)
 {
-	OVR_UNUSED(var);
+    OVR_UNUSED(var);
     return "[Trigger]";
 }
 
@@ -341,10 +341,10 @@ uint32_t OptionVar::GetEnumIndex()
 
 OptionSelectionMenu::OptionSelectionMenu(OptionSelectionMenu* parentMenu)
 {
-    DisplayState	= Display_None;
-    SelectedIndex 	= 0;
+    DisplayState    = Display_None;
+    SelectedIndex     = 0;
     SelectionActive = false;
-    ParentMenu 		= parentMenu;
+    ParentMenu         = parentMenu;
 
     PopupMessageTimeout = 0.0;
     PopupMessageBorder  = false;
@@ -592,14 +592,14 @@ void OptionSelectionMenu::Render(RenderDevice* prender, String title)
     // Measure labels
     const char* menuItemsCStr = menuItems.ToCStr();
     bool havelLabelSelection = FindLineCharRange(menuItemsCStr, highlightIndex, selection);
-	OVR_UNUSED(havelLabelSelection);
+    OVR_UNUSED(havelLabelSelection);
     prender->MeasureText(&DejaVu, menuItemsCStr, textSize, labelsSize,
                          selection, labelSelectionRect);
 
     // Measure label-to-value gap
     const char* valuesCStr = values.ToCStr();
     bool haveValueSelection = FindLineCharRange(valuesCStr, highlightIndex, selection);
-	OVR_UNUSED(haveValueSelection);
+    OVR_UNUSED(haveValueSelection);
     prender->MeasureText(&DejaVu, valuesCStr, textSize, valuesSize, selection, valueSelectionRect);
 
     // Measure max value size (absolute size varies, so just use a reasonable max)

@@ -76,7 +76,7 @@ ovrHmdDesc HMDRenderState::GetDesc() const
         d.Type        = ovrHmd_DK2;
         d.HmdCaps    |= ovrHmdCap_LowPersistence | ovrHmdCap_DynamicPrediction;
         d.TrackingCaps |= ovrTrackingCap_Position;
-		d.DistortionCaps |= ovrDistortionCap_Overdrive;
+        d.DistortionCaps |= ovrDistortionCap_Overdrive;
     }
         
     const DistortionRenderDesc& leftDistortion  = Distortion[0];
@@ -102,10 +102,10 @@ ovrHmdDesc HMDRenderState::GetDesc() const
     }    
 
     // MA: Taking this out on purpose.
-	// Important information for those that are required to do their own timing,
+    // Important information for those that are required to do their own timing,
     // because of shortfalls in timing code.
-	//d.VsyncToNextVsync = OurHMDInfo.Shutter.VsyncToNextVsync;
-	//d.PixelPersistence = OurHMDInfo.Shutter.PixelPersistence;
+    //d.VsyncToNextVsync = OurHMDInfo.Shutter.VsyncToNextVsync;
+    //d.PixelPersistence = OurHMDInfo.Shutter.PixelPersistence;
 
     return d;
 }

@@ -4,7 +4,7 @@ Filename    :   OculusWorldDemo.h
 Content     :   First-person view test application for Oculus Rift - Header file
 Created     :   October 4, 2012
 Authors     :   Michael Antonov, Andrew Reisse, Steve LaValle, Dov Katz
-				Peter Hoff, Dan Goodman, Bryan Croteau                
+                Peter Hoff, Dan Goodman, Bryan Croteau                
 
 Copyright   :   Copyright 2012 Oculus VR, Inc. All Rights reserved.
 
@@ -71,12 +71,12 @@ using namespace OVR::Render;
 // Important Oculus-specific logic can be found at following locations:
 //
 //  OculusWorldDemoApp::OnStartup - This function will initialize the SDK, creating the Hmd
-//									and delegating to CalculateHmdValues to initialize it.
+//                                    and delegating to CalculateHmdValues to initialize it.
 //
 //  OculusWorldDemoApp::OnIdle    - Here we poll SensorFusion for orientation, apply it
-//									to the scene and handle movement.
-//									Stereo rendering is also done here, by delegating to
-//									to the RenderEyeView() function for each eye.
+//                                    to the scene and handle movement.
+//                                    Stereo rendering is also done here, by delegating to
+//                                    to the RenderEyeView() function for each eye.
 //
 
 //-------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ public:
     void         InitMainFilePath();
     void         PopulateScene(const char* fileName);
     void         PopulatePreloadScene();
-    void		 ClearScene();
+    void         ClearScene();
     void         PopulateOptionMenu();
 
 
@@ -157,7 +157,7 @@ public:
     void BlockShowChange(OptionVar* = 0)    { BlocksCenter = ThePlayer.BodyPos; }
     void EyeHeightChange(OptionVar* = 0)    { ThePlayer.BodyPos.y = ThePlayer.UserEyeHeight; }    
 
-	void HmdSensorToggle(OptionVar* = 0);
+    void HmdSensorToggle(OptionVar* = 0);
     void HmdSettingChangeFreeRTs(OptionVar* = 0);
     void MultisampleChange(OptionVar* = 0);
     void CenterPupilDepthChange(OptionVar* = 0);
@@ -203,8 +203,8 @@ protected:
     // Frame timing logic.
     enum { SecondsOfFpsMeasurement = 1 };
     int                 FrameCounter;
-	int					TotalFrameCounter;
-    double              NextFPSUpdate;	
+    int                    TotalFrameCounter;
+    double              NextFPSUpdate;    
     float               SecondsPerFrame;
     float               FPS;
     double              LastFpsUpdate;
@@ -213,7 +213,7 @@ protected:
     double              LastUpdate;         
   
     // Loaded data.
-    String	                    MainFilePath;
+    String                        MainFilePath;
     Array<Ptr<CollisionModel> > CollisionModels;
     Array<Ptr<CollisionModel> > GroundCollisionModels;
 
@@ -233,15 +233,15 @@ protected:
     
     GamepadState        LastGamepadState;
 
-    Player				ThePlayer;
+    Player                ThePlayer;
     Matrix4f            View;
     Scene               MainScene;
     Scene               LoadingScene;
     Scene               SmallGreenCube;
 
-	Scene				OculusCubesScene;
-	Scene               RedCubesScene;
-	Scene				BlueCubesScene;
+    Scene                OculusCubesScene;
+    Scene               RedCubesScene;
+    Scene                BlueCubesScene;
 
     // Last frame asn sensor data reported by BeginFrame().
     ovrFrameTiming      HmdFrameTiming;
@@ -258,7 +258,7 @@ protected:
     // Render Target - affecting state.
     bool                RendertargetIsSharedByBothEyes;
     bool                DynamicRezScalingEnabled;
-	bool                EnableSensor;
+    bool                EnableSensor;
     bool                ForceZeroIpd;
     float               DesiredPixelDensity;    
     float               FovSideTanMax;
@@ -281,7 +281,7 @@ protected:
     bool                DynamicPrediction;
     bool                DisplaySleep;
     bool                PositionTrackingEnabled;
-	bool				PixelLuminanceOverdrive;
+    bool                PixelLuminanceOverdrive;
     bool                MirrorToWindow;
 
     // Support toggling background color for distortion so that we can see
@@ -298,8 +298,8 @@ protected:
     enum SceneRenderMode
     {
         Scene_World,
-		Scene_Cubes,
-		Scene_OculusCubes
+        Scene_Cubes,
+        Scene_OculusCubes
     };
     SceneRenderMode    SceneMode;
 

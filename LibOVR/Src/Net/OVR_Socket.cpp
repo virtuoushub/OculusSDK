@@ -33,7 +33,7 @@ namespace OVR { namespace Net {
 // Socket
 
 Socket::Socket() :
-	Transport(TransportType_None)
+    Transport(TransportType_None)
 {
 }
 
@@ -42,7 +42,7 @@ Socket::Socket() :
 // BerkleyBindParameters
 
 BerkleyBindParameters::BerkleyBindParameters() :
-	Port(0),
+    Port(0),
     blockingTimeout(0x7fffffff)
 {
 }
@@ -51,15 +51,15 @@ BerkleyBindParameters::BerkleyBindParameters() :
 // BerkleySocket
 
 BerkleySocket::BerkleySocket() :
-	TheSocket(INVALID_SOCKET)
+    TheSocket(INVALID_SOCKET)
 {
     SetBlockingTimeout(1000);
 }
 
 BerkleySocket::~BerkleySocket()
 {
-	// Close socket on destruction
-	Close();
+    // Close socket on destruction
+    Close();
 }
 
 
@@ -68,7 +68,7 @@ BerkleySocket::~BerkleySocket()
 
 UDPSocketBase::UDPSocketBase()
 {
-	Transport = TransportType_UDP;
+    Transport = TransportType_UDP;
 }
 
 
@@ -77,12 +77,12 @@ UDPSocketBase::UDPSocketBase()
 
 TCPSocketBase::TCPSocketBase()
 {
-	Transport = TransportType_TCP;
+    Transport = TransportType_TCP;
 }
 
 TCPSocketBase::TCPSocketBase(SocketHandle handle)
 {
-	TheSocket = handle;
+    TheSocket = handle;
 }
 
 

@@ -51,21 +51,21 @@ struct ProfileDeviceKey
 {
     ProfileDeviceKey(const HMDInfo* info);
 
-	// Initialized properly?
-	bool Valid;
+    // Initialized properly?
+    bool Valid;
 
     // The HMD type
     HmdTypeEnum HmdType;
 
-	// This is the 12 character serial number printed on the HMD
-	String PrintedSerial;
+    // This is the 12 character serial number printed on the HMD
+    String PrintedSerial;
 
-	// This is the product name string of the USB sensor device
-	// Note: It has been modified from the original to remove spaces and strip off "Oculus"
-	String ProductName;
+    // This is the product name string of the USB sensor device
+    // Note: It has been modified from the original to remove spaces and strip off "Oculus"
+    String ProductName;
 
-	// This is the product id from the HID info of the USB sensor device
-	unsigned ProductId;
+    // This is the product id from the HID info of the USB sensor device
+    unsigned ProductId;
 
     static String SanitizeProductName(String productName);
 };
@@ -182,20 +182,20 @@ public:
     bool Close();
 
 protected:
-	Profile(String basePath) :
-		BasePath(basePath)
-	{
-	}
+    Profile(String basePath) :
+        BasePath(basePath)
+    {
+    }
     
     void                SetValue(JSON* val);
 
-	static bool         LoadProfile(const ProfileDeviceKey& deviceKey,
+    static bool         LoadProfile(const ProfileDeviceKey& deviceKey,
                                     const char* user,
                                     Profile** profile);
     void                CopyItems(JSON* root, String prefix);
     
     bool                LoadDeviceFile(unsigned int device_id, const char* serial);
-	bool                LoadDeviceProfile(const ProfileDeviceKey& deviceKey);
+    bool                LoadDeviceProfile(const ProfileDeviceKey& deviceKey);
 
     bool                LoadProfile(JSON* root,
                                     const char* user,

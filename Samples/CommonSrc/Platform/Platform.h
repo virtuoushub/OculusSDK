@@ -116,37 +116,37 @@ protected:
 public:
     PlatformCore(Application *app);
     virtual ~PlatformCore() { }
-    Application*		GetApp() { return pApp; }
-    RenderDevice*		GetRenderer() const { return pRender; }
-    GamepadManager*		GetGamepadManager() const { return pGamepadManager; }
+    Application*        GetApp() { return pApp; }
+    RenderDevice*        GetRenderer() const { return pRender; }
+    GamepadManager*        GetGamepadManager() const { return pGamepadManager; }
 
-    virtual void*		SetupWindow(int w, int h) = 0;
+    virtual void*        SetupWindow(int w, int h) = 0;
     // Destroys window and also releases renderer.
-    virtual void		DestroyWindow() = 0;
-    virtual void		Exit(int exitcode) = 0;
+    virtual void        DestroyWindow() = 0;
+    virtual void        Exit(int exitcode) = 0;
 
-    virtual void		ShowWindow(bool visible) = 0;
+    virtual void        ShowWindow(bool visible) = 0;
     
-    virtual bool		SetFullscreen(const Render::RendererParams& rp, int fullscreen);
+    virtual bool        SetFullscreen(const Render::RendererParams& rp, int fullscreen);
    
     // Search for a matching graphics renderer based on type argument and initializes it.    
     virtual RenderDevice* SetupGraphics(const SetupGraphicsDeviceSet& setupGraphicsDesc,
                                         const char* gtype,
                                         const Render::RendererParams& rp) = 0;
 
-    virtual void		SetMouseMode(MouseMode mm) { OVR_UNUSED(mm); }
+    virtual void        SetMouseMode(MouseMode mm) { OVR_UNUSED(mm); }
 
-    virtual void		GetWindowSize(int* w, int* h) const = 0;
+    virtual void        GetWindowSize(int* w, int* h) const = 0;
 
-    virtual void		SetWindowTitle(const char*title) = 0;
-	virtual void		PlayMusicFile(const char *fileName) { OVR_UNUSED(fileName); }
-    virtual int			GetDisplayCount() { return 0; }
+    virtual void        SetWindowTitle(const char*title) = 0;
+    virtual void        PlayMusicFile(const char *fileName) { OVR_UNUSED(fileName); }
+    virtual int            GetDisplayCount() { return 0; }
     virtual Render::DisplayId GetDisplay(int screen);
     
     // Get time since start of application in seconds.
-    double				GetAppTime() const; 
+    double                GetAppTime() const; 
     
-    virtual String		GetContentDirectory() const { return "."; }
+    virtual String        GetContentDirectory() const { return "."; }
 
     // Creates notification overlay text box over the top of OS window. Multiple
     // messages can be created with different 'index' values. Pass null string

@@ -40,32 +40,32 @@ namespace OVR { namespace Tracking {
 class SensorStateReader : public NewOverrideBase
 {
 protected:
-	const CombinedSharedStateUpdater *Updater;
+    const CombinedSharedStateUpdater *Updater;
 
-	// Transform from real-world coordinates to centered coordinates
-	Posed CenteredFromWorld;
+    // Transform from real-world coordinates to centered coordinates
+    Posed CenteredFromWorld;
 
     // Last latency warning time
     mutable double LastLatWarnTime;
 
 public:
-	SensorStateReader();
+    SensorStateReader();
 
-	// Initialize the updater
+    // Initialize the updater
     void         SetUpdater(const CombinedSharedStateUpdater *updater);
 
-	// Re-centers on the current yaw (optionally pitch) and translation
-	void		 RecenterPose();
+    // Re-centers on the current yaw (optionally pitch) and translation
+    void         RecenterPose();
 
-	// Get the full dynamical system state of the CPF, which includes velocities and accelerations,
-	// predicted at a specified absolute point in time.
-	bool		 GetSensorStateAtTime(double absoluteTime, Tracking::TrackingState& state) const;
+    // Get the full dynamical system state of the CPF, which includes velocities and accelerations,
+    // predicted at a specified absolute point in time.
+    bool         GetSensorStateAtTime(double absoluteTime, Tracking::TrackingState& state) const;
 
-	// Get the predicted pose (orientation, position) of the center pupil frame (CPF) at a specific point in time.
-	bool		 GetPoseAtTime(double absoluteTime, Posef& transform) const;
+    // Get the predicted pose (orientation, position) of the center pupil frame (CPF) at a specific point in time.
+    bool         GetPoseAtTime(double absoluteTime, Posef& transform) const;
 
-	// Get the sensor status (same as GetSensorStateAtTime(...).Status)
-	uint32_t     GetStatus() const;
+    // Get the sensor status (same as GetSensorStateAtTime(...).Status)
+    uint32_t     GetStatus() const;
 };
 
 

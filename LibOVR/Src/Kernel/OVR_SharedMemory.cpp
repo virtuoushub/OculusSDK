@@ -198,13 +198,13 @@ namespace OVR {
 
 void SharedMemoryInternal::Close()
 {
-	FakeMemoryManager::GetInstance()->Free(Block);
-	Block.Clear();
+    FakeMemoryManager::GetInstance()->Free(Block);
+    Block.Clear();
 }
 
 SharedMemoryInternal* SharedMemoryInternal::CreateSharedMemory(const SharedMemory::OpenParameters& params)
 {
-	return FakeMemoryManager::GetInstance()->Open(params.globalName, params.minSizeBytes, params.openMode == SharedMemory::OpenMode_OpenOnly);
+    return FakeMemoryManager::GetInstance()->Open(params.globalName, params.minSizeBytes, params.openMode == SharedMemory::OpenMode_OpenOnly);
 }
 
 #endif
@@ -220,207 +220,207 @@ SharedMemoryInternal* SharedMemoryInternal::CreateSharedMemory(const SharedMemor
 class SharedMemoryInternal : public NewOverrideBase
 {
 public:
-	HANDLE FileMapping;
-	void* FileView;
+    HANDLE FileMapping;
+    void* FileView;
 
-	SharedMemoryInternal(HANDLE fileMapping, void* fileView) :
-		FileMapping(fileMapping),
-		FileView(fileView)
-	{
-	}
+    SharedMemoryInternal(HANDLE fileMapping, void* fileView) :
+        FileMapping(fileMapping),
+        FileView(fileView)
+    {
+    }
 
-	~SharedMemoryInternal()
-	{
-		// If file view is set,
-		if (FileView)
-		{
-			UnmapViewOfFile(FileView);
-			FileView = NULL;
-		}
+    ~SharedMemoryInternal()
+    {
+        // If file view is set,
+        if (FileView)
+        {
+            UnmapViewOfFile(FileView);
+            FileView = NULL;
+        }
 
-		// If file mapping is set,
-		if (FileMapping != NULL)
-		{
-			CloseHandle(FileMapping);
-			FileMapping = NULL;
-		}
-	}
+        // If file mapping is set,
+        if (FileMapping != NULL)
+        {
+            CloseHandle(FileMapping);
+            FileMapping = NULL;
+        }
+    }
 
-	static SharedMemoryInternal* DoFileMap(HANDLE hFileMapping, const char* fileName, bool openReadOnly, int minSize);
-	static SharedMemoryInternal* AttemptOpenSharedMemory(const char* fileName, int minSize, bool openReadOnly);
-	static SharedMemoryInternal* AttemptCreateSharedMemory(const char* fileName, int minSize, bool openReadOnly, bool allowRemoteWrite);
-	static SharedMemoryInternal* CreateSharedMemory(const SharedMemory::OpenParameters& params);
+    static SharedMemoryInternal* DoFileMap(HANDLE hFileMapping, const char* fileName, bool openReadOnly, int minSize);
+    static SharedMemoryInternal* AttemptOpenSharedMemory(const char* fileName, int minSize, bool openReadOnly);
+    static SharedMemoryInternal* AttemptCreateSharedMemory(const char* fileName, int minSize, bool openReadOnly, bool allowRemoteWrite);
+    static SharedMemoryInternal* CreateSharedMemory(const SharedMemory::OpenParameters& params);
 };
 
 SharedMemoryInternal* SharedMemoryInternal::DoFileMap(HANDLE hFileMapping, const char* fileName, bool openReadOnly, int minSize)
 {
-	// Interpret the access mode as a map desired access code
-	DWORD mapDesiredAccess = openReadOnly ? FILE_MAP_READ : FILE_MAP_WRITE;
+    // Interpret the access mode as a map desired access code
+    DWORD mapDesiredAccess = openReadOnly ? FILE_MAP_READ : FILE_MAP_WRITE;
 
-	// Map view of the file to this process
-	void* pFileView = MapViewOfFile(hFileMapping, mapDesiredAccess, 0, 0, minSize);
+    // Map view of the file to this process
+    void* pFileView = MapViewOfFile(hFileMapping, mapDesiredAccess, 0, 0, minSize);
 
-	// If mapping could not be created,
-	if (!pFileView)
-	{
-		CloseHandle(hFileMapping);
+    // If mapping could not be created,
+    if (!pFileView)
+    {
+        CloseHandle(hFileMapping);
 
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to map view of file for %s error code = %d", fileName, GetLastError()));
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to map view of file for %s error code = %d", fileName, GetLastError()));
         OVR_UNUSED(fileName);
-		return NULL;
-	}
+        return NULL;
+    }
 
-	// Create internal representation
-	SharedMemoryInternal* pimple = new SharedMemoryInternal(hFileMapping, pFileView);
+    // Create internal representation
+    SharedMemoryInternal* pimple = new SharedMemoryInternal(hFileMapping, pFileView);
 
-	// If memory allocation fails,
-	if (!pimple)
-	{
-		UnmapViewOfFile(pFileView);
-		CloseHandle(hFileMapping);
+    // If memory allocation fails,
+    if (!pimple)
+    {
+        UnmapViewOfFile(pFileView);
+        CloseHandle(hFileMapping);
 
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Out of memory"));
-		return NULL;
-	}
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Out of memory"));
+        return NULL;
+    }
 
-	return pimple;
+    return pimple;
 }
 
 SharedMemoryInternal* SharedMemoryInternal::AttemptOpenSharedMemory(const char* fileName, int minSize, bool openReadOnly)
 {
-	// Interpret the access mode as a map desired access code
-	DWORD mapDesiredAccess = openReadOnly ? FILE_MAP_READ : FILE_MAP_WRITE;
+    // Interpret the access mode as a map desired access code
+    DWORD mapDesiredAccess = openReadOnly ? FILE_MAP_READ : FILE_MAP_WRITE;
 
-	// Open file mapping
-	HANDLE hFileMapping = OpenFileMappingA(mapDesiredAccess, TRUE, fileName);
+    // Open file mapping
+    HANDLE hFileMapping = OpenFileMappingA(mapDesiredAccess, TRUE, fileName);
 
-	// If file was mapped unsuccessfully,
-	if (NULL == hFileMapping)
-	{
-		OVR_DEBUG_LOG(("[SharedMemory] WARNING: Unable to open file mapping for %s error code = %d (not necessarily bad)", fileName, GetLastError()));
-		return NULL;
-	}
+    // If file was mapped unsuccessfully,
+    if (NULL == hFileMapping)
+    {
+        OVR_DEBUG_LOG(("[SharedMemory] WARNING: Unable to open file mapping for %s error code = %d (not necessarily bad)", fileName, GetLastError()));
+        return NULL;
+    }
 
-	// Map the file
-	return DoFileMap(hFileMapping, fileName, openReadOnly, minSize);
+    // Map the file
+    return DoFileMap(hFileMapping, fileName, openReadOnly, minSize);
 }
 
 SharedMemoryInternal* SharedMemoryInternal::AttemptCreateSharedMemory(const char* fileName, int minSize, bool openReadOnly, bool allowRemoteWrite)
 {
-	// Prepare a SECURITY_ATTRIBUTES object
-	SECURITY_ATTRIBUTES security;
-	ZeroMemory(&security, sizeof(security));
-	security.nLength = sizeof(security);
+    // Prepare a SECURITY_ATTRIBUTES object
+    SECURITY_ATTRIBUTES security;
+    ZeroMemory(&security, sizeof(security));
+    security.nLength = sizeof(security);
 
-	// Security descriptor by DACL strings:
-	// ACE strings grant Allow(A), Object/Contains Inheritance (OICI) of:
-	// + Grant All (GA) to System (SY)
-	// + Grant All (GA) to Built-in Administrators (BA)
-	// + Grant Read-Only (GR) or Read-Write (GWGR) to Interactive Users (IU) - ie. games
-	static const char* DACLString_ReadOnly = "D:P(A;OICI;GA;;;SY)(A;OICI;GA;;;BA)(A;OICI;GR;;;IU)";
-	static const char* DACLString_ReadWrite = "D:P(A;OICI;GA;;;SY)(A;OICI;GA;;;BA)(A;OICI;GWGR;;;IU)";
+    // Security descriptor by DACL strings:
+    // ACE strings grant Allow(A), Object/Contains Inheritance (OICI) of:
+    // + Grant All (GA) to System (SY)
+    // + Grant All (GA) to Built-in Administrators (BA)
+    // + Grant Read-Only (GR) or Read-Write (GWGR) to Interactive Users (IU) - ie. games
+    static const char* DACLString_ReadOnly = "D:P(A;OICI;GA;;;SY)(A;OICI;GA;;;BA)(A;OICI;GR;;;IU)";
+    static const char* DACLString_ReadWrite = "D:P(A;OICI;GA;;;SY)(A;OICI;GA;;;BA)(A;OICI;GWGR;;;IU)";
 
-	// Select the remote process access mode
-	const char* remoteAccessString =
-		allowRemoteWrite ? DACLString_ReadWrite : DACLString_ReadOnly;
+    // Select the remote process access mode
+    const char* remoteAccessString =
+        allowRemoteWrite ? DACLString_ReadWrite : DACLString_ReadOnly;
 
-	// Attempt to convert access string to security attributes
-	// Note: This will allocate the security descriptor with LocalAlloc() and must be freed later
-	BOOL bConvertOkay = ConvertStringSecurityDescriptorToSecurityDescriptorA(
-		remoteAccessString, SDDL_REVISION_1, &security.lpSecurityDescriptor, NULL);
+    // Attempt to convert access string to security attributes
+    // Note: This will allocate the security descriptor with LocalAlloc() and must be freed later
+    BOOL bConvertOkay = ConvertStringSecurityDescriptorToSecurityDescriptorA(
+        remoteAccessString, SDDL_REVISION_1, &security.lpSecurityDescriptor, NULL);
 
-	// If conversion fails,
-	if (!bConvertOkay)
-	{
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to convert access string, error code = %d", GetLastError()));
-		return NULL;
-	}
+    // If conversion fails,
+    if (!bConvertOkay)
+    {
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to convert access string, error code = %d", GetLastError()));
+        return NULL;
+    }
 
-	// Interpret the access mode as a page protection code
-	int pageProtectCode = openReadOnly ? PAGE_READONLY : PAGE_READWRITE;
+    // Interpret the access mode as a page protection code
+    int pageProtectCode = openReadOnly ? PAGE_READONLY : PAGE_READWRITE;
 
-	// Attempt to create a file mapping
-	HANDLE hFileMapping = CreateFileMappingA(INVALID_HANDLE_VALUE,	// From page file
-											 &security,				// Security attributes
-											 pageProtectCode,		// Read-only?
-											 0,						// High word for size = 0
-											 minSize,				// Low word for size
-											 fileName);				// Name of global shared memory file
+    // Attempt to create a file mapping
+    HANDLE hFileMapping = CreateFileMappingA(INVALID_HANDLE_VALUE,    // From page file
+                                             &security,                // Security attributes
+                                             pageProtectCode,        // Read-only?
+                                             0,                        // High word for size = 0
+                                             minSize,                // Low word for size
+                                             fileName);                // Name of global shared memory file
 
-	// Free the security descriptor buffer
-	LocalFree(security.lpSecurityDescriptor);
+    // Free the security descriptor buffer
+    LocalFree(security.lpSecurityDescriptor);
 
-	// If mapping could not be created,
-	if (NULL == hFileMapping)
-	{
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to create file mapping for %s error code = %d", fileName, GetLastError()));
-		return NULL;
-	}
+    // If mapping could not be created,
+    if (NULL == hFileMapping)
+    {
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to create file mapping for %s error code = %d", fileName, GetLastError()));
+        return NULL;
+    }
 
 #ifndef OVR_ALLOW_CREATE_FILE_MAPPING_IF_EXISTS
-	// If the file mapping already exists,
-	if (GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		CloseHandle(hFileMapping);
+    // If the file mapping already exists,
+    if (GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        CloseHandle(hFileMapping);
 
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: File mapping at %s already exists", fileName));
-		return NULL;
-	}
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: File mapping at %s already exists", fileName));
+        return NULL;
+    }
 #endif
 
-	// Map the file
-	return DoFileMap(hFileMapping, fileName, openReadOnly, minSize);
+    // Map the file
+    return DoFileMap(hFileMapping, fileName, openReadOnly, minSize);
 }
 
 SharedMemoryInternal* SharedMemoryInternal::CreateSharedMemory(const SharedMemory::OpenParameters& params)
 {
-	SharedMemoryInternal* retval = NULL;
+    SharedMemoryInternal* retval = NULL;
 
-	// Construct the file mapping name in a Windows-specific way
-	OVR::String fileMappingName = params.globalName;
-	const char *fileName = fileMappingName.ToCStr();
+    // Construct the file mapping name in a Windows-specific way
+    OVR::String fileMappingName = params.globalName;
+    const char *fileName = fileMappingName.ToCStr();
 
-	// Is being opened read-only?
-	const bool openReadOnly = (params.accessMode == SharedMemory::AccessMode_ReadOnly);
+    // Is being opened read-only?
+    const bool openReadOnly = (params.accessMode == SharedMemory::AccessMode_ReadOnly);
 
-	// Try up to 3 times to reduce low-probability failures:
-	static const int ATTEMPTS_MAX = 3;
-	for (int attempts = 0; attempts < ATTEMPTS_MAX; ++attempts)
-	{
-		// If opening should be attempted first,
-		if (params.openMode != SharedMemory::OpenMode_CreateOnly)
-		{
-			// Attempt to open a shared memory map
-			retval = AttemptOpenSharedMemory(fileName, params.minSizeBytes, openReadOnly);
+    // Try up to 3 times to reduce low-probability failures:
+    static const int ATTEMPTS_MAX = 3;
+    for (int attempts = 0; attempts < ATTEMPTS_MAX; ++attempts)
+    {
+        // If opening should be attempted first,
+        if (params.openMode != SharedMemory::OpenMode_CreateOnly)
+        {
+            // Attempt to open a shared memory map
+            retval = AttemptOpenSharedMemory(fileName, params.minSizeBytes, openReadOnly);
 
-			// If successful,
-			if (retval)
-			{
-				// Done!
-				break;
-			}
-		}
+            // If successful,
+            if (retval)
+            {
+                // Done!
+                break;
+            }
+        }
 
-		// If creating the shared memory is also acceptable,
-		if (params.openMode != SharedMemory::OpenMode_OpenOnly)
-		{
-			// Interpret create mode
-			const bool allowRemoteWrite = (params.remoteMode == SharedMemory::RemoteMode_ReadWrite);
+        // If creating the shared memory is also acceptable,
+        if (params.openMode != SharedMemory::OpenMode_OpenOnly)
+        {
+            // Interpret create mode
+            const bool allowRemoteWrite = (params.remoteMode == SharedMemory::RemoteMode_ReadWrite);
 
-			// Attempt to create a shared memory map
-			retval = AttemptCreateSharedMemory(fileName, params.minSizeBytes, openReadOnly, allowRemoteWrite);
+            // Attempt to create a shared memory map
+            retval = AttemptCreateSharedMemory(fileName, params.minSizeBytes, openReadOnly, allowRemoteWrite);
 
-			// If successful,
-			if (retval)
-			{
-				// Done!
-				break;
-			}
-		}
-	} // Re-attempt create/open
+            // If successful,
+            if (retval)
+            {
+                // Done!
+                break;
+            }
+        }
+    } // Re-attempt create/open
 
-	// Note: On Windows the initial contents of the region are guaranteed to be zero.
-	return retval;
+    // Note: On Windows the initial contents of the region are guaranteed to be zero.
+    return retval;
 }
 
 #endif // OVR_OS_WIN32
@@ -432,38 +432,38 @@ SharedMemoryInternal* SharedMemoryInternal::CreateSharedMemory(const SharedMemor
 class SharedMemoryInternal
 {
 public:
-	int   FileMapping;
-	void* FileView;
+    int   FileMapping;
+    void* FileView;
     int   FileSize;
 
-	SharedMemoryInternal(int fileMapping, void* fileView, int fileSize) :
-		FileMapping(fileMapping),
-		FileView(fileView),
+    SharedMemoryInternal(int fileMapping, void* fileView, int fileSize) :
+        FileMapping(fileMapping),
+        FileView(fileView),
         FileSize(fileSize)
-	{
-	}
+    {
+    }
 
-	~SharedMemoryInternal()
-	{
-		// If file view is set,
-		if (FileView)
-		{
+    ~SharedMemoryInternal()
+    {
+        // If file view is set,
+        if (FileView)
+        {
             munmap(FileView, FileSize);
-			FileView = MAP_FAILED;
-		}
+            FileView = MAP_FAILED;
+        }
 
-		// If file mapping is set,
-		if (FileMapping >= 0)
-		{
+        // If file mapping is set,
+        if (FileMapping >= 0)
+        {
             close(FileMapping);
-			FileMapping = -1;
-		}
-	}
+            FileMapping = -1;
+        }
+    }
 
-	static SharedMemoryInternal* DoFileMap(int hFileMapping, const char* fileName, bool openReadOnly, int minSize);
-	static SharedMemoryInternal* AttemptOpenSharedMemory(const char* fileName, int minSize, bool openReadOnly);
-	static SharedMemoryInternal* AttemptCreateSharedMemory(const char* fileName, int minSize, bool openReadOnly, bool allowRemoteWrite);
-	static SharedMemoryInternal* CreateSharedMemory(const SharedMemory::OpenParameters& params);
+    static SharedMemoryInternal* DoFileMap(int hFileMapping, const char* fileName, bool openReadOnly, int minSize);
+    static SharedMemoryInternal* AttemptOpenSharedMemory(const char* fileName, int minSize, bool openReadOnly);
+    static SharedMemoryInternal* AttemptCreateSharedMemory(const char* fileName, int minSize, bool openReadOnly, bool allowRemoteWrite);
+    static SharedMemoryInternal* CreateSharedMemory(const SharedMemory::OpenParameters& params);
 };
 
 SharedMemoryInternal* SharedMemoryInternal::DoFileMap(int hFileMapping, const char* fileName, bool openReadOnly, int minSize)
@@ -478,25 +478,25 @@ SharedMemoryInternal* SharedMemoryInternal::DoFileMap(int hFileMapping, const ch
     {
         close(hFileMapping);
 
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to map view of file for %s error code = %d", fileName, errno));
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to map view of file for %s error code = %d", fileName, errno));
         OVR_UNUSED(fileName);
-		return NULL;
+        return NULL;
     }
 
-	// Create internal representation
-	SharedMemoryInternal* pimple = new SharedMemoryInternal(hFileMapping, pFileView, minSize);
+    // Create internal representation
+    SharedMemoryInternal* pimple = new SharedMemoryInternal(hFileMapping, pFileView, minSize);
 
-	// If memory allocation fails,
-	if (!pimple)
-	{
+    // If memory allocation fails,
+    if (!pimple)
+    {
         munmap(pFileView, minSize);
         close(hFileMapping);
 
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Out of memory"));
-		return NULL;
-	}
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Out of memory"));
+        return NULL;
+    }
 
-	return pimple;
+    return pimple;
 }
 
 SharedMemoryInternal* SharedMemoryInternal::AttemptOpenSharedMemory(const char* fileName, int minSize, bool openReadOnly)
@@ -511,12 +511,12 @@ SharedMemoryInternal* SharedMemoryInternal::AttemptOpenSharedMemory(const char* 
     // If file was not opened successfully,
     if (hFileMapping < 0)
     {
-		OVR_DEBUG_LOG(("[SharedMemory] WARNING: Unable to open file mapping for %s error code = %d (not necessarily bad)", fileName, errno));
-		return NULL;
+        OVR_DEBUG_LOG(("[SharedMemory] WARNING: Unable to open file mapping for %s error code = %d (not necessarily bad)", fileName, errno));
+        return NULL;
     }
 
-	// Map the file
-	return DoFileMap(hFileMapping, fileName, openReadOnly, minSize);
+    // Map the file
+    return DoFileMap(hFileMapping, fileName, openReadOnly, minSize);
 }
 
 SharedMemoryInternal* SharedMemoryInternal::AttemptCreateSharedMemory(const char* fileName, int minSize, bool openReadOnly, bool allowRemoteWrite)
@@ -529,7 +529,7 @@ SharedMemoryInternal* SharedMemoryInternal::AttemptCreateSharedMemory(const char
     // Require exclusive access when creating (seems like a good idea without trying it yet..)
     if (shm_unlink(fileName) < 0)
     {
-		OVR_DEBUG_LOG(("[SharedMemory] WARNING: Unable to unlink shared memory file %s error code = %d", fileName, errno));
+        OVR_DEBUG_LOG(("[SharedMemory] WARNING: Unable to unlink shared memory file %s error code = %d", fileName, errno));
     }
     flags |= O_EXCL;
 #endif
@@ -546,8 +546,8 @@ SharedMemoryInternal* SharedMemoryInternal::AttemptCreateSharedMemory(const char
     // If file was not opened successfully,
     if (hFileMapping < 0)
     {
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to create file mapping for %s error code = %d", fileName, errno));
-		return NULL;
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to create file mapping for %s error code = %d", fileName, errno));
+        return NULL;
     }
 
     int truncRes = ftruncate(hFileMapping, minSize);
@@ -556,47 +556,47 @@ SharedMemoryInternal* SharedMemoryInternal::AttemptCreateSharedMemory(const char
     if (truncRes < 0)
     {
         close(hFileMapping);
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to truncate file for %s to %d error code = %d", fileName, minSize, errno));
-		return NULL;
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Unable to truncate file for %s to %d error code = %d", fileName, minSize, errno));
+        return NULL;
     }
 
-	// Map the file
-	return DoFileMap(hFileMapping, fileName, openReadOnly, minSize);
+    // Map the file
+    return DoFileMap(hFileMapping, fileName, openReadOnly, minSize);
 }
 
 SharedMemoryInternal* SharedMemoryInternal::CreateSharedMemory(const SharedMemory::OpenParameters& params)
 {
-	SharedMemoryInternal* retval = NULL;
+    SharedMemoryInternal* retval = NULL;
 
-	// Construct the file mapping name in a Linux-specific way
-	OVR::String fileMappingName = "/";
-	fileMappingName += params.globalName;
-	const char *fileName = fileMappingName.ToCStr();
+    // Construct the file mapping name in a Linux-specific way
+    OVR::String fileMappingName = "/";
+    fileMappingName += params.globalName;
+    const char *fileName = fileMappingName.ToCStr();
 
-	// Is being opened read-only?
-	const bool openReadOnly = (params.accessMode == SharedMemory::AccessMode_ReadOnly);
+    // Is being opened read-only?
+    const bool openReadOnly = (params.accessMode == SharedMemory::AccessMode_ReadOnly);
 
-	// Try up to 3 times to reduce low-probability failures:
-	static const int ATTEMPTS_MAX = 3;
-	for (int attempts = 0; attempts < ATTEMPTS_MAX; ++attempts)
-	{
-		// If opening should be attempted first,
-		if (params.openMode != SharedMemory::OpenMode_CreateOnly)
-		{
-			// Attempt to open a shared memory map
-			retval = AttemptOpenSharedMemory(fileName, params.minSizeBytes, openReadOnly);
+    // Try up to 3 times to reduce low-probability failures:
+    static const int ATTEMPTS_MAX = 3;
+    for (int attempts = 0; attempts < ATTEMPTS_MAX; ++attempts)
+    {
+        // If opening should be attempted first,
+        if (params.openMode != SharedMemory::OpenMode_CreateOnly)
+        {
+            // Attempt to open a shared memory map
+            retval = AttemptOpenSharedMemory(fileName, params.minSizeBytes, openReadOnly);
 
-			// If successful,
-			if (retval)
-			{
-				// Done!
-				break;
-			}
-		}
+            // If successful,
+            if (retval)
+            {
+                // Done!
+                break;
+            }
+        }
 
-		// If creating the shared memory is also acceptable,
-		if (params.openMode != SharedMemory::OpenMode_OpenOnly)
-		{
+        // If creating the shared memory is also acceptable,
+        if (params.openMode != SharedMemory::OpenMode_OpenOnly)
+        {
             // Interpret create mode
             const bool allowRemoteWrite = (params.remoteMode == SharedMemory::RemoteMode_ReadWrite);
 
@@ -609,11 +609,11 @@ SharedMemoryInternal* SharedMemoryInternal::CreateSharedMemory(const SharedMemor
                 // Done!
                 break;
             }
-		}
-	} // Re-attempt create/open
+        }
+    } // Re-attempt create/open
 
-	// Note: On Windows the initial contents of the region are guaranteed to be zero.
-	return retval;
+    // Note: On Windows the initial contents of the region are guaranteed to be zero.
+    return retval;
 }
 
 #endif // OVR_OS_LINUX
@@ -622,25 +622,25 @@ SharedMemoryInternal* SharedMemoryInternal::CreateSharedMemory(const SharedMemor
 //// SharedMemory
 
 SharedMemory::SharedMemory(int size, void* data, SharedMemoryInternal* pInternal) :
-	Size(size),
-	Data(data),
-	Internal(pInternal)
+    Size(size),
+    Data(data),
+    Internal(pInternal)
 {
 }
 // Call close when it goes out of scope
 SharedMemory::~SharedMemory()
 {
-	Close();
+    Close();
     delete Internal;
 }
 
 void SharedMemory::Close()
 {
-	if (Internal)
-	{
-		delete Internal;
-		Internal = NULL;
-	}
+    if (Internal)
+    {
+        delete Internal;
+        Internal = NULL;
+    }
 }
 
 
@@ -648,40 +648,40 @@ void SharedMemory::Close()
 
 Ptr<SharedMemory> SharedMemoryFactory::Open(const SharedMemory::OpenParameters& params)
 {
-	Ptr<SharedMemory> retval;
+    Ptr<SharedMemory> retval;
 
-	// If no name specified or no size requested,
-	if (!params.globalName || (params.minSizeBytes <= 0))
-	{
-		OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Invalid parameters to Create()"));
-		return NULL;
-	}
+    // If no name specified or no size requested,
+    if (!params.globalName || (params.minSizeBytes <= 0))
+    {
+        OVR_DEBUG_LOG(("[SharedMemory] FAILURE: Invalid parameters to Create()"));
+        return NULL;
+    }
 
-	OVR_DEBUG_LOG(("[SharedMemory] Creating shared memory region: %s > %d bytes",
-		params.globalName, params.minSizeBytes));
+    OVR_DEBUG_LOG(("[SharedMemory] Creating shared memory region: %s > %d bytes",
+        params.globalName, params.minSizeBytes));
 
-	// Attempt to create a shared memory region from the parameters
-	SharedMemoryInternal* pInternal = SharedMemoryInternal::CreateSharedMemory(params);
+    // Attempt to create a shared memory region from the parameters
+    SharedMemoryInternal* pInternal = SharedMemoryInternal::CreateSharedMemory(params);
 
-	if (pInternal)
-	{
-		// Create the wrapper object
-		retval = *new SharedMemory(params.minSizeBytes, pInternal->FileView, pInternal);
-	}
+    if (pInternal)
+    {
+        // Create the wrapper object
+        retval = *new SharedMemory(params.minSizeBytes, pInternal->FileView, pInternal);
+    }
 
-	return retval;
+    return retval;
 }
 
 SharedMemoryFactory::SharedMemoryFactory()
 {
-	OVR_DEBUG_LOG(("[SharedMemory] Creating factory"));
+    OVR_DEBUG_LOG(("[SharedMemory] Creating factory"));
 
     PushDestroyCallbacks();
 }
 
 SharedMemoryFactory::~SharedMemoryFactory()
 {
-	OVR_DEBUG_LOG(("[SharedMemory] Destroying factory"));
+    OVR_DEBUG_LOG(("[SharedMemory] Destroying factory"));
 }
 
 void SharedMemoryFactory::OnSystemDestroy()

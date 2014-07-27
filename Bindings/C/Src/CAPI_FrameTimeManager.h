@@ -51,9 +51,9 @@ struct TimeDeltaCollector
 
     enum { Capacity = 12 };
 private:
-	double  TimeBufferSeconds[Capacity];
-	mutable double  Median;
-	int     Count;
+    double  TimeBufferSeconds[Capacity];
+    mutable double  Median;
+    int     Count;
     mutable bool    ReCalcMedian;
 };
 

@@ -47,48 +47,48 @@ typedef Delegate2<void, BitStream*, ReceivePayload*> RPCSlot;
 class RPC1 : public NetworkPlugin
 {
 public:
-	RPC1();
-	virtual ~RPC1();
+    RPC1();
+    virtual ~RPC1();
 
-	/// Register a slot, which is a function pointer to one or more implementations that supports this function signature
-	/// When a signal occurs, all slots with the same identifier are called.
-	/// \param[in] sharedIdentifier A string to identify the slot. Recommended to be the same as the name of the function.
-	/// \param[in] functionPtr Pointer to the function.
-	/// \param[in] callPriority Slots are called by order of the highest callPriority first. For slots with the same priority, they are called in the order they are registered
-	void RegisterSlot(OVR::String sharedIdentifier,  OVR::Observer<RPCSlot> *rpcSlotObserver);
+    /// Register a slot, which is a function pointer to one or more implementations that supports this function signature
+    /// When a signal occurs, all slots with the same identifier are called.
+    /// \param[in] sharedIdentifier A string to identify the slot. Recommended to be the same as the name of the function.
+    /// \param[in] functionPtr Pointer to the function.
+    /// \param[in] callPriority Slots are called by order of the highest callPriority first. For slots with the same priority, they are called in the order they are registered
+    void RegisterSlot(OVR::String sharedIdentifier,  OVR::Observer<RPCSlot> *rpcSlotObserver);
 
-	/// \brief Same as \a RegisterFunction, but is called with CallBlocking() instead of Call() and returns a value to the caller
-	bool RegisterBlockingFunction(OVR::String uniqueID, RPCDelegate blockingFunction);
+    /// \brief Same as \a RegisterFunction, but is called with CallBlocking() instead of Call() and returns a value to the caller
+    bool RegisterBlockingFunction(OVR::String uniqueID, RPCDelegate blockingFunction);
 
-	/// \brief Same as UnregisterFunction, except for a blocking function
-	void UnregisterBlockingFunction(OVR::String uniqueID);
+    /// \brief Same as UnregisterFunction, except for a blocking function
+    void UnregisterBlockingFunction(OVR::String uniqueID);
 
-	// \brief Same as call, but don't return until the remote system replies.
-	/// Broadcasting parameter does not exist, this can only call one remote system
-	/// \note This function does not return until the remote system responds, disconnects, or was never connected to begin with
-	/// \param[in] Identifier originally passed to RegisterBlockingFunction() on the remote system(s)
-	/// \param[in] bitStream bitStream encoded data to send to the function callback
-	/// \param[in] pConnection connection to send on
-	/// \param[out] returnData Written to by the function registered with RegisterBlockingFunction.
-	/// \return true if successfully called. False on disconnect, function not registered, or not connected to begin with
-	bool CallBlocking( OVR::String uniqueID, OVR::Net::BitStream * bitStream, Ptr<Connection> pConnection, OVR::Net::BitStream *returnData = NULL );
+    // \brief Same as call, but don't return until the remote system replies.
+    /// Broadcasting parameter does not exist, this can only call one remote system
+    /// \note This function does not return until the remote system responds, disconnects, or was never connected to begin with
+    /// \param[in] Identifier originally passed to RegisterBlockingFunction() on the remote system(s)
+    /// \param[in] bitStream bitStream encoded data to send to the function callback
+    /// \param[in] pConnection connection to send on
+    /// \param[out] returnData Written to by the function registered with RegisterBlockingFunction.
+    /// \return true if successfully called. False on disconnect, function not registered, or not connected to begin with
+    bool CallBlocking( OVR::String uniqueID, OVR::Net::BitStream * bitStream, Ptr<Connection> pConnection, OVR::Net::BitStream *returnData = NULL );
 
-	/// Calls zero or more functions identified by sharedIdentifier registered with RegisterSlot()
-	/// \param[in] sharedIdentifier parameter of the same name passed to RegisterSlot() on the remote system
-	/// \param[in] bitStream bitStream encoded data to send to the function callback
-	/// \param[in] pConnection connection to send on
-	bool Signal(OVR::String sharedIdentifier, OVR::Net::BitStream * bitStream, Ptr<Connection> pConnection);
+    /// Calls zero or more functions identified by sharedIdentifier registered with RegisterSlot()
+    /// \param[in] sharedIdentifier parameter of the same name passed to RegisterSlot() on the remote system
+    /// \param[in] bitStream bitStream encoded data to send to the function callback
+    /// \param[in] pConnection connection to send on
+    bool Signal(OVR::String sharedIdentifier, OVR::Net::BitStream * bitStream, Ptr<Connection> pConnection);
     void BroadcastSignal(OVR::String sharedIdentifier, OVR::Net::BitStream * bitStream);
 
 
 protected:
-	virtual void OnReceive(ReceivePayload *pPayload, ListenerReceiveResult *lrrOut);
+    virtual void OnReceive(ReceivePayload *pPayload, ListenerReceiveResult *lrrOut);
 
     virtual void OnDisconnected(Connection* conn);
     virtual void OnConnected(Connection* conn);
 
-	Hash< String, RPCDelegate, String::HashFunctor > registeredBlockingFunctions;
-	ObserverHash< RPCSlot > slotHash;
+    Hash< String, RPCDelegate, String::HashFunctor > registeredBlockingFunctions;
+    ObserverHash< RPCSlot > slotHash;
 
     // Synchronization for RPC caller
     Lock            singleRPCLock;
@@ -96,7 +96,7 @@ protected:
     WaitCondition   callBlockingWait;
 
     Net::BitStream* blockingReturnValue;
-	Ptr<Connection> blockingOnThisConnection;
+    Ptr<Connection> blockingOnThisConnection;
 };
 
 

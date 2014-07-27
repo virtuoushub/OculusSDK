@@ -49,34 +49,34 @@ struct OVR_DDS_PIXELFORMAT
 
 struct OVR_DDS_HEADER
 {
-    uint32_t				Size;
-    uint32_t				Flags;
-    uint32_t				Height;
-    uint32_t				Width;
-    uint32_t				PitchOrLinearSize;
-    uint32_t				Depth;
-    uint32_t				MipMapCount;
-    uint32_t				Reserved1[11];
+    uint32_t                Size;
+    uint32_t                Flags;
+    uint32_t                Height;
+    uint32_t                Width;
+    uint32_t                PitchOrLinearSize;
+    uint32_t                Depth;
+    uint32_t                MipMapCount;
+    uint32_t                Reserved1[11];
     OVR_DDS_PIXELFORMAT     PixelFormat;
-    uint32_t				Caps;
-    uint32_t				Caps2;
-    uint32_t				Caps3;
-    uint32_t				Caps4;
-    uint32_t				Reserved2;
+    uint32_t                Caps;
+    uint32_t                Caps2;
+    uint32_t                Caps3;
+    uint32_t                Caps4;
+    uint32_t                Reserved2;
 };
 
 // Returns -1 on failure, or a valid TextureFormat value on success
 static inline int InterpretPixelFormatFourCC(uint32_t fourCC) {
-	switch (fourCC) {
-	case OVR_DXT1_MAGIC_NUMBER: return Texture_DXT1;
-	case OVR_DXT2_MAGIC_NUMBER: return Texture_DXT3;
-	case OVR_DXT3_MAGIC_NUMBER: return Texture_DXT3;
-	case OVR_DXT4_MAGIC_NUMBER: return Texture_DXT5;
-	case OVR_DXT5_MAGIC_NUMBER: return Texture_DXT5;
-	}
+    switch (fourCC) {
+    case OVR_DXT1_MAGIC_NUMBER: return Texture_DXT1;
+    case OVR_DXT2_MAGIC_NUMBER: return Texture_DXT3;
+    case OVR_DXT3_MAGIC_NUMBER: return Texture_DXT3;
+    case OVR_DXT4_MAGIC_NUMBER: return Texture_DXT5;
+    case OVR_DXT5_MAGIC_NUMBER: return Texture_DXT5;
+    }
 
-	// Unrecognized FourCC
-	return -1;
+    // Unrecognized FourCC
+    return -1;
 }
 
 Texture* LoadTextureDDS(RenderDevice* ren, File* f)
@@ -104,19 +104,19 @@ Texture* LoadTextureDDS(RenderDevice* ren, File* f)
     }
     if(header.PixelFormat.Flags & OVR_DDS_PF_FOURCC)
     {
-		format = InterpretPixelFormatFourCC(header.PixelFormat.FourCC);
-		if (format == -1) {
-			return NULL;
-		}
+        format = InterpretPixelFormatFourCC(header.PixelFormat.FourCC);
+        if (format == -1) {
+            return NULL;
+        }
     }
 
     int            byteLen = f->BytesAvailable();
     unsigned char* bytes   = new unsigned char[byteLen];
     f->Read(bytes, byteLen);
     Texture* out = ren->CreateTexture(format, (int)width, (int)height, bytes, mipCount);
-	if (!out) {
-		return NULL;
-	}
+    if (!out) {
+        return NULL;
+    }
 
     if(strstr(f->GetFilePath(), "_c."))
     {

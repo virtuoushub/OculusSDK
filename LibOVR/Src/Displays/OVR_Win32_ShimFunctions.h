@@ -41,35 +41,35 @@ class DisplayShim
 public:
 
 public:
-	static DisplayShim& GetInstance()
-	{
-		static DisplayShim instance;
-		return instance;
-	}
+    static DisplayShim& GetInstance()
+    {
+        static DisplayShim instance;
+        return instance;
+    }
 
-	bool Initialize( bool inCompatibility );
-	bool Shutdown();
+    bool Initialize( bool inCompatibility );
+    bool Shutdown();
 
-	bool Update( Win32ShimInfo* shimInfo );
+    bool Update( Win32ShimInfo* shimInfo );
 
-	void* GetDX11SwapChain();
+    void* GetDX11SwapChain();
 
-	ULONG   ChildUid;
-	int		ExpectedWidth;
-	int		ExpectedHeight;
-	int		Rotation;
-	HWND    hWindow;
-	bool	UseMirroring;
-	bool	Active;
+    ULONG   ChildUid;
+    int        ExpectedWidth;
+    int        ExpectedHeight;
+    int        Rotation;
+    HWND    hWindow;
+    bool    UseMirroring;
+    bool    Active;
 
 private:
 
-	DisplayShim();
+    DisplayShim();
 
-	virtual ~DisplayShim();
+    virtual ~DisplayShim();
 
-	DisplayShim(DisplayShim const&);    // Don't Implement
-	void operator=(DisplayShim const&); // Don't implement
+    DisplayShim(DisplayShim const&);    // Don't Implement
+    void operator=(DisplayShim const&); // Don't implement
 
 };
 

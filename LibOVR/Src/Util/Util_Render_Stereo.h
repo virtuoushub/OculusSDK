@@ -60,7 +60,7 @@ StereoEyeParams CalculateStereoEyeParams ( HmdRenderInfo const &hmd,
                                            bool bRendertargetSharedByBothEyes,
                                            bool bRightHanded = true,
                                            float zNear = 0.01f, float zFar = 10000.0f,
-										   Sizei const *pOverrideRenderedPixelSize = NULL,
+                                           Sizei const *pOverrideRenderedPixelSize = NULL,
                                            FovPort const *pOverrideFovport = NULL,
                                            float zoomFactor = 1.0f );
 
@@ -196,7 +196,7 @@ public:
     // Supply just left = set both to the same.
     // Supply neither = remove override.
     void        SetFov ( FovPort const *pfovLeft  = NULL,
-					     FovPort const *pfovRight = NULL );
+                         FovPort const *pfovRight = NULL );
     
     void        SetFovPortRadians ( float horizontal, float vertical )
     {
@@ -438,13 +438,13 @@ public:
     double      GetVisiblePixelTimeStart();
     double      GetVisiblePixelTimeEnd();
     // Predicted poses of the HMD at those first and last pixels.
-	bool        GetPredictedVisiblePixelPoseStart(Tracking::SensorStateReader* reader, Posef& transform);
-	bool        GetPredictedVisiblePixelPoseEnd(Tracking::SensorStateReader* reader, Posef& transform);
+    bool        GetPredictedVisiblePixelPoseStart(Tracking::SensorStateReader* reader, Posef& transform);
+    bool        GetPredictedVisiblePixelPoseEnd(Tracking::SensorStateReader* reader, Posef& transform);
     // The delta matrices to feed to the timewarp distortion code,
     // given the pose that was used for rendering.
     // (usually the one returned by GetViewRenderPredictionPose() earlier)
-	bool        GetTimewarpDeltaStart(Tracking::SensorStateReader* reader, Posef const &renderedPose, Matrix4f& transform);
-	bool        GetTimewarpDeltaEnd(Tracking::SensorStateReader* reader, Posef const &renderedPose, Matrix4f& transform);
+    bool        GetTimewarpDeltaStart(Tracking::SensorStateReader* reader, Posef const &renderedPose, Matrix4f& transform);
+    bool        GetTimewarpDeltaEnd(Tracking::SensorStateReader* reader, Posef const &renderedPose, Matrix4f& transform);
 
     // Just-In-Time distortion aims to delay the second sensor reading & distortion
     // until the very last moment to improve prediction. However, it is a little scary,

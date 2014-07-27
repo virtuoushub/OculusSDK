@@ -67,68 +67,68 @@ public:
     // TBD: Make public?
     void         WaitUntilGpuIdle();
 
-	// Similar to ovr_WaitTillTime but it also flushes GPU.
-	// Note, it exits when time expires, even if GPU is not in idle state yet.
-	double       FlushGpuAndWaitTillTime(double absTime);
+    // Similar to ovr_WaitTillTime but it also flushes GPU.
+    // Note, it exits when time expires, even if GPU is not in idle state yet.
+    double       FlushGpuAndWaitTillTime(double absTime);
 
 protected:
 
-	class GraphicsState : public CAPI::DistortionRenderer::GraphicsState
-	{
-	public:
-		GraphicsState(ID3D1xDeviceContext* context);
-		virtual ~GraphicsState();
-		virtual void clearMemory();
-		virtual void Save();
-		virtual void Restore();
+    class GraphicsState : public CAPI::DistortionRenderer::GraphicsState
+    {
+    public:
+        GraphicsState(ID3D1xDeviceContext* context);
+        virtual ~GraphicsState();
+        virtual void clearMemory();
+        virtual void Save();
+        virtual void Restore();
 
-	protected:
-		ID3D1xDeviceContext* context;
-		BOOL memoryCleared;
+    protected:
+        ID3D1xDeviceContext* context;
+        BOOL memoryCleared;
 
-		ID3D1xRasterizerState* rasterizerState;
-		ID3D1xSamplerState* samplerStates[D3D1x_COMMONSHADER_SAMPLER_SLOT_COUNT];
-		ID3D1xInputLayout* inputLayoutState;
+        ID3D1xRasterizerState* rasterizerState;
+        ID3D1xSamplerState* samplerStates[D3D1x_COMMONSHADER_SAMPLER_SLOT_COUNT];
+        ID3D1xInputLayout* inputLayoutState;
 
-		ID3D1xShaderResourceView* psShaderResourceState[D3D1x_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT];
-		ID3D1xShaderResourceView* vsShaderResourceState[D3D1x_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT];
+        ID3D1xShaderResourceView* psShaderResourceState[D3D1x_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT];
+        ID3D1xShaderResourceView* vsShaderResourceState[D3D1x_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT];
 
-		ID3D1xBuffer* psConstantBuffersState[D3D1x_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT];
-		ID3D1xBuffer* vsConstantBuffersState[D3D1x_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT];
+        ID3D1xBuffer* psConstantBuffersState[D3D1x_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT];
+        ID3D1xBuffer* vsConstantBuffersState[D3D1x_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT];
 
-		ID3D1xRenderTargetView* renderTargetViewState[D3D1x_SIMULTANEOUS_RENDER_TARGET_COUNT];
-		ID3D1xDepthStencilView* depthStencilViewState;
+        ID3D1xRenderTargetView* renderTargetViewState[D3D1x_SIMULTANEOUS_RENDER_TARGET_COUNT];
+        ID3D1xDepthStencilView* depthStencilViewState;
 
-		ID3D1xBlendState* omBlendState;
-		FLOAT omBlendFactorState[4];
-		UINT omSampleMaskState;
+        ID3D1xBlendState* omBlendState;
+        FLOAT omBlendFactorState[4];
+        UINT omSampleMaskState;
 
-		D3D1x_PRIMITIVE_TOPOLOGY primitiveTopologyState;
+        D3D1x_PRIMITIVE_TOPOLOGY primitiveTopologyState;
 
-		ID3D1xBuffer* iaIndexBufferPointerState;
-		DXGI_FORMAT iaIndexBufferFormatState;
-		UINT iaIndexBufferOffsetState;
+        ID3D1xBuffer* iaIndexBufferPointerState;
+        DXGI_FORMAT iaIndexBufferFormatState;
+        UINT iaIndexBufferOffsetState;
 
-		ID3D1xBuffer* iaVertexBufferPointersState[D3D1x_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-		UINT iaVertexBufferStridesState[D3D1x_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-		UINT iaVertexBufferOffsetsState[D3D1x_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+        ID3D1xBuffer* iaVertexBufferPointersState[D3D1x_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+        UINT iaVertexBufferStridesState[D3D1x_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+        UINT iaVertexBufferOffsetsState[D3D1x_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
-		ID3D1xPixelShader* currentPixelShader;
-		ID3D1xVertexShader* currentVertexShader;
-		ID3D1xGeometryShader* currentGeometryShader;
+        ID3D1xPixelShader* currentPixelShader;
+        ID3D1xVertexShader* currentVertexShader;
+        ID3D1xGeometryShader* currentGeometryShader;
 #if (OVR_D3D_VERSION == 11)
-		ID3D11HullShader* currentHullShader;
-		ID3D11DomainShader* currentDomainShader;
+        ID3D11HullShader* currentHullShader;
+        ID3D11DomainShader* currentDomainShader;
 #endif
 
-	};
+    };
 
 private:
     // Helpers
     void initBuffersAndShaders();
     void initShaders();
     void initFullscreenQuad();
-	void initOverdrive();
+    void initOverdrive();
     void destroy();
 
     void setViewport(const Recti& vp);
@@ -161,15 +161,15 @@ private:
     ovrSizei            EyeTextureSize[2];
     ovrRecti            EyeRenderViewport[2];
 
-	Ptr<Texture>        pOverdriveTextures[NumOverdriveTextures];
+    Ptr<Texture>        pOverdriveTextures[NumOverdriveTextures];
 
     //Ptr<Buffer>         mpFullScreenVertexBuffer;
 
-	Ptr<Buffer>         DistortionMeshVBs[2];    // one per-eye
-	Ptr<Buffer>         DistortionMeshIBs[2];    // one per-eye
+    Ptr<Buffer>         DistortionMeshVBs[2];    // one per-eye
+    Ptr<Buffer>         DistortionMeshIBs[2];    // one per-eye
 
-	Ptr<ShaderSet>      DistortionShader;
-	Ptr<ID3D1xInputLayout> DistortionVertexIL;
+    Ptr<ShaderSet>      DistortionShader;
+    Ptr<ID3D1xInputLayout> DistortionVertexIL;
 
     struct StandardUniformData
     {

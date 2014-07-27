@@ -39,9 +39,9 @@ namespace OVR { namespace CAPI {
 // ***** HMDState
 
 HMDState::HMDState(const OVR::Service::HMDNetworkInfo& netInfo,
-				   const OVR::HMDInfo& hmdInfo,
-				   Profile* profile,
-				   Service::NetClient* client) :
+                   const OVR::HMDInfo& hmdInfo,
+                   Profile* profile,
+                   Service::NetClient* client) :
     pClient(client),
     pProfile(profile),
     pHmdDesc(0),
@@ -75,8 +75,8 @@ HMDState::~HMDState()
 {
     if (pClient)
     {
-		pClient->Hmd_Release(NetId);
-		pClient = 0;
+        pClient->Hmd_Release(NetId);
+        pClient = 0;
     }
 
     ConfigureRendering(0,0,0,0);
@@ -243,12 +243,12 @@ HMDState* HMDState::CreateHMDState(ovrHmdType hmdType)
 
 bool HMDState::ConfigureTracking(unsigned supportedCaps, unsigned requiredCaps)
 {
-	return pClient ? pClient->Hmd_ConfigureTracking(NetId, supportedCaps, requiredCaps) : true;
+    return pClient ? pClient->Hmd_ConfigureTracking(NetId, supportedCaps, requiredCaps) : true;
 }
 
 void HMDState::ResetTracking()
 {
-	if (pClient) pClient->Hmd_ResetTracking(NetId);
+    if (pClient) pClient->Hmd_ResetTracking(NetId);
 }        
 
 // Re-center the orientation.
@@ -260,7 +260,7 @@ void HMDState::RecenterPose()
 // Returns prediction for time.
 ovrTrackingState HMDState::PredictedTrackingState(double absTime)
 {    
-	Tracking::TrackingState ss;
+    Tracking::TrackingState ss;
     TheSensorStateReader.GetSensorStateAtTime(absTime, ss);
 
     // Zero out the status flags
@@ -322,7 +322,7 @@ void HMDState::SetEnabledHmdCaps(unsigned hmdCaps)
     unsigned newServiceCaps  = hmdCaps & ovrHmdCap_Writable_Mask & ovrHmdCap_Service_Mask;
 
     if (prevServiceCaps ^ newServiceCaps)
-	{
+    {
         EnabledServiceHmdCaps = pClient ? pClient->Hmd_SetEnabledCaps(NetId, newServiceCaps)
                                 : newServiceCaps;
     }
@@ -331,7 +331,7 @@ void HMDState::SetEnabledHmdCaps(unsigned hmdCaps)
 
 unsigned HMDState::SetEnabledHmdCaps()
 {
-	unsigned serviceCaps = pClient ? pClient->Hmd_GetEnabledCaps(NetId) :
+    unsigned serviceCaps = pClient ? pClient->Hmd_GetEnabledCaps(NetId) :
                                       EnabledServiceHmdCaps;
     
     return serviceCaps & ((~ovrHmdCap_Service_Mask) | EnabledHmdCaps);    
@@ -426,14 +426,14 @@ static unsigned CopyFloatArrayWithLimit(float dest[], unsigned destSize,
 
 unsigned HMDState::getFloatArray(const char* propertyName, float values[], unsigned arraySize)
 {
-	if (arraySize)
-	{
-		if (OVR_strcmp(propertyName, "ScreenSize") == 0)
-		{
-			float data[2] = { OurHMDInfo.ScreenSizeInMeters.w, OurHMDInfo.ScreenSizeInMeters.h };
+    if (arraySize)
+    {
+        if (OVR_strcmp(propertyName, "ScreenSize") == 0)
+        {
+            float data[2] = { OurHMDInfo.ScreenSizeInMeters.w, OurHMDInfo.ScreenSizeInMeters.h };
 
             return CopyFloatArrayWithLimit(values, arraySize, data, 2);
-		}
+        }
         else if (OVR_strcmp(propertyName, "DistortionClearColor") == 0)
         {
             return CopyFloatArrayWithLimit(values, arraySize, RenderState.ClearColor, 4);
@@ -470,16 +470,16 @@ unsigned HMDState::getFloatArray(const char* propertyName, float values[], unsig
 
             return count;
         }
-		else if (pProfile)
-		{        
-			// TBD: Not quite right. Should update profile interface, so that
-			//      we can return 0 in all conditions if property doesn't exist.
-		
+        else if (pProfile)
+        {        
+            // TBD: Not quite right. Should update profile interface, so that
+            //      we can return 0 in all conditions if property doesn't exist.
+        
             return pProfile->GetFloatValues(propertyName, values, arraySize);
-			}
-		}
+            }
+        }
 
-	return 0;
+    return 0;
 }
 
 bool HMDState::setFloatArray(const char* propertyName, float values[], unsigned arraySize)
@@ -515,16 +515,16 @@ const char* HMDState::getString(const char* propertyName, const char* defaultVal
         return NetClient::GetInstance()->GetStringValue(GetNetId(), propertyName, defaultVal);
     }
 
-	if (pProfile)
-	{
-		LastGetStringValue[0] = 0;
-		if (pProfile->GetValue(propertyName, LastGetStringValue, sizeof(LastGetStringValue)))
-		{
-			return LastGetStringValue;
-		}
-	}
+    if (pProfile)
+    {
+        LastGetStringValue[0] = 0;
+        if (pProfile->GetValue(propertyName, LastGetStringValue, sizeof(LastGetStringValue)))
+        {
+            return LastGetStringValue;
+        }
+    }
 
-	return defaultVal;
+    return defaultVal;
 }
 
 bool HMDState::setString(const char* propertyName, const char* value)
@@ -667,7 +667,7 @@ bool HMDState::ConfigureRendering(ovrEyeRenderDesc eyeRenderDescOut[2],
             pRenderer.Clear();
     }
 
-	distortionCaps = distortionCaps & pHmdDesc->DistortionCaps;
+    distortionCaps = distortionCaps & pHmdDesc->DistortionCaps;
 
     // Step 1: do basic setup configuration
     RenderState.EnabledHmdCaps = EnabledHmdCaps;     // This is a copy... Any cleaner way?
@@ -737,7 +737,7 @@ ovrBool ovrHmd_CreateDistortionMeshInternal( ovrHmdStruct *  hmd,
                                              ovrEyeType eyeType, ovrFovPort fov,
                                              unsigned int distortionCaps,
                                              ovrDistortionMesh *meshData,
-											 float overrideEyeReliefIfNonZero )
+                                             float overrideEyeReliefIfNonZero )
 {
     if (!meshData)
         return 0;
@@ -749,7 +749,7 @@ ovrBool ovrHmd_CreateDistortionMeshInternal( ovrHmdStruct *  hmd,
 #if defined (OVR_OS_WIN32)
     OVR_COMPILER_ASSERT(sizeof(DistortionMeshVertexData) == sizeof(ovrDistortionVertex));
 #endif
-	
+    
     // *** Calculate a part of "StereoParams" needed for mesh generation
 
     // Note that mesh distortion generation is invariant of RenderTarget UVs, allowing
@@ -761,10 +761,10 @@ ovrBool ovrHmd_CreateDistortionMeshInternal( ovrHmdStruct *  hmd,
     StereoEye             stereoEye      = (eyeType == ovrEye_Left) ? StereoEye_Left : StereoEye_Right;
 
     DistortionRenderDesc& distortion = hmds->RenderState.Distortion[eyeType];
-	if (overrideEyeReliefIfNonZero)
-	{
-		distortion.Lens = GenerateLensConfigFromEyeRelief(overrideEyeReliefIfNonZero,hmdri);
-	}
+    if (overrideEyeReliefIfNonZero)
+    {
+        distortion.Lens = GenerateLensConfigFromEyeRelief(overrideEyeReliefIfNonZero,hmdri);
+    }
 
     // Find the mapping from TanAngle space to target NDC space.
     ScaleAndOffset2D      eyeToSourceNDC = CreateNDCScaleAndOffsetFromFov(fov);

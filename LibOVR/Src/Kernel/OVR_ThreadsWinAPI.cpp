@@ -598,12 +598,12 @@ Thread::~Thread()
 // Default Run implementation
 int Thread::Run()
 {
-	if (!ThreadFunction)
-		return 0;
+    if (!ThreadFunction)
+        return 0;
 
-	int ret = ThreadFunction(this, UserHandle);
+    int ret = ThreadFunction(this, UserHandle);
 
-	return ret;
+    return ret;
 }
 
 void Thread::OnExit()

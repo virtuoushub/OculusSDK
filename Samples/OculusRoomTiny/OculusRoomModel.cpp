@@ -258,46 +258,46 @@ void PopulateRoomScene(Scene* scene, RenderDevice* render)
 
 // Render a debug marker static in rift (special request for eye-tracking)
 void renderSphere(RenderDevice* render, Vector3f ViewAdjust, float metresLeft, float metresUp, float metresAway, float metresRadius,
-				unsigned char red,unsigned char green,unsigned char blue)
+                unsigned char red,unsigned char green,unsigned char blue)
 {
-	//Get textures, if haven't already
-	static FillCollection * pfills;  
-	static bool firstTime = true;
-	if (firstTime)
-	{
-		firstTime=false;
-		pfills = new FillCollection(render);
-	}
+    //Get textures, if haven't already
+    static FillCollection * pfills;  
+    static bool firstTime = true;
+    if (firstTime)
+    {
+        firstTime=false;
+        pfills = new FillCollection(render);
+    }
 
-	//Create object
-	Scene*  scene = new Scene;
-	Slab CubeSlabs[] =
-	{
-	#if 0 //Simple cube
-		 { metresLeft-metresRadius,  metresUp-metresRadius, metresAway-metresRadius,
-		   metresLeft+metresRadius,  metresUp+metresRadius, metresAway+metresRadius,  Color(red,green,blue) }
-	#else //Blob
-		 { metresLeft-0.33f*metresRadius,  metresUp-metresRadius, metresAway-0.33f*metresRadius,
-		   metresLeft+0.33f*metresRadius,  metresUp+metresRadius, metresAway+0.33f*metresRadius,  Color(red,green,blue) },
-		 { metresLeft-metresRadius,  metresUp-0.33f*metresRadius, metresAway-0.33f*metresRadius,
-		   metresLeft+metresRadius,  metresUp+0.33f*metresRadius, metresAway+0.33f*metresRadius,  Color(red,green,blue) },
-		 { metresLeft-0.33f*metresRadius,  metresUp-0.33f*metresRadius, metresAway-metresRadius,
-		   metresLeft+0.33f*metresRadius,  metresUp+0.33f*metresRadius, metresAway+metresRadius,  Color(red,green,blue) },
-		 { metresLeft-0.71f*metresRadius,  metresUp-0.71f*metresRadius, metresAway-0.71f*metresRadius,
-		   metresLeft+0.71f*metresRadius,  metresUp+0.71f*metresRadius, metresAway+0.71f*metresRadius,  Color(red,green,blue) },
+    //Create object
+    Scene*  scene = new Scene;
+    Slab CubeSlabs[] =
+    {
+    #if 0 //Simple cube
+         { metresLeft-metresRadius,  metresUp-metresRadius, metresAway-metresRadius,
+           metresLeft+metresRadius,  metresUp+metresRadius, metresAway+metresRadius,  Color(red,green,blue) }
+    #else //Blob
+         { metresLeft-0.33f*metresRadius,  metresUp-metresRadius, metresAway-0.33f*metresRadius,
+           metresLeft+0.33f*metresRadius,  metresUp+metresRadius, metresAway+0.33f*metresRadius,  Color(red,green,blue) },
+         { metresLeft-metresRadius,  metresUp-0.33f*metresRadius, metresAway-0.33f*metresRadius,
+           metresLeft+metresRadius,  metresUp+0.33f*metresRadius, metresAway+0.33f*metresRadius,  Color(red,green,blue) },
+         { metresLeft-0.33f*metresRadius,  metresUp-0.33f*metresRadius, metresAway-metresRadius,
+           metresLeft+0.33f*metresRadius,  metresUp+0.33f*metresRadius, metresAway+metresRadius,  Color(red,green,blue) },
+         { metresLeft-0.71f*metresRadius,  metresUp-0.71f*metresRadius, metresAway-0.71f*metresRadius,
+           metresLeft+0.71f*metresRadius,  metresUp+0.71f*metresRadius, metresAway+0.71f*metresRadius,  Color(red,green,blue) },
 
-	#endif
+    #endif
 
-	};
-	SlabModel Cube = {sizeof(CubeSlabs)/sizeof(Slab), CubeSlabs, Tex_None};
+    };
+    SlabModel Cube = {sizeof(CubeSlabs)/sizeof(Slab), CubeSlabs, Tex_None};
     scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Cube,  *pfills)));
     scene->SetAmbient(Vector4f(1.0f,1.0f,1.0f,1));
 
-	//Render object
+    //Render object
     Matrix4f view = Matrix4f::LookAtRH(Vector3f(0,0,0), Vector3f(0,0,0) + Vector3f(0,0,1), Vector3f(0,1,0)); 
-	scene->Render(render, Matrix4f::Translation(ViewAdjust) * view);
+    scene->Render(render, Matrix4f::Translation(ViewAdjust) * view);
 
-	//Delete object
-	delete scene;
+    //Delete object
+    delete scene;
 }
 
