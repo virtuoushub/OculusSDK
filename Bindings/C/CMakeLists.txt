@@ -17,10 +17,6 @@ list(APPEND SOURCE_FILES ${WIN32_SOURCE_FILES})
 endif()
 add_library(OVR_C SHARED ${SOURCE_FILES})
 
-set(EXTRA_LIBS OculusVR)
-list(APPEND EXTRA_LIBS ${OVR_LIBRARIES})
-
 # All platforms require GLEW and OpenGL
 find_package(OpenGL REQUIRED)
-list(APPEND EXTRA_LIBS ${OPENGL_LIBRARIES})
-target_link_libraries(OVR_C ${EXTRA_LIBS})
+target_link_libraries(OVR_C ${OVR_LIBRARIES} ${OPENGL_LIBRARIES})
