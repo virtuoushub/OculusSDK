@@ -39,8 +39,6 @@ limitations under the License.
 #include <conio.h>
 # pragma comment(lib, "wbemuuid.lib")
 #include <wbemidl.h>
-#include <AtlBase.h>
-#include <AtlConv.h>
 
 // WIN32_LEAN_AND_MEAN included in OVR_Atomic.h may break 'byte' declaration.
 #ifdef WIN32_LEAN_AND_MEAN
@@ -337,7 +335,6 @@ static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC, LPRECT, LPARAM dwDa
 
 static bool getCompatDisplayEDID( WCHAR* displayName, String& serialNumberStr, String& userFriendlyNameStr )
 {
-    USES_CONVERSION;
 
     IWbemLocator *pLoc = NULL;
     IWbemServices *pSvc = NULL;

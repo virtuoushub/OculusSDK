@@ -16,8 +16,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include <windows.h>
 #include <DbgHelp.h>
-#include <AtlBase.h>
-#include <AtlConv.h>
 
 #include "OVR_Win32_Dxgi_Display.h"
 
@@ -243,21 +241,45 @@ static HMODULE
     return createShim( lpLibFileName, targetAPI );
 }
 
+static WCHAR _convertTempW[MAX_PATH];
+static CHAR _convertTempA[MAX_PATH];
+
+static WCHAR* a2w(CHAR*str) {
+  int ret = MultiByteToWideChar(CP_THREAD_ACP, 0, str, -1, _convertTempW, MAX_PATH);
+  if (ret == 0)
+  {
+    OVR_ASSERT(FALSE);
+    return NULL;
+  }
+  _convertTempW[ret] = 0;
+  return _convertTempW;
+}
+
+static LPCSTR w2a(LPCWSTR wstr) {
+  int ret = WideCharToMultiByte(CP_THREAD_ACP, 0, wstr, -1, _convertTempA, MAX_PATH, NULL, NULL);
+  if (ret == 0)
+  {
+    OVR_ASSERT(FALSE);
+    return NULL;
+  }
+  _convertTempA[ret] = 0;
+  return _convertTempA;
+}
+
+
 static HMODULE
     WINAPI
     OVRLoadLibraryW(
     __in LPCWSTR lpLibFileName
     )
 {
-    USES_CONVERSION;
-
     OVRTargetAPI targetAPI = DirectX;
 
-    bool needShim = checkForOverride( W2A( lpLibFileName ), targetAPI );
+    bool needShim = checkForOverride( w2a( lpLibFileName ), targetAPI );
     if( !needShim )    
         return (*oldProcW)( lpLibFileName );
 
-    return createShim( W2A( lpLibFileName ), targetAPI );
+    return createShim( w2a( lpLibFileName ), targetAPI );
 }
 
 static HMODULE
@@ -287,16 +309,14 @@ static HMODULE
     __in       DWORD dwFlags
     )
 {
-    USES_CONVERSION;
-
     OVRTargetAPI targetAPI = DirectX;
 
-    bool needShim = checkForOverride( W2A( lpLibFileName ), targetAPI );
+    bool needShim = checkForOverride(w2a(lpLibFileName), targetAPI);
     if( !needShim )
         return (*oldProcExW)( lpLibFileName, hFile, dwFlags );
 
     // FIXME: Don't throw away the flags parameter
-    return createShim( W2A( lpLibFileName ), targetAPI );
+    return createShim(w2a(lpLibFileName), targetAPI);
 }
 
 static BOOL WINAPI OVRGetModuleHandleExA(
@@ -324,17 +344,15 @@ static BOOL WINAPI OVRGetModuleHandleExW(
     __out    HMODULE *phModule
     )
 {
-    USES_CONVERSION;
-
     OVRTargetAPI targetAPI = DirectX;
 
-    bool needShim = checkForOverride( W2A( lpModuleName ), targetAPI );
+    bool needShim = checkForOverride(w2a(lpModuleName), targetAPI);
     if( !needShim )
     {
         return (*oldProcModExW)( dwFlags, lpModuleName, phModule );
     }
 
-    *phModule = createShim( W2A( lpModuleName ), targetAPI );
+    *phModule = createShim(w2a(lpModuleName), targetAPI);
 
     return TRUE;
 }
