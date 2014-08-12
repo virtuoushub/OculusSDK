@@ -165,7 +165,7 @@ typedef enum
     // Read-only flags.
     ovrHmdCap_Present           = 0x0001,   ///  The HMD is plugged in and detected by the system.
     ovrHmdCap_Available         = 0x0002,   ///  The HMD and its sensor is available for ownership use.
-                                            ///  i.e. it is not already owned by another application.
+											///  i.e. it is not already owned by another application.
     ovrHmdCap_Captured          = 0x0004,   ///  Set to 'true' if we captured ownership of this HMD.
 
     // These flags are intended for use with the new driver display mode.
@@ -173,7 +173,7 @@ typedef enum
 
     // Modifiable flags (through ovrHmd_SetEnabledCaps).
     ovrHmdCap_NoMirrorToWindow  = 0x2000,   /// Disables mirroring of HMD output to the window. This may improve 
-                                            /// rendering performance slightly (only if 'ExtendDesktop' is off).
+											/// rendering performance slightly (only if 'ExtendDesktop' is off).
     ovrHmdCap_DisplayOff        = 0x0040,   /// Turns off HMD screen and output (only if 'ExtendDesktop' is off).
 
     ovrHmdCap_LowPersistence    = 0x0080,   ///  HMD supports low persistence mode.
@@ -205,13 +205,13 @@ typedef enum
 /// Used with ovrHmd_ConfigureRendering and ovrHmd_CreateDistortionMesh.
 typedef enum
 {        
-    ovrDistortionCap_Chromatic    = 0x01,        ///    Supports chromatic aberration correction.
-    ovrDistortionCap_TimeWarp    = 0x02,        ///    Supports timewarp.
-    ovrDistortionCap_Vignette    = 0x08,        ///    Supports vignetting around the edges of the view.
-    ovrDistortionCap_NoRestore  = 0x10,        ///  Do not save and restore the graphics state when rendering distortion.
-    ovrDistortionCap_FlipInput  = 0x20,        ///  Flip the vertical texture coordinate of input images.
-    ovrDistortionCap_SRGB       = 0x40,        ///  Assume input images are in sRGB gamma-corrected color space.
-    ovrDistortionCap_Overdrive  = 0x80,        ///  Overdrive brightness transitions to reduce artifacts on DK2+ displays
+    ovrDistortionCap_Chromatic	    = 0x01,		///	Supports chromatic aberration correction.
+    ovrDistortionCap_TimeWarp	    = 0x02,		///	Supports timewarp.
+    ovrDistortionCap_Vignette	    = 0x08,		///	Supports vignetting around the edges of the view.
+    ovrDistortionCap_NoRestore      = 0x10,		///  Do not save and restore the graphics state when rendering distortion.
+    ovrDistortionCap_FlipInput      = 0x20,		///  Flip the vertical texture coordinate of input images.
+    ovrDistortionCap_SRGB           = 0x40,		///  Assume input images are in sRGB gamma-corrected color space.
+    ovrDistortionCap_Overdrive      = 0x80,		///  Overdrive brightness transitions to reduce artifacts on DK2+ displays
 
     ovrDistortionCap_ProfileNoTimewarpSpinWaits = 0x10000,  /// Use when profiling with timewarp to remove false positives
 } ovrDistortionCaps;
@@ -258,7 +258,7 @@ typedef struct ovrHmdDesc_
 
     /// Capability bits described by ovrHmdCaps.
     unsigned int HmdCaps;
-    /// Capability bits described by ovrTrackingCaps.
+	/// Capability bits described by ovrTrackingCaps.
     unsigned int TrackingCaps;
     /// Capability bits described by ovrDistortionCaps.
     unsigned int DistortionCaps;
@@ -345,10 +345,10 @@ typedef struct ovrTrackingState_
 typedef struct ovrFrameTiming_
 {
     /// The amount of time that has passed since the previous frame's
-    /// ThisFrameSeconds value (usable for movement scaling).
+	/// ThisFrameSeconds value (usable for movement scaling).
     /// This will be clamped to no more than 0.1 seconds to prevent
     /// excessive movement after pauses due to loading or initialization.
-    float            DeltaSeconds;
+    float			DeltaSeconds;
 
     /// It is generally expected that the following holds:
     /// ThisFrameSeconds < TimewarpPointSeconds < NextFrameSeconds < 
@@ -357,17 +357,17 @@ typedef struct ovrFrameTiming_
     /// Absolute time value when rendering of this frame began or is expected to
     /// begin. Generally equal to NextFrameSeconds of the previous frame. Can be used
     /// for animation timing.
-    double            ThisFrameSeconds;
+    double			ThisFrameSeconds;
     /// Absolute point when IMU expects to be sampled for this frame.
-    double            TimewarpPointSeconds;
+    double			TimewarpPointSeconds;
     /// Absolute time when frame Present followed by GPU Flush will finish and the next frame begins.
-    double            NextFrameSeconds;
+    double			NextFrameSeconds;
 
     /// Time when when half of the screen will be scanned out. Can be passed as an absolute time
-    /// to ovrHmd_GetTrackingState() to get the predicted general orientation.
-    double            ScanoutMidpointSeconds;
+	/// to ovrHmd_GetTrackingState() to get the predicted general orientation.
+    double		    ScanoutMidpointSeconds;
     /// Timing points when each eye will be scanned out to display. Used when rendering each eye.
-    double            EyeScanoutSeconds[2];    
+    double			EyeScanoutSeconds[2];    
 } ovrFrameTiming;
 
 
@@ -381,9 +381,9 @@ typedef struct ovrEyeRenderDesc_
 {    
     ovrEyeType  Eye;
     ovrFovPort  Fov;
-    ovrRecti    DistortedViewport;             /// Distortion viewport.
+	ovrRecti	DistortedViewport; 	        /// Distortion viewport.
     ovrVector2f PixelsPerTanAngleAtCenter;  /// How many display pixels will fit in tan(angle) = 1.
-    ovrVector3f ViewAdjust;                  /// Translation to be applied to view matrix.
+    ovrVector3f ViewAdjust;  		        /// Translation to be applied to view matrix.
 } ovrEyeRenderDesc;
 
 
@@ -422,7 +422,7 @@ typedef struct ovrRenderAPIConfigHeader_
 typedef struct ovrRenderAPIConfig_
 {
     ovrRenderAPIConfigHeader Header;
-    uint32_t                 PlatformData[16];
+    uintptr_t                PlatformData[8];
 } ovrRenderAPIConfig;
 
 /// Platform-independent part of the eye texture descriptor.
@@ -439,8 +439,9 @@ typedef struct ovrTextureHeader_
 typedef struct ovrTexture_
 {
     ovrTextureHeader Header;
-    uint32_t         PlatformData[16];
+    uintptr_t        PlatformData[8];
 } ovrTexture;
+
 
 // -----------------------------------------------------------------------------------
 // ***** API Interfaces
@@ -474,8 +475,20 @@ typedef struct ovrTexture_
 extern "C" {
 #endif
 
+// ovr_InitializeRenderingShim initializes the rendering shim appart from everything
+// else in LibOVR. This may be helpful if the application prefers to avoid
+// creating any OVR resources (allocations, service connections, etc) at this point.
+// ovr_InitializeRenderingShim does not bring up anything within LibOVR except the
+// necessary hooks to enable the Direct-to-Rift functionality.
+//
+// Either ovr_InitializeRenderingShim() or ovr_Initialize() must be called before any
+// Direct3D or OpenGL initilization is done by applictaion (creation of devices, etc).
+// ovr_Initialize() must still be called after to use the rest of LibOVR APIs.
+OVR_EXPORT void ovr_InitializeRenderingShim();
+
 // Library init/shutdown, must be called around all other OVR code.
-// No other functions calls are allowed before ovr_Initialize succeeds or after ovr_Shutdown.
+// No other functions calls besides ovr_InitializeRenderingShim are allowed
+// before ovr_Initialize succeeds or after ovr_Shutdown.
 /// Initializes all Oculus functionality.
 OVR_EXPORT ovrBool  ovr_Initialize();
 /// Shuts down all Oculus functionality.
@@ -516,8 +529,8 @@ OVR_EXPORT const char* ovrHmd_GetLastError(ovrHmd hmd);
 ///            Null pointers mean "full size".
 /// @note Source and dest mirror rects are not yet implemented.
 OVR_EXPORT ovrBool ovrHmd_AttachToWindow(ovrHmd hmd, void* window,
-                                         const ovrRecti* destMirrorRect,
-                                         const ovrRecti* sourceRenderTargetRect);
+										 const ovrRecti* destMirrorRect,
+										 const ovrRecti* sourceRenderTargetRect);
 
 //-------------------------------------------------------------------------------------
 
@@ -539,7 +552,7 @@ OVR_EXPORT void         ovrHmd_SetEnabledCaps(ovrHmd hmd, unsigned int hmdCaps);
 /// ConfigureTracking starts sensor sampling, enabling specified capabilities,
 ///    described by ovrTrackingCaps.
 ///  - supportedTrackingCaps specifies support that is requested. The function will succeed 
-///      even if these caps are not available (i.e. sensor or camera is unplugged). Support
+///	  even if these caps are not available (i.e. sensor or camera is unplugged). Support
 ///    will automatically be enabled if such device is plugged in later. Software should
 ///    check ovrTrackingState.StatusFlags for real-time status.
 ///  - requiredTrackingCaps specify sensor capabilities required at the time of the call.
@@ -547,7 +560,7 @@ OVR_EXPORT void         ovrHmd_SetEnabledCaps(ovrHmd hmd, unsigned int hmdCaps);
 ///    supportedTrackingCaps.
 ///  - Pass 0 for both supportedTrackingCaps and requiredTrackingCaps to disable tracking.
 OVR_EXPORT ovrBool  ovrHmd_ConfigureTracking(ovrHmd hmd, unsigned int supportedTrackingCaps,
-                                                         unsigned int requiredTrackingCaps);
+													     unsigned int requiredTrackingCaps);
 
 /// Re-centers the sensor orientation.
 /// Normally this will recenter the (x,y,z) translational components and the yaw 
@@ -863,19 +876,19 @@ OVR_EXPORT ovrBool ovrHmd_DismissHSWDisplay(ovrHmd hmd);
     #define OVR_KEY_IPD                         "IPD"
     #define OVR_KEY_NECK_TO_EYE_DISTANCE        "NeckEyeDistance"
 
-    // TODO: remove this duplication with OVR_Profile.h
-    // Default measurements empirically determined at Oculus to make us happy
-    // The neck model numbers were derived as an average of the male and female averages from ANSUR-88
-    // NECK_TO_EYE_HORIZONTAL = H22 - H43 = INFRAORBITALE_BACK_OF_HEAD - TRAGION_BACK_OF_HEAD
-    // NECK_TO_EYE_VERTICAL = H21 - H15 = GONION_TOP_OF_HEAD - ECTOORBITALE_TOP_OF_HEAD
-    // These were determined to be the best in a small user study, clearly beating out the previous default values
-    #define OVR_DEFAULT_GENDER                  "Unknown"
-    #define OVR_DEFAULT_PLAYER_HEIGHT           1.778f
-    #define OVR_DEFAULT_EYE_HEIGHT              1.675f
-    #define OVR_DEFAULT_IPD                     0.064f
-    #define OVR_DEFAULT_NECK_TO_EYE_HORIZONTAL  0.0805f
-    #define OVR_DEFAULT_NECK_TO_EYE_VERTICAL    0.075f
-    #define OVR_DEFAULT_EYE_RELIEF_DIAL         3
+	// TODO: remove this duplication with OVR_Profile.h
+	// Default measurements empirically determined at Oculus to make us happy
+	// The neck model numbers were derived as an average of the male and female averages from ANSUR-88
+	// NECK_TO_EYE_HORIZONTAL = H22 - H43 = INFRAORBITALE_BACK_OF_HEAD - TRAGION_BACK_OF_HEAD
+	// NECK_TO_EYE_VERTICAL = H21 - H15 = GONION_TOP_OF_HEAD - ECTOORBITALE_TOP_OF_HEAD
+	// These were determined to be the best in a small user study, clearly beating out the previous default values
+	#define OVR_DEFAULT_GENDER                  "Unknown"
+	#define OVR_DEFAULT_PLAYER_HEIGHT           1.778f
+	#define OVR_DEFAULT_EYE_HEIGHT              1.675f
+	#define OVR_DEFAULT_IPD                     0.064f
+	#define OVR_DEFAULT_NECK_TO_EYE_HORIZONTAL  0.0805f
+	#define OVR_DEFAULT_NECK_TO_EYE_VERTICAL    0.075f
+	#define OVR_DEFAULT_EYE_RELIEF_DIAL         3
 #endif
 
 /// Get boolean property. Returns first element if property is a boolean array.
@@ -923,4 +936,4 @@ OVR_EXPORT ovrBool ovrHmd_SetString(ovrHmd hmddesc, const char* propertyName,
 #endif
 
 
-#endif    // OVR_CAPI_h
+#endif	// OVR_CAPI_h

@@ -419,7 +419,7 @@ void HSWDisplay::LoadGraphics()
             const bool  flip   = ((RenderState.DistortionCaps & ovrDistortionCap_FlipInput) != 0);
             const float left   = -1.0f; // We currently draw this in normalized device coordinates with an stereo translation
             const float top    = -1.1f; // applied as a vertex shader uniform. In the future when we have a more formal graphics
-            const float right  =  1.0f; // API abstraction we may move this draw to an overlay layer or to a more formal 
+            const float right  =  1.0f; // API abstraction we may move this draw to an overlay layer or to a more formal  
             const float bottom =  0.9f; // model/mesh scheme with a perspective projection.
 
             pVertices[0] = HASWVertex(left,  top,    0.f, Color(255, 255, 255, 255), 0.f, flip ? 1.f : 0.f);

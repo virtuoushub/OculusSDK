@@ -151,6 +151,8 @@ public:
         Destroy();
     }
 
+	static void OVR_CDECL DirectDisplayInitialize();
+
     // Returns 'true' if system was properly initialized.
     static bool OVR_CDECL IsInitialized();
 
@@ -159,7 +161,7 @@ public:
     static void OVR_CDECL Init(Log* log = Log::ConfigureDefaultLog(LogMask_Debug),
                                Allocator *palloc = DefaultAllocator::InitSystemSingleton());
 
-    // De-initializes System more, finalizing the threading system and destroying
+	// De-initializes System more, finalizing the threading system and destroying
     // the global memory allocator.
     static void OVR_CDECL Destroy();
 };
