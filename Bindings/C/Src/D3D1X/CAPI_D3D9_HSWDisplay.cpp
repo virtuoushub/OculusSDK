@@ -36,9 +36,6 @@ limitations under the License.
 #include "Kernel/OVR_Allocator.h"
 #include "Kernel/OVR_Color.h"
 
-#include "../Textures/healthAndSafety.tga.h"
-
-
 
 namespace OVR { namespace CAPI { 
 
@@ -143,7 +140,7 @@ struct HASWVertex
 {
     Vector3f  Pos;
     Color     C;
-    float     U, V;    
+    float     U, V;	
 
     HASWVertex(const Vector3f& p, const Color& c = Color(64,0,0,255), float u = 0, float v = 0)
         : Pos(p), C(c), U(u), V(v)
@@ -178,9 +175,9 @@ bool HSWDisplay::Initialize(const ovrRenderAPIConfig* apiConfig)
 
     if(config)
     {
-        RenderParams.Device     = config->D3D9.pDevice;
+	    RenderParams.Device     = config->D3D9.pDevice;
         RenderParams.SwapChain  = config->D3D9.pSwapChain;
-        RenderParams.ScreenSize = config->D3D9.Header.RTSize;
+	    RenderParams.ScreenSize = config->D3D9.Header.RTSize;
     }
     else
     {
@@ -233,7 +230,9 @@ void HSWDisplay::LoadGraphics()
         if(caps.TextureCaps & (D3DPTEXTURECAPS_SQUAREONLY | D3DPTEXTURECAPS_POW2))
             { HSWDISPLAY_LOG(("[HSWDisplay D3D9] Square textures allowed only.")); }
 
-        pTexture = *LoadTextureTga(RenderParams, healthAndSafety_tga, (int)sizeof(healthAndSafety_tga), 255);
+        size_t textureSize;
+        const uint8_t* TextureData = GetDefaultTexture(textureSize);
+        pTexture = *LoadTextureTga(RenderParams, TextureData, (int)textureSize, 255);
         OVR_ASSERT(pTexture);
     }
 
@@ -269,9 +268,6 @@ void HSWDisplay::LoadGraphics()
             }
         }
     }
-
-    // Calculate ortho projection.
-    GetOrthoProjection(RenderState, OrthoProjection);
 }
 
 
@@ -327,9 +323,10 @@ void HSWDisplay::RenderInternal(ovrEyeType eye, const ovrTexture* eyeTexture)
         if(!pTexture)
             LoadGraphics();
 
-        HRESULT hResult;
+        // Calculate ortho projection.
+        GetOrthoProjection(RenderState, OrthoProjection);
 
-        hResult = RenderParams.Device->BeginScene();
+        HRESULT hResult = RenderParams.Device->BeginScene();
         if(FAILED(hResult))
             { HSWDISPLAY_LOG(("[HSWDisplay D3D9] BeginScene failed. %d (%x)", hResult, hResult)); }
 
@@ -370,9 +367,9 @@ void HSWDisplay::RenderInternal(ovrEyeType eye, const ovrTexture* eyeTexture)
 
         RenderParams.Device->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
         RenderParams.Device->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
-        RenderParams.Device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+		RenderParams.Device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
         RenderParams.Device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-        RenderParams.Device->SetRenderState(D3DRS_LIGHTING, FALSE);
+		RenderParams.Device->SetRenderState(D3DRS_LIGHTING, FALSE);
         RenderParams.Device->SetRenderState(D3DRS_ZENABLE, FALSE);
         RenderParams.Device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
         RenderParams.Device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);

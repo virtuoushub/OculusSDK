@@ -47,10 +47,10 @@ namespace OVR { namespace CAPI { namespace GL {
     
     "_VS_IN vec3 Position;\n"
     
-    "void main()\n"
-    "{\n"
-    "    gl_Position = vec4(Position.xy * Scale + PositionOffset, 0.5, 1.0);\n"
-    "}\n";
+	"void main()\n"
+	"{\n"
+	"	gl_Position = vec4(Position.xy * Scale + PositionOffset, 0.5, 1.0);\n"
+	"}\n";
     
     const OVR::CAPI::GL::ShaderBase::Uniform SimpleQuad_vs_refl[] =
     {
@@ -63,10 +63,10 @@ namespace OVR { namespace CAPI { namespace GL {
     
     "_FRAGCOLOR_DECLARATION\n"
     
-    "void main()\n"
-    "{\n"
-    "    _FRAGCOLOR = Color;\n"
-    "}\n";
+	"void main()\n"
+	"{\n"
+	"    _FRAGCOLOR = Color;\n"
+	"}\n";
     
     const OVR::CAPI::GL::ShaderBase::Uniform SimpleQuad_fs_refl[] =
     {
@@ -100,10 +100,10 @@ namespace OVR { namespace CAPI { namespace GL {
   
         "_VS_OUT vec4 oColor;\n"
         "_VS_OUT vec2 oTexCoord;\n"
-    
+
         "void main()\n"
         "{\n"
-        "    gl_Position = vec4(Position.xy * Scale + PositionOffset, 0.5, 1.0);\n"
+	    "	gl_Position = vec4(Position.xy * Scale + PositionOffset, 0.5, 1.0);\n"
         "   oColor = Color;\n"
         "   oTexCoord = TexCoord;\n"
         "}\n";
@@ -111,8 +111,8 @@ namespace OVR { namespace CAPI { namespace GL {
     // The following declaration is copied from the generated D3D SimpleTexturedQuad_vs_refl.h file, with D3D_NS renamed to GL.
     const OVR::CAPI::GL::ShaderBase::Uniform SimpleTexturedQuad_vs_refl[] =
     {
-        { "PositionOffset", OVR::CAPI::GL::ShaderBase::VARTYPE_FLOAT, 0, 8 },
-        { "Scale",          OVR::CAPI::GL::ShaderBase::VARTYPE_FLOAT, 8, 8 },
+	    { "PositionOffset", OVR::CAPI::GL::ShaderBase::VARTYPE_FLOAT, 0, 8 },
+	    { "Scale",          OVR::CAPI::GL::ShaderBase::VARTYPE_FLOAT, 8, 8 },
     };
 
 
@@ -123,17 +123,17 @@ namespace OVR { namespace CAPI { namespace GL {
         "_FS_IN vec4 oColor;\n"
         "_FS_IN vec2 oTexCoord;\n"
     
+        "_FRAGCOLOR_DECLARATION\n"
+
         "void main()\n"
         "{\n"
-        "   gl_FragColor = texture2D(Texture0, oTexCoord);\n"
-        "   if(oColor.a < 0.02)\n"
-        "       gl_FragColor.a = 0.0;\n"
+        "   _FRAGCOLOR = oColor * texture2D(Texture0, oTexCoord);\n"
         "}\n";
 
     // The following is copied from the generated D3D SimpleTexturedQuad_ps_refl.h file, with D3D_NS renamed to GL.
     const OVR::CAPI::GL::ShaderBase::Uniform SimpleTexturedQuad_ps_refl[] =
     {
-        { "Color",     OVR::CAPI::GL::ShaderBase::VARTYPE_FLOAT, 0, 16 },
+	    { "Color", 	OVR::CAPI::GL::ShaderBase::VARTYPE_FLOAT, 0, 16 },
     };
 
     
@@ -208,8 +208,8 @@ namespace OVR { namespace CAPI { namespace GL {
     // Accurate time warp lerp vs. faster
 #if 1
     // Apply the two 3x3 timewarp rotations to these vectors.
-    "   vec3 TransformedStart = (EyeRotationStart * vec4(TanEyeAngle, 0)).xyz;\n"
-    "   vec3 TransformedEnd   = (EyeRotationEnd * vec4(TanEyeAngle, 0)).xyz;\n"
+	"   vec3 TransformedStart = (EyeRotationStart * vec4(TanEyeAngle, 0)).xyz;\n"
+	"   vec3 TransformedEnd   = (EyeRotationEnd * vec4(TanEyeAngle, 0)).xyz;\n"
     // And blend between them.
     "   vec3 Transformed = mix ( TransformedStart, TransformedEnd, Color.a );\n"
 #else
@@ -325,12 +325,12 @@ namespace OVR { namespace CAPI { namespace GL {
     // Accurate time warp lerp vs. faster
 #if 1
     // Apply the two 3x3 timewarp rotations to these vectors.
-    "   vec3 TransformedRStart = (EyeRotationStart * vec4(TanEyeAngleR, 0)).xyz;\n"
-    "   vec3 TransformedGStart = (EyeRotationStart * vec4(TanEyeAngleG, 0)).xyz;\n"
-    "   vec3 TransformedBStart = (EyeRotationStart * vec4(TanEyeAngleB, 0)).xyz;\n"
-    "   vec3 TransformedREnd   = (EyeRotationEnd * vec4(TanEyeAngleR, 0)).xyz;\n"
-    "   vec3 TransformedGEnd   = (EyeRotationEnd * vec4(TanEyeAngleG, 0)).xyz;\n"
-    "   vec3 TransformedBEnd   = (EyeRotationEnd * vec4(TanEyeAngleB, 0)).xyz;\n"
+	"   vec3 TransformedRStart = (EyeRotationStart * vec4(TanEyeAngleR, 0)).xyz;\n"
+	"   vec3 TransformedGStart = (EyeRotationStart * vec4(TanEyeAngleG, 0)).xyz;\n"
+	"   vec3 TransformedBStart = (EyeRotationStart * vec4(TanEyeAngleB, 0)).xyz;\n"
+	"   vec3 TransformedREnd   = (EyeRotationEnd * vec4(TanEyeAngleR, 0)).xyz;\n"
+	"   vec3 TransformedGEnd   = (EyeRotationEnd * vec4(TanEyeAngleG, 0)).xyz;\n"
+	"   vec3 TransformedBEnd   = (EyeRotationEnd * vec4(TanEyeAngleB, 0)).xyz;\n"
     
     // And blend between them.
     "   vec3 TransformedR = mix ( TransformedRStart, TransformedREnd, Color.a );\n"

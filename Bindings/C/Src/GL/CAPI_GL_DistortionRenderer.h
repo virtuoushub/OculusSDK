@@ -43,7 +43,7 @@ public:
 
 
     // ***** Public DistortionRenderer interface
-    
+	
     virtual bool Initialize(const ovrRenderAPIConfig* apiConfig,
                             unsigned distortionCaps);
 
@@ -53,9 +53,9 @@ public:
 
     void         WaitUntilGpuIdle();
 
-    // Similar to ovr_WaitTillTime but it also flushes GPU.
-    // Note, it exits when time expires, even if GPU is not in idle state yet.
-    double       FlushGpuAndWaitTillTime(double absTime);
+	// Similar to ovr_WaitTillTime but it also flushes GPU.
+	// Note, it exits when time expires, even if GPU is not in idle state yet.
+	double       FlushGpuAndWaitTillTime(double absTime);
 
 protected:
     
@@ -67,6 +67,12 @@ protected:
         virtual void Save();
         virtual void Restore();
         
+#ifdef OVR_OS_MAC
+        // Asking for Core Profile is equivalent to asking whether we have a
+        // 3.2+ context on mac.
+        bool isAtLeastOpenGL3();
+#endif
+
     protected:
         void ApplyBool(GLenum Name, GLint Value, GLint index = -1);
         
@@ -105,62 +111,62 @@ protected:
     // TBD: Should we be using oe from RState instead?
     unsigned            DistortionCaps;
 
-    struct FOR_EACH_EYE
-    {
+	struct FOR_EACH_EYE
+	{
         FOR_EACH_EYE() : TextureSize(0), RenderViewport(Sizei(0)) { }
 
 #if 0
-        IDirect3DVertexBuffer9  * dxVerts;
-        IDirect3DIndexBuffer9   * dxIndices;
+		IDirect3DVertexBuffer9  * dxVerts;
+		IDirect3DIndexBuffer9   * dxIndices;
 #endif
-        int                       numVerts;
-        int                       numIndices;
+		int                       numVerts;
+		int                       numIndices;
 
-        GLuint                    texture;
+		GLuint                    texture;
 
-        ovrVector2f                   UVScaleOffset[2];
+		ovrVector2f			 	  UVScaleOffset[2];
         Sizei                     TextureSize;
         Recti                     RenderViewport;
-    } eachEye[2];
+	} eachEye[2];
 
     // GL context and utility variables.
     RenderParams        RParams;    
 
-    // Helpers
+	// Helpers
     void initBuffersAndShaders();
     void initShaders();
     void initFullscreenQuad();
     void destroy();
-    
+	
     void setViewport(const Recti& vp);
 
     void renderDistortion(Texture* leftEyeTexture, Texture* rightEyeTexture);
 
     void renderPrimitives(const ShaderFill* fill, Buffer* vertices, Buffer* indices,
                           int offset, int count,
-                          PrimitiveType rprim, GLuint* vao, bool isDistortionMesh);
+						  PrimitiveType rprim, GLuint* vao, bool isDistortionMesh);
 
-    void createDrawQuad();
+	void createDrawQuad();
     void renderLatencyQuad(unsigned char* latencyTesterDrawColor);
     void renderLatencyPixel(unsigned char* latencyTesterPixelColor);
-    
+	
     void renderEndFrame();
 
     Ptr<Texture>        pEyeTextures[2];
 
-    Ptr<Buffer>         DistortionMeshVBs[2];    // one per-eye
-    Ptr<Buffer>         DistortionMeshIBs[2];    // one per-eye
-    GLuint              DistortionMeshVAOs[2];   // one per-eye
+	Ptr<Buffer>         DistortionMeshVBs[2];    // one per-eye
+	Ptr<Buffer>         DistortionMeshIBs[2];    // one per-eye
+	GLuint              DistortionMeshVAOs[2];   // one per-eye
 
-    Ptr<ShaderSet>      DistortionShader;
+	Ptr<ShaderSet>      DistortionShader;
 
     struct StandardUniformData
     {
         Matrix4f  Proj;
         Matrix4f  View;
     }                   StdUniforms;
-    
-    GLuint              LatencyVAO;
+	
+	GLuint              LatencyVAO;
     Ptr<Buffer>         LatencyTesterQuadVB;
     Ptr<ShaderSet>      SimpleQuadShader;
     Ptr<ShaderSet>      SimpleQuadGammaShader;
@@ -169,14 +175,14 @@ protected:
     Array<Ptr<Texture> >     DepthBuffers;
     GLuint                   CurrentFbo;
 
-    GLint SavedViewport[4];
-    GLfloat SavedClearColor[4];
-    GLint SavedDepthTest;
-    GLint SavedCullFace;
-    GLint SavedProgram;
-    GLint SavedActiveTexture;
-    GLint SavedBoundTexture;
-    GLint SavedVertexArray;
+	GLint SavedViewport[4];
+	GLfloat SavedClearColor[4];
+	GLint SavedDepthTest;
+	GLint SavedCullFace;
+	GLint SavedProgram;
+	GLint SavedActiveTexture;
+	GLint SavedBoundTexture;
+	GLint SavedVertexArray;
     GLint SavedBoundFrameBuffer;
 };
 

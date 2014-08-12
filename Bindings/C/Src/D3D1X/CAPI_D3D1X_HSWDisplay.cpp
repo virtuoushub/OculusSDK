@@ -37,9 +37,6 @@ limitations under the License.
 #include "Kernel/OVR_Allocator.h"
 #include "Kernel/OVR_Color.h"
 
-
-#include "../Textures/healthAndSafety.tga.h"
-
 // We currently borrow the SimpleQuad shaders
 #include "../Shaders/SimpleTexturedQuad_vs.h"
 #include "../Shaders/SimpleTexturedQuad_vs_refl.h"
@@ -150,12 +147,12 @@ Texture* LoadTextureTga(RenderParams& rParams, ID3D1xSamplerState* pSamplerState
 
         // Create the D3D texture
         D3D1X_(TEXTURE2D_DESC) dsDesc;
-        dsDesc.Width              = width;
-        dsDesc.Height             = height;
+		dsDesc.Width              = width;
+		dsDesc.Height             = height;
         dsDesc.MipLevels          = 1;
         dsDesc.ArraySize          = 1;
         dsDesc.Format             = DXGI_FORMAT_R8G8B8A8_UNORM;
-        dsDesc.SampleDesc.Count   = 1;
+		dsDesc.SampleDesc.Count   = 1;
         dsDesc.SampleDesc.Quality = 0;
         dsDesc.Usage              = D3D1X_(USAGE_DEFAULT);
         dsDesc.BindFlags          = D3D1X_(BIND_SHADER_RESOURCE);
@@ -211,7 +208,7 @@ struct HASWVertex
 {
     Vector3f  Pos;
     Color     C;
-    float     U, V;    
+    float     U, V;	
 
     HASWVertex(const Vector3f& p, const Color& c = Color(64,0,0,255), float u = 0, float v = 0)
         : Pos(p), C(c), U(u), V(v)
@@ -249,7 +246,7 @@ bool HSWDisplay::Initialize(const ovrRenderAPIConfig* apiConfig)
 
     if(config)
     {
-        RenderParams.pDevice       = config->D3D_NS.pDevice;
+        RenderParams.pDevice	   = config->D3D_NS.pDevice;
         #if (OVR_D3D_VERSION == 10)    
         RenderParams.pContext      = config->D3D10.pDevice;
         #else
@@ -324,7 +321,11 @@ void HSWDisplay::LoadGraphics()
     #endif
 
     if(!pTexture) // To do: Add support for .dds files, which would be significantly smaller than the size of the tga.
-        pTexture = *LoadTextureTga(RenderParams, pSamplerState, healthAndSafety_tga, (int)sizeof(healthAndSafety_tga), 255);
+    {
+        size_t textureSize;
+        const uint8_t* TextureData = GetDefaultTexture(textureSize);
+        pTexture = *LoadTextureTga(RenderParams, pSamplerState, TextureData, (int)textureSize, 255);
+    }
 
     if(!UniformBufferArray[0])
     {
@@ -418,9 +419,6 @@ void HSWDisplay::LoadGraphics()
             }
         }
     }
-
-    // Calculate ortho projection.
-    GetOrthoProjection(RenderState, OrthoProjection);
 }
 
 
@@ -445,6 +443,8 @@ void HSWDisplay::RenderInternal(ovrEyeType eye, const ovrTexture* eyeTexture)
         if(!pVB)
             LoadGraphics();
 
+        // Calculate ortho projection.
+        GetOrthoProjection(RenderState, OrthoProjection);
 
         // Save settings
         // To do: Merge this saved state with that done by DistortionRenderer::GraphicsState::Save(), and put them in a shared location.
@@ -546,8 +546,8 @@ void HSWDisplay::RenderInternal(ovrEyeType eye, const ovrTexture* eyeTexture)
 
             if (vertexData)
             {
-                UniformBufferArray[OVR::CAPI::D3D_NS::Shader_Vertex]->Data(OVR::CAPI::D3D_NS::Buffer_Uniform, vertexData, vShaderBase->UniformsSize);
-                vShaderBase->SetUniformBuffer(UniformBufferArray[OVR::CAPI::D3D_NS::Shader_Vertex]);
+		        UniformBufferArray[OVR::CAPI::D3D_NS::Shader_Vertex]->Data(OVR::CAPI::D3D_NS::Buffer_Uniform, vertexData, vShaderBase->UniformsSize);
+		        vShaderBase->SetUniformBuffer(UniformBufferArray[OVR::CAPI::D3D_NS::Shader_Vertex]);
             }
 
             for (int i = (OVR::CAPI::D3D_NS::Shader_Vertex + 1); i < OVR::CAPI::D3D_NS::Shader_Count; i++)
