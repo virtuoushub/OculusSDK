@@ -4,16 +4,27 @@ include_directories(Include Src Src/Kernel Src/Util)
 include_directories(../Bindings/C/Include)
 
 file(GLOB_RECURSE SOURCE_FILES Src/*.cpp Src/*.h Include/*.h)
+file(GLOB_RECURSE OSX_FILES Src/OVR_OSX_*.cpp Src/OVR_OSX_*.h )
+file(GLOB_RECURSE UNIX_FILES Src/OVR_Unix_*.cpp Src/OVR_Unix_*.h Src/OVR_ThreadsPthread.cpp)
+file(GLOB_RECURSE WIN32_FILES Src/OVR_Win32_*.cpp Src/OVR_Win32_*.h )
 
 if(WIN32)
     # Extra libs
     list(APPEND EXTRA_LIBS setupapi winmm ws2_32)
+	
+	foreach(f ${OSX_FILES}) 
+		list(REMOVE_ITEM SOURCE_FILES ${f})
+	endforeach(f) 
+	foreach(f ${UNIX_FILES}) 
+		list(REMOVE_ITEM SOURCE_FILES ${f})
+	endforeach(f) 
+
 elseif(APPLE)
+	foreach(f ${WIN32_FILES}) 
+		list(REMOVE_ITEM SOURCE_FILES ${f})
+	endforeach(f) 
 
     # Extra source
-    file(GLOB PLATFORM_SOURCE_FILES Platform/OSX/*.cpp Platform/OSX/*.h)
-    list(APPEND PLATFORM_SOURCE_FILES Platform/OVR_ThreadsPthread.cpp)
-
     # Extra libs
     find_library(COCOA_LIBRARY Cocoa)
     find_library(IOKIT_LIBRARY IOKit)
