@@ -19,4 +19,4 @@ add_library(OVR_C SHARED ${SOURCE_FILES})
 
 # All platforms require GLEW and OpenGL
 find_package(OpenGL REQUIRED)
-target_link_libraries(OVR_C ${OVR_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(OVR_C OculusVR ${OVR_LIBRARIES} ${OPENGL_LIBRARIES})

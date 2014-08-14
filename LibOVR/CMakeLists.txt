@@ -5,8 +5,8 @@ include_directories(../Bindings/C/Include)
 
 file(GLOB_RECURSE SOURCE_FILES Src/*.cpp Src/*.h Include/*.h)
 file(GLOB_RECURSE OSX_FILES Src/OVR_OSX_*.cpp Src/OVR_OSX_*.h )
-file(GLOB_RECURSE UNIX_FILES Src/OVR_Unix_*.cpp Src/OVR_Unix_*.h Src/OVR_ThreadsPthread.cpp)
-file(GLOB_RECURSE WIN32_FILES Src/OVR_Win32_*.cpp Src/OVR_Win32_*.h )
+file(GLOB_RECURSE UNIX_FILES Src/OVR_Unix_*.cpp Src/OVR_Unix_*.h Src/Kernel/OVR_ThreadsPthread.cpp)
+file(GLOB_RECURSE WIN32_FILES Src/OVR_Win32_*.cpp Src/OVR_Win32_*.h Src/Kernel/OVR_ThreadsWinAPI.cpp)
 
 if(WIN32)
     # Extra libs
@@ -15,6 +15,7 @@ if(WIN32)
 	foreach(f ${OSX_FILES}) 
 		list(REMOVE_ITEM SOURCE_FILES ${f})
 	endforeach(f) 
+
 	foreach(f ${UNIX_FILES}) 
 		list(REMOVE_ITEM SOURCE_FILES ${f})
 	endforeach(f) 
