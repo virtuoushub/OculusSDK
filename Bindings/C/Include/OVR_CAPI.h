@@ -422,7 +422,7 @@ typedef struct ovrRenderAPIConfigHeader_
 typedef struct ovrRenderAPIConfig_
 {
     ovrRenderAPIConfigHeader Header;
-    uintptr_t                PlatformData[8];
+    uint32_t                PlatformData[16];
 } ovrRenderAPIConfig;
 
 /// Platform-independent part of the eye texture descriptor.
@@ -439,7 +439,7 @@ typedef struct ovrTextureHeader_
 typedef struct ovrTexture_
 {
     ovrTextureHeader Header;
-    uintptr_t        PlatformData[8];
+    uint32_t        PlatformData[16];
 } ovrTexture;
 
 
