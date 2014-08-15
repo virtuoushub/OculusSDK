@@ -57,6 +57,8 @@ else()
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty/EDID)
 
 endif()
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DOVR_BUILD_DEBUG")
 add_library(OculusVR STATIC ${SOURCE_FILES} ${PLATFORM_SOURCE_FILES})
 list(APPEND EXTRA_LIBS OculusVR)
 set(OVR_LIBRARIES ${EXTRA_LIBS} CACHE STRING "Dependencies of OculusVR")
