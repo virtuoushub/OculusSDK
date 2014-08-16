@@ -851,6 +851,13 @@ OVR_EXPORT void ovrHmd_GetHSWDisplayState(ovrHmd hmd, ovrHSWDisplayState *hasWar
 ///    }
 OVR_EXPORT ovrBool ovrHmd_DismissHSWDisplay(ovrHmd hmd);
 
+/// Allows the user to enable / disable SDK side rendering of the health and safety warning.
+/// Must be called *after* ovrHmd_ConfigureRendering.  Disabling the HSW is only recommended for
+/// debugging.
+///
+/// If you disable the SDK health and safety warning and do not include some kind of replacement
+/// of your own in your released software, you are likely in violation of the Oculus SDK license.
+OVR_EXPORT void ovrhmd_EnableHSWDisplaySDKRender(ovrHmd hmd, ovrBool enabled);
 
 
 
